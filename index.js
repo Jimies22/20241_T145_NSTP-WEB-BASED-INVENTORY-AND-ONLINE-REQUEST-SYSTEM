@@ -3,14 +3,14 @@ const app = express();
 
 app.use(express.json());
 
-app.post('/user/login', (req,res) => {
-    //process user to login
+app.post('/user/calendar', (req,res) => {
+    //Google Calendar
 })
 
-app.post('/user/logout', (req,res) => {
-    //process user to logout
+app.post('/user/Authentication', (req,res) => {
+    //Google Authentication
 })
 
-app.get('/user/id', (req,res) => {
-    //get users id to signup
-})
+// app.get('/user/:id', (req,res) => {
+//     //get users id to signup
+// })
