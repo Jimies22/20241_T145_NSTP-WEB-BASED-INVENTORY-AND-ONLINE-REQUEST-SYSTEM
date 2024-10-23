@@ -1,16 +1,14 @@
-const express = require('express');
+const express = require("express");
+const { console } = require("inspector");
 const app = express();
+const PORT = 6969;
 
-app.use(express.json());
+const userRouter = require("./routes/user");
+const requestRouter = require("./routes/request");
 
-app.post('/user/calendar', (req,res) => {
-    //Google Calendar
-})
+app.use("/user", userRouter);
+app.use("/request", requestRouter);
 
-app.post('/user/Authentication', (req,res) => {
-    //Google Authentication
-})
-
-// app.get('/user/:id', (req,res) => {
-//     //get users id to signup
-// })
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
