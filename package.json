@@ -10,6 +10,19 @@
   "author": "GreenSoft",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.1"
-  }
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongoose": "^8.7.2",
+    "nodemon": "^3.1.7"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jimies22/20241_T145_NSTP-WEB-BASED-INVENTORY-AND-ONLINE-REQUEST-SYSTEM.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jimies22/20241_T145_NSTP-WEB-BASED-INVENTORY-AND-ONLINE-REQUEST-SYSTEM/issues"
+  },
+  "homepage": "https://github.com/Jimies22/20241_T145_NSTP-WEB-BASED-INVENTORY-AND-ONLINE-REQUEST-SYSTEM#readme"
 }

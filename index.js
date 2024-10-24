@@ -3,8 +3,8 @@ const { console } = require("inspector");
 const app = express();
 const PORT = 6969;
 
-const userRouter = require("./routes/user");
-const requestRouter = require("./routes/request");
+const userRouter = require("./routes/userRoutes");
+const requestRouter = require("./routes/adminRoutes");
 
 app.use("/user", userRouter);
 app.use("/request", requestRouter);
