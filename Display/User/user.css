@@ -71,6 +71,7 @@ body {
 	width: 60px;
 }
 #sidebar .brand {
+
 	font-size: 24px;
 	font-weight: 700;
 	height: 56px;
@@ -86,6 +87,7 @@ body {
 	box-sizing: content-box;
 }
 #sidebar .brand .bx {
+	
 	min-width: 60px;
 	display: flex;
 	justify-content: center;
@@ -466,6 +468,7 @@ body {
 }
 
 .projector-card img {
+	
     width: 100%;
     height: auto;
     border-radius: 8px;
