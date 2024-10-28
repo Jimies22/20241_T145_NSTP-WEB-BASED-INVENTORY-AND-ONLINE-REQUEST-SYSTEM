@@ -1,1 +1,46 @@
+# exclude node_modules
 node_modules/
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+
+# OS-generated files
+.DS_Store
+
+# IDE settings
+.vscode/
+.idea/
+
+# excluding package-lock.json
+package-lock.json# exclude node_modules
+node_modules/
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+*.tmp
+*.bak
+
+# Environment variables
+.env
+.env.example
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+*.iml
+
+# excluding package-lock.json
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

@@ -1,23 +1,23 @@
 const express = require("express");
 const { console } = require("inspector");
 const app = express();
-const PORT = 3000;
+const PORT = 6969;
 
-const userRouter = require("./routes/User/userRoutes");
-const requestRouter = require("./routes/Admin/adminRoutes");
+const userRouter = require("./routes/user");
+const requestRouter = require("./routes/request");
 
-// Update code for put and delete +++++++++++++++++++++
-const itemRouter = require("./routes/User/userRoutes");
-//const requestRouter = require("./routes/Admin/adminRoutes");
-
-// Endpoints
 app.use("/user", userRouter);
 app.use("/request", requestRouter);
-
-app.use("/item", itemRouter);
-// app.use("/request", requestRouter);
-// Update code for put and delete +++++++++++++++++++++
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// const express = require("express");
+// const { console } = require("inspector");
+// const app = express();
+// const PORT = 3000;
+
+// app.listen(PORT, () => {
+//   console.log(`Server is running on port ${PORT}`);
+// });
