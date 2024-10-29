@@ -1,26 +1,35 @@
 const express = require("express");
 const router = express.Router();
 
-// Define routes with unique paths
-router.post("/bookings", (req, res) => {
+// // Bookings and Requests connected to controller
+// router.post("/bookings", userController.placeBooking);
+// router.delete("/bookings/cancel", userController.cancelBooking);
+// router.get("/requests", userController.viewRequests);
+// router.get("/bookings/pending", userController.viewPendingBookings);
+// router.get("/bookings/accepted", userController.viewAcceptedBookings);
+// router.get("/bookings/return", userController.viewItemsToReturn);
+// router.post("/items/scanReturn", userController.scanItemReturn);
+
+// Bookings and Requests disconnected to controller
+router.post("/", (req, res) => {
   res.send({ data: "Booking placed successfully" });
 });
-router.delete("/bookings/cancel", (req, res) => {
+router.delete("/", (req, res) => {
   res.send({ data: "Booking cancelled successfully" });
 });
-router.get("/requests", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "Requests retrieved successfully" });
 });
-router.get("/bookings/pending", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "Pending bookings retrieved successfully" });
 });
-router.get("/bookings/accepted", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "Accepted bookings retrieved successfully" });
 });
-router.get("/bookings/return", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "Items to return retrieved successfully" });
 });
-router.post("/items/scanReturn", (req, res) => {
+router.post("/", (req, res) => {
   res.send({ data: "Item return scanned successfully" });
 });
 
