@@ -8,13 +8,20 @@ const router = express.Router();
 
 // Inventory disconnected to controller
 router.get("/", (req, res) => {
-  res.send({ data: "Welcome to the Inventory System" });
+  res.status(200).json({ message: "Welcome to the Inventory System" });
 });
+
 router.get("/status", (req, res) => {
-  res.send({ data: "Inventory status retrieved successfully" });
+  res.status(200).json({ message: "Inventory status retrieved successfully" });
 });
+
 router.get("/details", (req, res) => {
-  res.send({ data: "Inventory details retrieved successfully" });
+  res.status(200).json({ message: "Inventory details retrieved successfully" });
+});
+
+// Error handling middleware
+router.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
 });
 
 module.exports = router;
