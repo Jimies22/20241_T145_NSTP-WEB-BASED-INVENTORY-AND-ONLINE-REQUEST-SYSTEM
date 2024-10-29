@@ -16,5 +16,5 @@ npm-debug.log*
 .vscode/
 .idea/
 
-# excluding package-lock.json
+# Exclude package-lock.json
 package-lock.json
