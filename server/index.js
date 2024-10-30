@@ -40,17 +40,17 @@ const express = require("express"); // Corrected the require statement
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-//const userRouter = require("./routes/User/userRoutes"); // Ensure the path is correct
-//const requestRouter = require("./routes/User/requestRoutes"); // Ensure the path is correct
-const dashboardRouter = require("./routes/User/dashboard"); // Add the new import
-const inventoryRouter = require("./routes/User/inventory"); // Add the new import
-const notificationRouter = require("./routes/User/notification"); // Add the new import
+const userRouter = require("./routes/User/userRoute"); // Ensure the path is correct
+const bookingRouter = require("./routes/User/bookingRoutes"); // Ensure the path is correct
+const dashboardRouter = require("./routes/User/dashboardRoute"); // Add the new import
+const inventoryRouter = require("./routes/User/inventoryRoute"); // Add the new import
+const notificationRouter = require("./routes/User/notificationRoute"); // Add the new import
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//app.use("/user", userRouter);
-//app.use("/request", requestRouter);
+app.use("/user", userRouter);
+app.use("/booking", bookingRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/inventory", inventoryRouter);
 app.use("/notifications", notificationRouter);
