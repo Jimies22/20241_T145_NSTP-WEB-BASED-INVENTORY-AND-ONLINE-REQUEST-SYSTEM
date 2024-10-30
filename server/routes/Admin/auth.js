@@ -2,13 +2,29 @@ const express = require("express");
 const router = express.Router();
 
 // Authentication
-router.post("/login", adminController.login);
-router.post("/signup", adminController.signup);
-router.post("/login/google", adminController.googleLogin);
-router.post("/logout", adminController.logout);
-router.get("/session", adminController.checkSession);
-router.post("/verify-email", adminController.verifyEmail);
-router.put("/update-profile", adminController.updateProfile);
-router.post("/refresh-token", adminController.refreshToken);
+router.post("/login", (req, res) => {
+  res.send({ data: "Login successful" });
+});
+router.post("/signup", (req, res) => {
+  res.send({ data: "Signup successful" });
+});
+router.post("/login/google", (req, res) => {
+  res.send({ data: "Google login successful" });
+});
+router.post("/logout", (req, res) => {
+  res.send({ data: "Logout successful" });
+});
+router.get("/session", (req, res) => {
+  res.send({ data: "Session details" });
+});
+router.post("/verify-email", (req, res) => {
+  res.send({ data: "Email verification successful" });
+});
+router.put("/update-profile", (req, res) => {
+  res.send({ data: "Profile updated" });
+});
+router.post("/refresh-token", (req, res) => {
+  res.send({ data: "Token refreshed" });
+});
 
 module.exports = router;

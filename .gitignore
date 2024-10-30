@@ -1,4 +1,4 @@
-# Dependency directories
+# exclude node_modules
 node_modules/
 
 # Log files
@@ -18,3 +18,5 @@ npm-debug.log*
 
 # Exclude package-lock.json
 package-lock.json
+yarn.lock
+pnpm-lock.yaml

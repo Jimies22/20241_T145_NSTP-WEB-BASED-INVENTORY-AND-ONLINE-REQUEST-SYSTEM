@@ -2,9 +2,9 @@
   "name": "20241_t145_nstp-web-based-inventory-and-online-request-system",
   "version": "1.0.0",
   "description": "Collab Project 2024",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -21,7 +21,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "mongoose": "^8.7.2",
+    "mongoose": "^8.7.3",
     "nodemon": "^3.1.7"
   },
   "repository": {
