@@ -10,10 +10,10 @@ const router = express.Router();
 router.get("/", (req, res) => {
   res.send({ data: "Welcome to the Inventory System" });
 });
-router.get("/status", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "Inventory status retrieved successfully" });
 });
-router.get("/details", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "Inventory details retrieved successfully" });
 });
 

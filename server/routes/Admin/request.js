@@ -2,16 +2,16 @@ const express = require("express");
 const router = express.Router();
 
 // Request Management
-router.put("/request/:id/accept", (req, res) => {
+router.put("/", (req, res) => {
   res.send({ message: "Request accepted successfully" });
 });
-router.put("/request/:id/decline", (req, res) => {
+router.put("/", (req, res) => {
   res.send({ message: "Request declined successfully" });
 });
-router.get("/requests/pending", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ message: "List of pending requests" });
 });
-router.get("/requests/borrowed", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ message: "List of borrowed items" });
 });
 

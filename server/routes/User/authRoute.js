@@ -34,7 +34,7 @@ router.post("/", (req, res) => {
 router.put("/", (req, res) => {
   res.send({ data: "Profile updated successfully" });
 });
-router.post("/", (req, res) => {
+router.post("//", (req, res) => {
   res.send({ data: "Token refreshed successfully" });
 });
 

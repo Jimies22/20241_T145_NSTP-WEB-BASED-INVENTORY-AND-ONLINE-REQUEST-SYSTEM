@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/", (req, res) => {
   res.send({ data: "Welcome to the User Dashboard" });
 });
-router.get("/profile", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "User profile retrieved successfully" });
 });
 module.exports = router;

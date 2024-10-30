@@ -2,25 +2,44 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// User routes
 const authRouter = require("./routes/User/authRoute");
 const userRouter = require("./routes/User/userRoute");
-const bookingRouter = require("./routes/User/bookingRoutes");
+const bookingRouter = require("./routes/User/bookingRoute");
 const dashboardRouter = require("./routes/User/dashboardRoute");
 const inventoryRouter = require("./routes/User/inventoryRoute");
-const notificationRouter = require("./routes/User/notificationRoute");
+//const notificationRouter = require("./routes/User/notificationRoute");
+
+// Admin routes
+//const adminAuthRouter = require("./routes/Admin/authRoute");
+const authAdminRouter = require("./routes/Admin/auth");
+const inventoryAdminRouter = require("./routes/Admin/inventory");
+const notificationAdminRouter = require("./routes/Admin/notification");
+const reportRouter = require("./routes/Admin/report");
+const requestRouter = require("./routes/Admin/request");
 
 //app.use(express.json({ limit: "50mb" }));
 app.use(
   express.urlencoded({ extended: true, limit: "50mb", parameterLimit: 10000 })
 );
 
-app.use("/auth", authRouter);
-app.use("/user", userRouter);
-app.use("/booking", bookingRouter);
-app.use("/dashboard", dashboardRouter);
-app.use("/inventory", inventoryRouter);
-app.use("/notifications", notificationRouter);
+// User
+app.use("/api/user/auth", authRouter);
+app.use("/api/user/user", userRouter);
+app.use("/api/user/booking", bookingRouter);
+app.use("/api/user/dashboard", dashboardRouter);
+app.use("/api/user/inventory", inventoryRouter);
+//app.use("/notifications", notificationRouter);
 
+// Admin
+//app.use("/admin/auth", adminAuthRouter);
+app.use("/api/admin/login", authAdminRouter);
+app.use("/api/admin/signup", inventoryAdminRouter);
+app.use("/api/admin/notifications", notificationAdminRouter);
+app.use("/api/admin/reports", reportRouter);
+app.use("/api/admin/requests", requestRouter);
+
+// Admin
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
