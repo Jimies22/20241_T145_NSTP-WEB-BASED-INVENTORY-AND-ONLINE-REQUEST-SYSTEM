@@ -15,3 +15,6 @@ npm-debug.log*
 # IDE settings
 .vscode/
 .idea/
+
+# Exclude package-lock.json
+package-lock.json
