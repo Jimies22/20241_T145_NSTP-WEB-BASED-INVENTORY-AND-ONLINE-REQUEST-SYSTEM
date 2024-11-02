@@ -7,9 +7,9 @@
 	<!-- Boxicons -->
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<!-- My CSS -->
-	<link rel="stylesheet" href="Dashboard.css">
+	<link rel="stylesheet" href="Requestpage.css">
 
-	<title>Admin</title>
+	<title>User</title>
 </head>
 <body>
 
@@ -17,38 +17,32 @@
 	<!-- SIDEBAR -->
 	<section id="sidebar">
 		<a href="#" class="brand">
-			<img src="bootstrap/images/nstp_logo.png" alt="Admin Logo" class="brand" />
-			<span class="text">Admin</span>
+			<img src="img/NSTP_LOGO.png" alt="Admin Logo" class="brand" />
+			<span class="text">User</span>
 		</a>
 		<ul class="side-menu top">
 			<li>
-				<a href="#">
+				<a href="Dashboard.html">
 					<i class='bx bxs-dashboard'></i>
 					<span class="text">Dashboard</span>
 				</a>
 			</li>
 			<li>
-				<a href="Mainpage.html">
+				<a href="Requestpage.html">
 					<i class='bx bxs-shopping-bag-alt' ></i>
 					<span class="text">Request</span>
 				</a>
 			</li>
 			<li>
-				<a href="AddItem.html">
-					<i class='bx bxs-message-square-add' ></i>
-					<span class="text">Edit Items</span>
+				<a href="#">
+					<i class='bx bxs-book'></i>
+					<span class="text">Borrowed Items</span>
 				</a>
 			</li>
 			<li>
-				<a href="Returned.html">
+				<a href="Reports.html">
 					<i class='bx bxs-message-dots' ></i>
 					<span class="text">Reports</span>
-				</a>
-			</li>
-			<li>
-				<a href="Archived.html">
-					<i class='bx bxs-archive'></i>
-					<span class="text">Archived Items</span>
 				</a>
 			</li>
 		</ul>
@@ -89,7 +83,7 @@
 				<i class='bx bxs-bell' ></i>
 				<span class="num">8</span>
 			</a>
-			<a href="AdminProfile.html" class="profile">
+			<a href="StaffProfile.html" class="profile">
 				<img src="img/Screen-Shot-2024-06-11-at-11.54.30-AM-e1718634535872.webp">
 			</a>
 		</nav>
@@ -99,14 +93,14 @@
 		<main>
 			<div class="head-title">
 				<div class="left">
-					<h1>Dashboard</h1>
+					<h1>Borrowed Items</h1>
 					<ul class="breadcrumb">
 						<li>
-							<a href="#">Dashboard</a>
+							<a href="#">Borrowed Items</a>
 						</li>
 						<li><i class='bx bx-chevron-right' ></i></li>
 						<li>
-							<a href="#">Home</a>
+							<a class="active" href="Dashboard.html">Home</a>
 						</li>
 					</ul>
 				</div>
@@ -115,22 +109,87 @@
 					<span class="text">Download PDF</span>
 				</a> -->
 			</div>
-			<ul class="box-info">
-				<li>
-					<i class='bx bxs-calendar-check' ></i>
-					<span class="text">
-						<h3>13</h3>
-						<p>Total Request</p>
-					</span>
-				</li>
-				<li>
-					<i class='bx bxs-calendar-check' ></i>
-					<span class="text">
-						<h3>5</h3>
-						<p>Total Items Borrowed</p>
-					</span>
-				</li>
-                </ul>
+			<div class="table-data">
+				<div class="recent-orders">
+					<div class="head">
+						<h3>Borrowed Items</h3>
+						<i class='bx bx-filter'></i>
+					</div>
+					<div class="order">
+						<table>
+							<thead>
+								<tr>
+									<th>Item Descrription</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+									</td>
+                                        <td><span class="status R1">To Return</span></td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+									</td>
+                                        <td><span class="status R1">Returned</span></td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
+								</tr>
+                                <tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+									</td>
+                                        <td><span class="status R1">Returned</span></td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+									</td>
+                                        <td><span class="status R1">Returned</span></td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+									</td>
+                                        <td><span class="status R1">Returned</span></td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+				</div>		
 				<!-- <div class="todo">
 					<div class="head">
 						<h3>Todos</h3>

@@ -3,13 +3,13 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 	<!-- Boxicons -->
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<!-- My CSS -->
-	<link rel="stylesheet" href="request.css">
+	<link rel="stylesheet" href="style.css">
 
-	<title>AdminHub</title>
+	<title>User</title>
 </head>
 <body>
 
@@ -17,22 +17,41 @@
 	<!-- SIDEBAR -->
 	<section id="sidebar">
 		<a href="#" class="brand">
-			<img src="bootstrap/images/nstp_logo.png" alt="nstp_logo" style="width: 8.5vh; height: 9vh; margin-top: 20px;">
+			<i class='bx bxs-smile'></i>
+			<span class="text">AdminHub</span>
 		</a>
 		<ul class="side-menu top">
 			<li class="active">
-				<a href="user.html">
+				<a href="#">
 					<i class='bx bxs-dashboard' ></i>
 					<span class="text">Dashboard</span>
 				</a>
 			</li>
 			<li>
-				<a href="request.html">
+				<a href="#">
 					<i class='bx bxs-shopping-bag-alt' ></i>
 					<span class="text">Request</span>
 				</a>
 			</li>
-			
+			<li>
+				<a href="#">
+					<i class='bx bxs-doughnut-chart' ></i>
+					<span class="text">Analytics</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<i class='bx bxs-message-dots' ></i>
+					<span class="text">Message</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<i class='bx bxs-group' ></i>
+					<span class="text">Status</span>
+				</a>
+			</li>
+		</ul>
 		<ul class="side-menu">
 			<!-- <li>
 				<a href="#">
@@ -41,7 +60,7 @@
 				</a>
 			</li> -->
 			<li>
-				<a href="../login/login.html" class="logout">
+				<a href="#" class="logout">
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>
@@ -49,6 +68,9 @@
 		</ul>
 	</section>
 	<!-- SIDEBAR -->
+
+
+
 	<!-- CONTENT -->
 	<section id="content">
 		<!-- NAVBAR -->
@@ -68,7 +90,7 @@
 				<span class="num">8</span>
 			</a>
 			<a href="#" class="profile">
-				<img src="bootstrap/images/jan ID.jpg">
+				<img src="img/people.png">
 			</a>
 		</nav>
 		<!-- NAVBAR -->
@@ -77,21 +99,58 @@
 		<main>
 			<div class="head-title">
 				<div class="left">
-					<h1>Borrow Item</h1>
+					<h1>Dashboard</h1>
 					<ul class="breadcrumb">
 						<li>
-							<a href="#">Borrow Item</a>
+							<a href="#">Dashboard</a>
 						</li>
 						<li><i class='bx bx-chevron-right' ></i></li>
 						<li>
-							<a class="active" href="user.html">Home</a>
+							<a class="active" href="#">Home</a>
 						</li>
 					</ul>
 				</div>
+				<!-- <a href="#" class="btn-download">
+					<i class='bx bxs-cloud-download' ></i>
+					<span class="text">Download PDF</span>
+				</a> -->
 			</div>
-        </main>
+
+			<ul class="box-info">
+				<li>
+					<i class='bx bxs-calendar-check' ></i>
+					<span class="text">
+						<h3>5</h3>
+						<p>New Request</p>
+					</span>
+				</li>
+				<li>
+					<i class='bx bxs-group' ></i>
+					<span class="text">
+						<h3>2834</h3>
+						<p>Visitors</p>
+					</span>
+				</li>
+				<li>
+					<i class='bx bxs-dollar-circle' ></i>
+					<span class="text">
+						<h3>5</h3>
+						<p>Total Items Borrowed</p>
+					</span>
+				</li>
+			</ul>
+
+
+			<div class="card-container">
+                <!-- card 1 -->
+                 <div class="card">
+                    <img src="https://via.placeholder.com/200x150" alt="Epson 703HD Projector">
+                    <p class="product-name">Epson 703HD Powerlite Home Cinema LCD Projector</p>
+                    <p class="availability">AVAILABLE</p>
+                 </div>
+				
 	
-	</section>
-        <script src="script.js"></script>
-    </body>
-    </html>
+
+	<script src="script.js"></script>
+</body>
+</html>

@@ -1,9 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
+
 a {
 	text-decoration: none;
 }
@@ -69,7 +71,6 @@ body {
 	width: 60px;
 }
 #sidebar .brand {
-
 	font-size: 24px;
 	font-weight: 700;
 	height: 56px;
@@ -77,7 +78,7 @@ body {
 	align-items: center;
 	color: var(--blue);
 	position: sticky;
-	top: 0;
+	top: 20px;
 	left: 0;
 	background: var(--light);
 	z-index: 500;
@@ -85,7 +86,6 @@ body {
 	box-sizing: content-box;
 }
 #sidebar .brand .bx {
-	
 	min-width: 60px;
 	display: flex;
 	justify-content: center;
@@ -304,9 +304,7 @@ body {
 
 
 
-h3{
-	margin-left: 10vh;
-}
+
 
 /* MAIN */
 #content main {
@@ -326,7 +324,7 @@ h3{
 #content main .head-title .left h1 {
 	font-size: 36px;
 	font-weight: 600;
-	margin-bottom: 10px;
+	margin-bottom: 0px;
 	color: var(--dark);
 }
 #content main .head-title .left .breadcrumb {
@@ -359,67 +357,266 @@ h3{
 }
 
 
-.container {
-	margin-top: 20px;
-    display: flex;
-    background-color: #7b96d4;
-    padding: 20px;
-    border-radius: 50px;
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.59);
-	border: none;
-}
-.image {
-    margin-right: 20px;
-}
-.image img {
-    max-width: 100%;
-    border-radius: 8px;
-}
-.form {
-    display: flex;
-    flex-direction: column;
-	margin-top: 30px;
-}
-.form input {
-	height: 8vh;
-   align-items: end;
-    margin-bottom: 20px;
-    padding: 10px;
-    border: none;
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.59);
-    border-radius: 5px;
-}
-.form button {
-    width: auto;
-    padding: 15px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-/* .form button:hover {
-    background-color: #555;   
 
-} */
-.time-picker {
+
+#content main .box-info {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	grid-gap: 24px;
+	margin-top: 10px;
+}
+#content main .box-info li {
+	padding: 24px;
+	background: var(--light);
+	border-radius: 20px;
 	display: flex;
-	justify-content: space-around;
-	
+	align-items: center;
+	grid-gap: 24px;
 }
-.time-picker label{
-	margin: 10px;
+#content main .box-info li .bx {
+	width: 80px;
+	height: 80px;
+	border-radius: 10px;
+	font-size: 36px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
-/* Your existing styles here */
-button.disabled {
-    background-color: gray;
-    cursor: not-allowed;
+#content main .box-info li:nth-child(1) .bx {
+	background: var(--light-blue);
+	color: var(--blue);
 }
-button.enabled {
-    background-color: rgb(5, 197, 5);
+#content main .box-info li:nth-child(2) .bx {
+	background: var(--light-yellow);
+	color: var(--yellow);
+}
+#content main .box-info li:nth-child(3) .bx {
+	background: var(--light-orange);
+	color: var(--orange);
+}
+#content main .box-info li .text h3 {
+	font-size: 24px;
+	font-weight: 600;
+	color: var(--dark);
+}
+#content main .box-info li .text p {
+	color: var(--dark);	
+}
+
+
+
+
+
+
+#content main .table-data {
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 24px;
+    margin-top: 24px;
+    width: 100%;
+    color: var(--dark);
+}
+
+#content main .table-data > div {
+    flex-grow: 1;
+    flex-basis: 300px;
+    max-height: 700px; /* Adjust the height as needed */
+    overflow-y: auto; /* Enables vertical scrolling */
+    border-radius: 20px; /* Retain existing styles */
+    background: var(--light);
+    padding: 24px;
+}
+
+#content main .table-data .head {
+    display: flex;
+    align-items: center;
+    grid-gap: 16px;
+    margin-bottom: 24px;
+}
+
+#content main .table-data .head h3 {
+    margin-right: auto;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+#content main .table-data .head .bx {
     cursor: pointer;
 }
 
-button.enabled:hover{
-	background-color: #129c10f0;   
+#content main .table-data .order {
+    flex-grow: 1;
+    flex-basis: 300px;
+}
+
+#content main .table-data .order table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#content main .table-data .order table th {
+    padding-bottom: 12px;
+    font-size: 13px;
+    text-align: left;
+    border-bottom: 1px solid var(--grey);
+}
+
+#content main .table-data .order table td {
+    padding: 16px 0;
+}
+
+#content main .table-data .order table tr td:first-child {
+    display: flex;
+    align-items: center;
+    grid-gap: 12px;
+    padding-left: 6px;
+}
+
+#content main .table-data .order table td img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#content main .table-data .order table tbody tr:hover {
+    background: var(--grey);
+}
+
+#content main .table-data .order table tr td .status {
+    font-size: 10px;
+    padding: 6px 16px;
+    color: var(--light);
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+#content main .table-data .order table tr td .status.R1 {
+    background: var(--blue);
+}
+
+#content main .table-data .order table tr td .status.R2 {
+    background: var(--yellow);
+}
+#content main .table-data .order table tr td .status.R3 {
+    background: var(--orange);
+}
+
+#content main .table-data .order table tr td .status.completed {
+    background: var(--blue);
+}
+
+#content main .table-data .order table tr td .status.process {
+    background: var(--yellow);
+}
+
+#content main .table-data .order table tr td .status.pending {
+    background: var(--orange);
+}
+
+
+/* #content main .table-data .todo {
+	flex-grow: 1;
+	flex-basis: 300px;
+}
+#content main .table-data .todo .todo-list {
+	width: 100%;
+}
+#content main .table-data .todo .todo-list li {
+	width: 100%;
+	margin-bottom: 16px;
+	background: var(--grey);
+	border-radius: 10px;
+	padding: 14px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+#content main .table-data .todo .todo-list li .bx {
+	cursor: pointer;
+}
+#content main .table-data .todo .todo-list li.completed {
+	border-left: 10px solid var(--blue);
+}
+#content main .table-data .todo .todo-list li.not-completed {
+	border-left: 10px solid var(--orange);
+}
+#content main .table-data .todo .todo-list li:last-child {
+	margin-bottom: 0;
+} */
+/* MAIN */
+/* CONTENT */
+
+
+
+
+
+
+
+
+
+@media screen and (max-width: 768px) {
+	#sidebar {
+		width: 200px;
+	}
+
+	#content {
+		width: calc(100% - 60px);
+		left: 200px;
+	}
+
+	#content nav .nav-link {
+		display: none;
+	}
+}
+
+
+
+
+
+
+@media screen and (max-width: 576px) {
+	#content nav form .form-input input {
+		display: none;
+	}
+
+	#content nav form .form-input button {
+		width: auto;
+		height: auto;
+		background: transparent;
+		border-radius: none;
+		color: var(--dark);
+	}
+
+	#content nav form.show .form-input input {
+		display: block;
+		width: 100%;
+	}
+	#content nav form.show .form-input button {
+		width: 36px;
+		height: 100%;
+		border-radius: 0 36px 36px 0;
+		color: var(--light);
+		background: var(--red);
+	}
+
+	#content nav form.show ~ .notification,
+	#content nav form.show ~ .profile {
+		display: none;
+	}
+
+	#content main .box-info {
+		grid-template-columns: 1fr;
+	}
+
+	#content main .table-data .head {
+		min-width: 420px;
+	}
+	#content main .table-data .order table {
+		min-width: 420px;
+	}
+	#content main .table-data .todo .todo-list {
+		min-width: 420px;
+	}
+	
 }

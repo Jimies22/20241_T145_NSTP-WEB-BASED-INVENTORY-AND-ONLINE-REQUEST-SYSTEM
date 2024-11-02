@@ -7,9 +7,9 @@
 	<!-- Boxicons -->
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<!-- My CSS -->
-	<link rel="stylesheet" href="add.css">
+	<link rel="stylesheet" href="Requestpage.css">
 
-	<title>Admin</title>
+	<title>User</title>
 </head>
 <body>
 
@@ -17,8 +17,8 @@
 	<!-- SIDEBAR -->
 	<section id="sidebar">
 		<a href="#" class="brand">
-			<img src="bootstrap/images/nstp_logo.png" alt="Admin Logo" class="brand" />
-			<span class="text">Admin</span>
+			<img src="img/NSTP_LOGO.png" alt="Admin Logo" class="brand" />
+			<span class="text">User</span>
 		</a>
 		<ul class="side-menu top">
 			<li>
@@ -28,28 +28,21 @@
 				</a>
 			</li>
 			<li>
-				<a href="Mainpage.html">
+				<a href="#">
 					<i class='bx bxs-shopping-bag-alt' ></i>
 					<span class="text">Request</span>
 				</a>
 			</li>
 			<li>
-				<a href="AddItem.html">
-					<i class='bx bxs-message-square-add' ></i>
-					<span class="text">Edit Items</span>
+				<a href="Borroweditems.html">
+					<i class='bx bxs-book'></i>
+					<span class="text">Borrowed Items</span>
 				</a>
-                
 			</li>
 			<li>
-				<a href="Returned.html">
+				<a href="Reports.html">
 					<i class='bx bxs-message-dots' ></i>
 					<span class="text">Reports</span>
-				</a>
-			</li>
-			<li>
-				<a href="#">
-					<i class='bx bxs-archive'></i>
-					<span class="text">Archived Items</span>
 				</a>
 			</li>
 		</ul>
@@ -90,7 +83,7 @@
 				<i class='bx bxs-bell' ></i>
 				<span class="num">8</span>
 			</a>
-			<a href="AdminProfile.html" class="profile">
+			<a href="StaffProfile.html" class="profile">
 				<img src="img/Screen-Shot-2024-06-11-at-11.54.30-AM-e1718634535872.webp">
 			</a>
 		</nav>
@@ -100,10 +93,14 @@
 		<main>
 			<div class="head-title">
 				<div class="left">
-					<h1>Edit Items</h1>
+					<h1>Request</h1>
 					<ul class="breadcrumb">
 						<li>
-							<a href="#">Add Items</a>
+							<a href="#">Request</a>
+						</li>
+						<li><i class='bx bx-chevron-right' ></i></li>
+						<li>
+							<a class="active" href="Canceled.html">Canceled</a>
 						</li>
 						<li><i class='bx bx-chevron-right' ></i></li>
 						<li>
@@ -116,40 +113,34 @@
 					<span class="text">Download PDF</span>
 				</a> -->
 			</div>
-
 			<div class="table-data">
 				<div class="pending-requests">
 					<div class="head">
-						<h3>All items</h3>
+						<h3>Pending Requests</h3>
 						<i class='bx bx-filter'></i>
 					</div>
 					<div class="order">
 						<table>
 							<thead>
 								<tr>
-									<th>Item Description</th>
-									<th>Item ID</th>
-                                    <th>
-                                        <a href=""><i class='bx bx-plus' style="font-size: 24px; color: #15ff00;"></i>
-                                        </a>
-                                    </th>
+									<th>Item Descrription</th>
+									<th>Status</th>
+
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
-									<td>
+									<td class="card">
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>22000</td>
+
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
+									
 									<td>
-                                    <a href="">
-										<i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                    </a>
+										<i class='bx bx-x'></i>
 									</td>
 								</tr>
 								<tr>
@@ -157,150 +148,160 @@
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>220011</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
 								</tr>
 								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>220012</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+										<td>
+											<span class="status R1">Waiting for Approval</span>
+										</td>
+										<td>
+											<i class='bx bx-x'></i>
+										</td>
 								</tr>
 								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>220013</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
 								</tr>
 								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>220014</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
 								</tr>
-                                <tr>
+								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>220015</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
 								</tr>
-                                <tr>
+								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>2200116</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
 								</tr>
-                                <tr>
+								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>2200117</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
 								</tr>
-                                <tr>
+								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>220018</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
 								</tr>
-                                <tr>
+								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
 										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
 									</td>
-									<td>220019</td>
 									<td>
-										<a href="">
-										<span class="status R1">view</span>
-									</a>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
 									<td>
-                                        <a href="">
-                                            <i class='bx bxs-archive-in' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                    </td>
+										<i class='bx bx-x'></i>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+									</td>
+									<td>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
+									<td>
+										<i class='bx bx-x'></i>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+									</td>
+									<td>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
+									<td>
+										<i class='bx bx-x'></i>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
+									</td>
+									<td>
+										<span class="status R1">Waiting for Approval</span>
+									</td>
+									<td>
+										<i class='bx bx-x'></i>
+									</td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
-				</div>
-				
+				</div>			
 				<!-- <div class="todo">
 					<div class="head">
 						<h3>Todos</h3>

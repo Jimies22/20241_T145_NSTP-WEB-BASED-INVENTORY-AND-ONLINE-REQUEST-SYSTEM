@@ -9,7 +9,7 @@
 	<!-- My CSS -->
 	<link rel="stylesheet" href="Notification.css">
 
-	<title>AdminHub</title>
+	<title>User</title>
 </head>
 <body>
 
@@ -17,38 +17,32 @@
 	<!-- SIDEBAR -->
 	<section id="sidebar">
 		<a href="#" class="brand">
-			<img src="bootstrap/images/nstp_logo.png" alt="Admin Logo" class="brand" />
-			<span class="text">Admin</span>
+			<img src="img/NSTP_LOGO.png" alt="Admin Logo" class="brand" />
+			<span class="text">User</span>
 		</a>
 		<ul class="side-menu top">
-			<li>
+            <li>
 				<a href="Dashboard.html">
 					<i class='bx bxs-dashboard'></i>
 					<span class="text">Dashboard</span>
 				</a>
 			</li>
 			<li>
-				<a href="Mainpage.html">
+				<a href="Requestpage.html">
 					<i class='bx bxs-shopping-bag-alt' ></i>
 					<span class="text">Request</span>
 				</a>
 			</li>
-			<li>
-				<a href="AddItem.html">
-					<i class='bx bxs-message-square-add' ></i>
-					<span class="text">Add Item</span>
+            <li>
+				<a href="Borroweditems.html">
+					<i class='bx bxs-book'></i>
+					<span class="text">Borrowed Items</span>
 				</a>
 			</li>
 			<li>
-				<a href="Returned.html">
-					<i class='bx bxs-message-dots' ></i>
+				<a href="Reports.html">
+                    <i class='bx bxs-report' ></i>
 					<span class="text">Reports</span>
-				</a>
-			</li>
-			<li>
-				<a href="Archived.html">
-					<i class='bx bxs-archive'></i>
-					<span class="text">Archived Items</span>
 				</a>
 			</li>
 		</ul>
@@ -89,7 +83,7 @@
 				<i class='bx bxs-bell' ></i>
 				<span class="num">8</span>
 			</a>
-			<a href="AdminProfile.html" class="profile">
+			<a href="#" class="profile">
 				<img src="img/Screen-Shot-2024-06-11-at-11.54.30-AM-e1718634535872.webp">
 			</a>
 		</nav>
@@ -102,11 +96,11 @@
 					<h1>Notifications</h1>
 					<ul class="breadcrumb">
 						<li>
-							<a href="Notification.html">Notifications</a>
+							<a href="#">Notifications</a>
 						</li>
 						<li><i class='bx bx-chevron-right' ></i></li>
 						<li>
-							<a class="active" href="Mainpage.html">Home</a>
+							<a class="active" href="Dashboard.html">Home</a>
 						</li>
 					</ul>
 				</div>
@@ -118,7 +112,7 @@
                 <div class="table-data">
                     <div class="pending-requests">
                         <div class="head">
-                            <h3>Notification Requests</h3>
+                            <h3>Notifications</h3>
                             <i class='bx bx-filter'></i>
                         </div>
                         <div class="order">
@@ -127,7 +121,6 @@
                                     <tr>
                                         <th>User ID</th>
                                         <th>Description </th>
-                                        <th>View</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -136,75 +129,60 @@
                                             <img src="img/people.png" alt="User Image">
                                             <p>220011</p>
                                         </td>
-                                        <td>Would like to book an Item</td>
+                                        <td>Successfully Booked an Item</td>
                                         <td>
-                                        <a href="">
-                                            <i class='bx bx-check' style="font-size: 24px; color: #36f465;"></i>
-                                        </a>
-                                        <a href="">
-                                            <i class='bx bxs-x-circle' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                        </td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
                                     </tr>
                                     <tr>
                                         <td class="card">
                                             <img src="img/people.png" alt="User Image">
                                             <p>220011</p>
                                         </td>
-                                        <td>Would like to book an Item</td>
-                                        <td>
-                                        <a href="">
-                                            <i class='bx bx-check' style="font-size: 24px; color: #36f465;"></i>
-                                        </a>
-                                        <a href="">
-                                            <i class='bx bxs-x-circle' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                        </td>
+                                        <td>Successfully returned an Item</td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
                                     </tr>
                                     <tr>
                                         <td class="card">
                                             <img src="img/people.png" alt="User Image">
                                             <p>220011</p>
                                         </td>
-                                        <td>Would like to book an Item</td>
-                                        <td>
-                                        <a href="">
-                                            <i class='bx bx-check' style="font-size: 24px; color: #36f465;"></i>
-                                        </a>
-                                        <a href="">
-                                            <i class='bx bxs-x-circle' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                        </td>
+                                        <td>Successfully Booked an Item</td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
                                     </tr>
                                     <tr>
                                         <td class="card">
                                             <img src="img/people.png" alt="User Image">
                                             <p>220011</p>
                                         </td>
-                                        <td>Would like to return an Item</td>
-                                        <td>
-                                        <a href="">
-                                            <i class='bx bx-check' style="font-size: 24px; color: #36f465;"></i>
-                                        </a>
-                                        <a href="">
-                                            <i class='bx bxs-x-circle' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                        </td>
+                                        <td>Successfully Booked an Item</td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
                                     </tr>
                                     <tr>
                                         <td class="card">
                                             <img src="img/people.png" alt="User Image">
                                             <p>220011</p>
                                         </td>
-                                        <td>Would like to return an Item</td>
-                                        <td>
-                                        <a href="">
-                                            <i class='bx bx-check' style="font-size: 24px; color: #36f465;"></i>
-                                        </a>
-                                        <a href="">
-                                            <i class='bx bxs-x-circle' style="font-size: 24px; color: #f44336;"></i>
-                                        </a>
-                                        </td>
+                                        <td>Successfully returned an Item</td>
+										<td>
+											<a href="">
+											<span class="status R2">view</span>
+											</a>
+										</td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -56,11 +56,14 @@ body {
 
 .account-info p {
     margin: 0;
+    text-decoration: none !important; /* Removes underline */
 }
 
 .account-info .email {
     color: #888;
+    text-decoration: none !; /* Removes underline */
 }
+
 
 .other-account {
     color: #1a73e8;

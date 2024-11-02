@@ -80,14 +80,14 @@ body, html {
     opacity: .9;
     position: relative; /* Ensure form-floating is above the background image */
 }
-a.btn {
+.btn {
     width: 90%;
     margin-top: 10px; /* Add space between buttons */
     display: block;
     text-align: center; /* Align text to center */
 }
 
-a.btn-primary {
+.btn-primary {
     height: 50px;
     background-color:#7b96d4    ;
     border:none;
