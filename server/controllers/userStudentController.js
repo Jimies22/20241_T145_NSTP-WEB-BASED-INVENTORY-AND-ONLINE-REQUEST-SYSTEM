@@ -1,4 +1,4 @@
-import UserFaculty from "../models/userFaculty";
+//import UserFaculty from "../models/userFaculty";
 import userStudent from "../models/userStudent";
 const express = require("express");
 //const router = express.Router();

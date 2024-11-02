@@ -7,13 +7,13 @@ const router = express.Router();
 // router.get("/inventory/sort", userController.sortInventory);
 
 // Inventory disconnected to controller
-router.get("/", (req, res) => {
+router.get("/api/user/inventory/search", (req, res) => {
   res.send({ data: "Welcome to the Inventory System" });
 });
-router.get("/", (req, res) => {
+router.get("/api/user/inventory/view", (req, res) => {
   res.send({ data: "Inventory status retrieved successfully" });
 });
-router.get("/", (req, res) => {
+router.get("/api/user/inventory/sort", (req, res) => {
   res.send({ data: "Inventory details retrieved successfully" });
 });
 

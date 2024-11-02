@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // Reporting
-router.get("/", (req, res) => {
+router.get("/api/admin/reports", (req, res) => {
   res.send({ data: "Reports" });
 });
 

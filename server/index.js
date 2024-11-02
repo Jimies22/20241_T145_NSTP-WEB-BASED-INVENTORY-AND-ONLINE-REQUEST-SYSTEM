@@ -1,6 +1,24 @@
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const dotevn = require("dotenv");
+const cors = require("cors");
+const mongoose = require("mongoose");
+
+// model imports
+const userStudent = require("./models/userStudent");
+
+// dotenv configuration
+dotevn.config();
+
+// local db connection
+mongoose.connect("mongodb://localhost/Buksu");
+
+if (mongoose.connect("mongodb://localhost/nstpDB")) {
+  console.log("MongoDB connected");
+} else {
+  console.log("Connection error");
+}
 
 // User routes
 const authRouter = require("./routes/User/authRoute");
@@ -8,7 +26,7 @@ const userRouter = require("./routes/User/userRoute");
 const bookingRouter = require("./routes/User/bookingRoute");
 const dashboardRouter = require("./routes/User/dashboardRoute");
 const inventoryRouter = require("./routes/User/inventoryRoute");
-//const notificationRouter = require("./routes/User/notificationRoute");
+const notificationRouter = require("./routes/User/notificationRoute");
 
 // Admin routes
 //const adminAuthRouter = require("./routes/Admin/authRoute");
@@ -24,12 +42,12 @@ app.use(
 );
 
 // User
-app.use("/api/user/auth", authRouter);
-app.use("/api/user/user", userRouter);
-app.use("/api/user/booking", bookingRouter);
-app.use("/api/user/dashboard", dashboardRouter);
-app.use("/api/user/inventory", inventoryRouter);
-//app.use("/notifications", notificationRouter);
+app.use("/", authRouter);
+app.use("/", userRouter);
+app.use("/", bookingRouter);
+app.use("/", dashboardRouter);
+app.use("/", inventoryRouter);
+app.use("/", notificationRouter);
 
 // Admin
 //app.use("/admin/auth", adminAuthRouter);
@@ -62,3 +80,13 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// const newUser = new userStudent({
+//   name: "Jim Joshua P. Boquil",
+//   user_id: 2201101389,
+//   gender: "male",
+//   email: "2201101389@student.buksu.edu.ph",
+//   year: 3,
+//   course: "BSIT",
+// });
+// newUser.save();

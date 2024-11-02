@@ -12,29 +12,29 @@ const router = express.Router();
 // router.post("/refresh-token", userController.refreshToken);
 
 // Authentication disconnected to the controller
-router.post("/", (req, res) => {
+router.post("/api/user/auth/login", (req, res) => {
   res.send({ data: "User logged in successfully" });
   console.log("Login request received");
 });
-router.post("/", (req, res) => {
+router.post("/api/user/auth/signup", (req, res) => {
   res.send({ data: "User signed up successfully" });
 });
-router.post("/", (req, res) => {
+router.post("/api/user/auth/login/google", (req, res) => {
   res.send({ data: "User logged in with Google successfully" });
 });
-router.post("/", (req, res) => {
+router.post("/api/user/auth/logout", (req, res) => {
   res.send({ data: "User logged out successfully" });
 });
-router.get("/", (req, res) => {
+router.get("/api/user/auth/session", (req, res) => {
   res.send({ data: "Session data retrieved successfully" });
 });
-router.post("/", (req, res) => {
+router.post("/api/user/auth/verify-email", (req, res) => {
   res.send({ data: "Email verified successfully" });
 });
-router.put("/", (req, res) => {
+router.put("/api/user/auth/update-profile", (req, res) => {
   res.send({ data: "Profile updated successfully" });
 });
-router.post("//", (req, res) => {
+router.post("/api/user/auth/refresh-token", (req, res) => {
   res.send({ data: "Token refreshed successfully" });
 });
 

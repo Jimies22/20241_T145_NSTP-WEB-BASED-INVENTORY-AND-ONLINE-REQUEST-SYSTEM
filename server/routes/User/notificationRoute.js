@@ -5,7 +5,7 @@ const router = express.Router();
 // router.get("/notifications", userController.viewNotifications);
 
 // Notifications disconnected to controller
-router.get("/", (req, res) => {
+router.get("/api/user/notifications", (req, res) => {
   res.send({ data: "Welcome to the Notifications System" });
 });
 module.exports = router;

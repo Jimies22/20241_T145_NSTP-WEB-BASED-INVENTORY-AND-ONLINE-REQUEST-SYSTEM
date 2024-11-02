@@ -1,19 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/api/admin/list", (req, res) => {
   res.send({ data: "Item list" });
 });
 
-router.post("/", (req, res) => {
+router.post("/api/admin/add", (req, res) => {
   res.send({ data: "Item Created" });
 });
 
-router.put("/", (req, res) => {
+router.put("/api/admin/update", (req, res) => {
   res.send({ data: "Item Updated" });
 });
 
-router.delete("/", (req, res) => {
+router.delete("/api/admin/delete", (req, res) => {
   res.send({ data: "Item Deleted" });
 });
 

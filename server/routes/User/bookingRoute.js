@@ -11,26 +11,29 @@ const router = express.Router();
 // router.post("/items/scanReturn", userController.scanItemReturn);
 
 // Bookings and Requests disconnected to controller
-router.post("/", (req, res) => {
+router.post("/api/user/bookings", (req, res) => {
   res.send({ data: "Booking placed successfully" });
 });
-router.delete("/", (req, res) => {
+router.delete("/api/user/bookings/cancel", (req, res) => {
   res.send({ data: "Booking cancelled successfully" });
 });
-router.get("/", (req, res) => {
+router.get("/api/user/", (req, res) => {
   res.send({ data: "Requests retrieved successfully" });
 });
-router.get("/", (req, res) => {
+router.get("/api/user/requests", (req, res) => {
   res.send({ data: "Pending bookings retrieved successfully" });
 });
-router.get("/", (req, res) => {
+router.get("/api/user/bookings/pending", (req, res) => {
   res.send({ data: "Accepted bookings retrieved successfully" });
 });
-router.get("/", (req, res) => {
+router.get("/api/user/bookings/accepted", (req, res) => {
   res.send({ data: "Items to return retrieved successfully" });
 });
-router.post("/", (req, res) => {
+router.post("/api/user/bookings/return", (req, res) => {
   res.send({ data: "Item return scanned successfully" });
 });
+// router.post("/api/user/items/scanReturn", (req, res) => {
+//   res.send({ data: "Item scanned, return confirmed" });
+// });
 
 module.exports = router;
