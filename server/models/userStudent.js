@@ -7,7 +7,7 @@ const userStudentSchema = new Schema({
     required: true,
   },
   user_id: {
-    type: String,
+    type: Number,
     required: true,
   },
   gender: {
@@ -20,7 +20,7 @@ const userStudentSchema = new Schema({
   },
 
   year: {
-    type: String,
+    type: Number,
     required: true,
   },
   course: {
