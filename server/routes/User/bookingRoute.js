@@ -1,39 +1,40 @@
 const express = require("express");
 const router = express.Router();
 
-// // Bookings and Requests connected to controller
-// router.post("/bookings", userController.placeBooking);
-// router.delete("/bookings/cancel", userController.cancelBooking);
-// router.get("/requests", userController.viewRequests);
-// router.get("/bookings/pending", userController.viewPendingBookings);
-// router.get("/bookings/accepted", userController.viewAcceptedBookings);
-// router.get("/bookings/return", userController.viewItemsToReturn);
-// router.post("/items/scanReturn", userController.scanItemReturn);
-
-// Bookings and Requests disconnected to controller
-router.post("/", (req, res) => {
+// Place a booking
+router.post("/bookings", (req, res) => {
   res.send({ data: "Booking placed successfully" });
 });
-router.delete("/", (req, res) => {
-  res.send({ data: "Booking cancelled successfully" });
+
+// Cancel a booking
+router.delete("/bookings/:id", (req, res) => {
+  const { id } = req.params; // Assuming you're passing the booking ID
+  res.send({ data: `Booking with ID ${id} cancelled successfully` });
 });
-router.get("/", (req, res) => {
+
+// Get all requests
+router.get("/requests", (req, res) => {
   res.send({ data: "Requests retrieved successfully" });
 });
-router.get("/", (req, res) => {
+
+// Get pending bookings
+router.get("/bookings/pending", (req, res) => {
   res.send({ data: "Pending bookings retrieved successfully" });
 });
-router.get("/", (req, res) => {
+
+// Get accepted bookings
+router.get("/bookings/accepted", (req, res) => {
   res.send({ data: "Accepted bookings retrieved successfully" });
 });
-router.get("/", (req, res) => {
+
+// Get items to return
+router.get("/items/return", (req, res) => {
   res.send({ data: "Items to return retrieved successfully" });
 });
-router.post("/", (req, res) => {
+
+// Scan item return
+router.post("/items/scanReturn", (req, res) => {
   res.send({ data: "Item return scanned successfully" });
 });
-// router.post("/api/user/items/scanReturn", (req, res) => {
-//   res.send({ data: "Item scanned, return confirmed" });
-// });
 
 module.exports = router;

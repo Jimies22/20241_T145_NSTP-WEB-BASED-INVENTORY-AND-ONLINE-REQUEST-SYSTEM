@@ -1,8 +1,9 @@
+// notification
 const express = require("express");
 const router = express.Router();
 
 // Notifications
-router.get("/api/admin/notifications", (req, res) => {
+router.get("/notification", (req, res) => {
   res.send({ data: "Notifications" });
 });
 

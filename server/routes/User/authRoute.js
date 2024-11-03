@@ -1,40 +1,40 @@
 const express = require("express");
 const router = express.Router();
 
-// Authentication connected to the controller
-// router.post("/login", userController.login);
-// router.post("/signup", userController.signup);
-// router.post("/login/google", userController.googleLogin);
-// router.post("/logout", userController.logout);
-// router.get("/session", userController.checkSession);
-// router.post("/verify-email", userController.verifyEmail);
-// router.put("/update-profile", userController.updateProfile);
-// router.post("/refresh-token", userController.refreshToken);
-
-// Authentication disconnected to the controller
-router.post("/", (req, res) => {
-  res.send({ data: "User logged in successfully" });
+// User login
+router.post("/login", (req, res) => {
+  // Logic to handle login (e.g., validate Google token)
+  res.send({ data: "User logged in with Google successfully" });
   console.log("Login request received");
 });
-router.post("/", (req, res) => {
-  res.send({ data: "User signed up successfully" });
-});
-router.post("/", (req, res) => {
-  res.send({ data: "User logged in with Google successfully" });
-});
-router.post("/", (req, res) => {
+
+// User logout
+router.post("/logout", (req, res) => {
+  // Logic to handle logout (e.g., invalidate session/token)
   res.send({ data: "User logged out successfully" });
 });
-router.get("/", (req, res) => {
+
+// Retrieve session data
+router.get("/session", (req, res) => {
+  // Logic to retrieve session data (e.g., user profile info)
   res.send({ data: "Session data retrieved successfully" });
 });
-router.post("/", (req, res) => {
+
+// Email verification (if applicable)
+router.post("/verify-email", (req, res) => {
+  // Logic for email verification (if using emails)
   res.send({ data: "Email verified successfully" });
 });
-router.put("/", (req, res) => {
+
+// Update user profile
+router.put("/profile", (req, res) => {
+  // Logic to update user profile (e.g., name, settings)
   res.send({ data: "Profile updated successfully" });
 });
-router.post("/", (req, res) => {
+
+// Refresh token
+router.post("/refresh-token", (req, res) => {
+  // Logic to refresh authentication token (if needed)
   res.send({ data: "Token refreshed successfully" });
 });
 

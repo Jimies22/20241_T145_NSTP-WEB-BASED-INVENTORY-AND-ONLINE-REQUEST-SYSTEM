@@ -1,17 +1,26 @@
+// request
 const express = require("express");
 const router = express.Router();
 
-// Request Management
-router.put("/api/admin/req-accepted", (req, res) => {
-  res.send({ message: "Request accepted successfully" });
+// Accept a request by ID
+router.put("/accept/:id", (req, res) => {
+  const { id } = req.params; // Get request ID from the request parameters
+  res.send({ message: `Request with ID ${id} accepted successfully` });
 });
-router.put("/api/admin/req-declined", (req, res) => {
-  res.send({ message: "Request declined successfully" });
+
+// Decline a request by ID
+router.put("/decline/:id", (req, res) => {
+  const { id } = req.params; // Get request ID from the request parameters
+  res.send({ message: `Request with ID ${id} declined successfully` });
 });
-router.get("/api/admin/req-list", (req, res) => {
+
+// Get a list of pending requests
+router.get("/pending", (req, res) => {
   res.send({ message: "List of pending requests" });
 });
-router.get("/api/admin/borrow-req", (req, res) => {
+
+// Get a list of borrowed items
+router.get("/borrowed", (req, res) => {
   res.send({ message: "List of borrowed items" });
 });
 
