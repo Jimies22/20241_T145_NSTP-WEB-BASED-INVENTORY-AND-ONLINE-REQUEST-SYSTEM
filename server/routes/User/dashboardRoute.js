@@ -6,10 +6,10 @@ const router = express.Router();
 // router.get("/profile", userController.getProfile);
 
 // Dashboard and Profile disconnected to the controller
-router.get("/api/user/dashboard", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "Welcome to the User Dashboard" });
 });
-router.get("/api/user/profile", (req, res) => {
+router.get("/", (req, res) => {
   res.send({ data: "User profile retrieved successfully" });
 });
 module.exports = router;

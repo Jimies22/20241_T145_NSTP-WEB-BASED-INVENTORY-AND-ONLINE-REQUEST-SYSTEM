@@ -42,12 +42,12 @@ app.use(
 );
 
 // User
-app.use("/", authRouter);
-app.use("/", userRouter);
-app.use("/", bookingRouter);
-app.use("/", dashboardRouter);
-app.use("/", inventoryRouter);
-app.use("/", notificationRouter);
+app.use("/api/user/auth", authRouter);
+app.use("/api/user/user", userRouter);
+app.use("/api/user/booking", bookingRouter);
+app.use("/api/user/dashboard", dashboardRouter);
+app.use("/api/user/inventory", inventoryRouter);
+app.use("/api/user/notification", notificationRouter);
 
 // Admin
 //app.use("/admin/auth", adminAuthRouter);
@@ -80,13 +80,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-// const newUser = new userStudent({
-//   name: "Jim Joshua P. Boquil",
-//   user_id: 2201101389,
-//   gender: "male",
-//   email: "2201101389@student.buksu.edu.ph",
-//   year: 3,
-//   course: "BSIT",
-// });
-// newUser.save();
