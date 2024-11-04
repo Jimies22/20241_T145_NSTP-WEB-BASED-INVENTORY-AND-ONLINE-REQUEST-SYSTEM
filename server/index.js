@@ -12,6 +12,15 @@ const { run: testDbConnection } = require("./config/testDB");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+mongoose.connect(process.env.MONGODB);
+
+// second test
+if (mongoose.connect(process.env.MONGODB)) {
+  console.log("DB connected");
+} else {
+  console.log("connection error");
+}
+
 // Middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(
@@ -26,6 +35,7 @@ app.use((req, res, next) => {
 });
 
 // Admin routes
+const dashboardAdminRoute = require("./routes/Admin/dashboard");
 const authAdminRouter = require("./routes/Admin/auth");
 const inventoryAdminRouter = require("./routes/Admin/inventory");
 const notificationAdminRouter = require("./routes/Admin/notification");
@@ -41,6 +51,7 @@ const inventoryRouter = require("./routes/User/inventoryRoute");
 const notificationRouter = require("./routes/User/notificationRoute");
 
 // Admin API routes
+app.use("/api/admin/dashboard", dashboardAdminRoute);
 app.use("/api/admin/login", authAdminRouter);
 app.use("/api/admin/inventory", inventoryAdminRouter);
 app.use("/api/admin/notifications", notificationAdminRouter);

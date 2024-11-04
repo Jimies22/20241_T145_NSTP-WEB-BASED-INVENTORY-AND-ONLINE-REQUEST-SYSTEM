@@ -1,3 +1,5 @@
+// debug and testing connection
+
 const dotenv = require("dotenv");
 require("dotenv").config(); // Load environment variables
 
@@ -19,9 +21,7 @@ async function run() {
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    console.log("You successfully connected to MongoDB!");
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
   } finally {
