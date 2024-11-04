@@ -1,23 +1,25 @@
+const { MongoClient, ServerApiVersion } = require("mongodb");
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
-
-const app = express();
+const uri = process.env.MONGODB_URI;
+const PORT = process.env.PORT || 3000;
 
 // dotenv configuration
 dotenv.config();
 // connect to database
-const PORT = process.env.PORT;
+const app = express();
+//const PORT = process.env.PORT;
 
 // local db connection
-mongoose
-  .connect("mongodb://localhost/", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log("Connection error", err));
+// mongoose
+//   .connect("mongodb://localhost/", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => console.log("MongoDB connected"))
+//   .catch((err) => console.log("Connection error", err));
 
 // Middleware
 app.use(express.json({ limit: "50mb" }));
