@@ -27,13 +27,6 @@ const userStudentSchema = new Schema({
     type: String,
     required: true,
   },
-  //   hobby: {
-  //     type: String,
-  //   },
-  //   section: {
-  //     type: String,
-  //     required: true,
-  //   },
 });
 const studentModel = mongoose.model("student", userStudentSchema);
 export default studentModel;

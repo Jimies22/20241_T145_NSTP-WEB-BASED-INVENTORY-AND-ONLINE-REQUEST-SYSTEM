@@ -16,7 +16,7 @@ const userFacultySchema = new Schema({
   },
   department: {
     type: String,
-    required: true,
+    //required: true,
   },
   //   hobby: {
   //     type: String,
