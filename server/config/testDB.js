@@ -1,11 +1,9 @@
-// debug and testing connection
+// Import dotenv to load environment variables
+import dotenv from "dotenv";
+import { MongoClient, ServerApiVersion } from "mongodb";
+import mongoose from "mongoose";
 
-const dotenv = require("dotenv");
-require("dotenv").config(); // Load environment variables
-
-dotenv.config();
-
-const { MongoClient, ServerApiVersion } = require("mongodb");
+dotenv.config(); // Load environment variables only once
 
 const client = new MongoClient(process.env.MONGODB, {
   serverApi: {
@@ -15,22 +13,24 @@ const client = new MongoClient(process.env.MONGODB, {
   },
 });
 
-async function run() {
+// Function to test the MongoDB connection
+export async function run() {
+  // Use 'export' to make this function available for ES modules
   try {
-    // Connect the client to the server (optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("You successfully connected to MongoDB!");
+
+    await mongoose.connect(process.env.MONGODB, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log("Successfully connected to MongoDB!");
   } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
+    console.error("MongoDB Connection Error", error);
+
+    process.exit(1); // Exit with failure
   } finally {
-    // Ensures that the client will close when you finish/error
     await client.close();
   }
 }
-// debug
-// console.log("MongoDB Connection String:", process.env.MONGODB);
-
-// Export the run function for external use
-module.exports = { run };

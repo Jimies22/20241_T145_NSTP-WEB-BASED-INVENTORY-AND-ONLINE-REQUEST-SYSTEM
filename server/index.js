@@ -1,33 +1,30 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const cors = require("cors");
+import express, { json, urlencoded } from "express";
+import { connect } from "mongoose";
+import { config } from "dotenv";
+import cors from "cors";
 
-// Load environment variables
-dotenv.config();
-
-// Import the testdb connection
-const { run: testDbConnection } = require("./config/testDB");
-
+config(); // Load environment variables
+import { run as testDbConnection } from "./config/testDB.js"; // Import the testdb connection
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-mongoose.connect(process.env.MONGODB);
+const PORT = process.env.PORT;
+connect(process.env.MONGODB);
 
 // second test
-if (mongoose.connect(process.env.MONGODB)) {
+if (connect(process.env.MONGODB)) {
   console.log("DB connected");
 } else {
   console.log("connection error");
 }
 
-// Middleware
-app.use(express.json({ limit: "50mb" }));
-app.use(
-  express.urlencoded({ extended: true, limit: "50mb", parameterLimit: 10000 })
-);
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:3000",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+};
 
+app.use(cors(corsOptions));
+app.use(json({ limit: "50mb" })); // Middleware
+app.use(urlencoded({ extended: true, limit: "50mb", parameterLimit: 10000 }));
 // Logging middleware
 app.use((req, res, next) => {
   console.log(`Request Method: ${req.method}, URL: ${req.url}`);
@@ -35,36 +32,38 @@ app.use((req, res, next) => {
 });
 
 // Admin routes
-const dashboardAdminRoute = require("./routes/Admin/dashboard");
-const authAdminRouter = require("./routes/Admin/auth");
-const inventoryAdminRouter = require("./routes/Admin/inventory");
-const notificationAdminRouter = require("./routes/Admin/notification");
-const reportRouter = require("./routes/Admin/report");
-const requestRouter = require("./routes/Admin/request");
+import userManRoute from "./routes/Admin/users.js";
+// import dashboardAdminRoute from "./routes/Admin/dashboard.js";
+// import authAdminRouter from "./routes/Admin/auth.js";
+// import inventoryAdminRouter from "./routes/Admin/inventory.js";
+// import notificationAdminRouter from "./routes/Admin/notification.js";
+// import reportRouter from "./routes/Admin/report.js";
+// import requestRouter from "./routes/Admin/request.js";
 
 // User routes
-const authRouter = require("./routes/User/authRoute");
-const userRouter = require("./routes/User/userRoute");
-const bookingRouter = require("./routes/User/bookingRoute");
-const dashboardRouter = require("./routes/User/dashboardRoute");
-const inventoryRouter = require("./routes/User/inventoryRoute");
-const notificationRouter = require("./routes/User/notificationRoute");
+// import authRouter from "./routes/User/authRoute.js";
+// import userRouter from "./routes/User/userRoute.js";
+// import bookingRouter from "./routes/User/bookingRoute.js";
+// import dashboardRouter from "./routes/User/dashboardRoute.js";
+// import inventoryRouter from "./routes/User/inventoryRoute.js";
+// import notificationRouter from "./routes/User/notificationRoute.js";
 
 // Admin API routes
-app.use("/api/admin/dashboard", dashboardAdminRoute);
-app.use("/api/admin/login", authAdminRouter);
-app.use("/api/admin/inventory", inventoryAdminRouter);
-app.use("/api/admin/notifications", notificationAdminRouter);
-app.use("/api/admin/reports", reportRouter);
-app.use("/api/admin/requests", requestRouter);
+app.use("/api/admin/users", userManRoute);
+// app.use("/api/admin/dashboard", dashboardAdminRoute);
+// app.use("/api/admin/login", authAdminRouter);
+// app.use("/api/admin/inventory", inventoryAdminRouter);
+// app.use("/api/admin/notifications", notificationAdminRouter);
+// app.use("/api/admin/reports", reportRouter);
+// app.use("/api/admin/requests", requestRouter);
 
 // User API routes
-app.use("/api/user/auth", authRouter);
-app.use("/api/user/profile", userRouter);
-app.use("/api/user/bookings", bookingRouter);
-app.use("/api/user/dashboard", dashboardRouter);
-app.use("/api/user/inventory", inventoryRouter);
-app.use("/api/user/notifications", notificationRouter);
+// app.use("/api/user/auth", authRouter);
+// app.use("/api/user/profile", userRouter);
+// app.use("/api/user/bookings", bookingRouter);
+// app.use("/api/user/dashboard", dashboardRouter);
+// app.use("/api/user/inventory", inventoryRouter);
+// app.use("/api/user/notifications", notificationRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
