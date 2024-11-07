@@ -23,7 +23,7 @@ router.get("/:userId", async (req, res) => {
 
   const { userId } = req.params;
   try {
-    const student = await findOne({ user_id: userId });
+    const student = await studentModel.findOne({ user_id: userId });
     if (student) {
       res.send({ data: student });
     } else {
@@ -36,26 +36,20 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-// Create a new user
-// router.post("/", async (req, res) => {
-//   //const { username, email } = req.body; // Assuming you send username and email in the body
-//   // Logic to create a new user
-//   //res.send({ data: `User ${username} created successfully` });
-
-//   const { name, user_id, gender, email, year, course } = req.body;
+// POST route to find user by userId in the request body
+// router.post("/findUser", async (req, res) => {
+//   const { userId } = req.body; // Get userId from the request body
 //   try {
-//     const newStudent = new studentModel({
-//       name,
-//       user_id,
-//       gender,
-//       email,
-//       year,
-//       course,
-//     });
-//     await newStudent.save();
-//     res.send({ data: `Student ${name} created successfully` });
+//     const student = await studentModel.findOne({ user_id: userId });
+//     if (student) {
+//       res.send({ data: student });
+//     } else {
+//       res
+//         .status(404)
+//         .send({ error: `Student with user_id ${userId} not found` });
+//     }
 //   } catch (error) {
-//     res.status(500).send({ error: "Failed to create student" });
+//     res.status(500).send({ error: "Failed to retrieve student" });
 //   }
 // });
 
@@ -75,25 +69,28 @@ router.post("/", async (req, res) => {
       });
       await newStudent.save();
       res.send({ data: `Student ${name} created successfully` });
+    } else {
+      const newStudents = await Promise.all(
+        students.map(async (studentData) => {
+          const { name, user_id, gender, email, year, course } = studentData;
+          const newStudent = new studentModel({
+            name,
+            user_id,
+            gender,
+            email,
+            year,
+            course,
+          });
+          return newStudent.save();
+        })
+      );
+
+      res.send({
+        data: `${newStudents.length} students created successfully`,
+      });
     }
 
     // Map over the array to create and save each student concurrently
-    const newStudents = await Promise.all(
-      students.map(async (studentData) => {
-        const { name, user_id, gender, email, year, course } = studentData;
-        const newStudent = new studentModel({
-          name,
-          user_id,
-          gender,
-          email,
-          year,
-          course,
-        });
-        return newStudent.save();
-      })
-    );
-
-    res.send({ data: `${newStudents.length} students created successfully` });
   } catch (error) {
     console.error("Error saving students:", error);
     res.status(500).send({ error: "Failed to create students" });
@@ -110,7 +107,7 @@ router.put("/:userId", async (req, res) => {
   const { userId } = req.params;
   const { name, gender, email, year, course } = req.body;
   try {
-    const updatedStudent = await findOneAndUpdate(
+    const updatedStudent = await studentModel.findOneAndUpdate(
       { user_id: userId },
       { name, gender, email, year, course },
       { new: true } // Return the updated document
@@ -130,15 +127,12 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
-// Delete a user
+// Delete a user by user ID
+// This route deletes a student from the database based on the provided user ID.
 router.delete("/:userId", async (req, res) => {
-  //const { userId } = req.params; // Get the user ID from the request parameters
-  // Logic to delete the user
-  res.send({ data: `User with ID ${userId} deleted successfully` });
-
   const { userId } = req.params;
   try {
-    const deletedStudent = await findOneAndDelete({
+    const deletedStudent = await studentModel.findOneAndDelete({
       user_id: userId,
     });
     if (deletedStudent) {
