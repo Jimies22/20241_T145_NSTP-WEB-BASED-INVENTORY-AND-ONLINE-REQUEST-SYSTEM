@@ -1,62 +1,101 @@
-//import UserFaculty from "../models/userFaculty";
-import userStudent from "../models/userStudent";
-const express = require("express");
-//const router = express.Router();
+import studentModel from "../models/userStudent.js";
 
-// Mock database for demonstration purposes
-
-let students = [];
-
-// Controller for Students
-class UserStudentController {
-  static getAllStudents(req, res) {
-    res.json(students);
+const getStudents = async (req, res) => {
+  try {
+    const students = await studentModel.find();
+    res.send({ data: students });
+  } catch (error) {
+    res.status(500).send({ error: "Failed to retrieve students" });
   }
+};
 
-  static createStudent(req, res) {
-    const newStudent = req.body; // Assuming body contains student data
-    students.push(newStudent);
-    res.status(201).json(newStudent);
-  }
-
-  static getStudentById(req, res) {
-    const studentId = req.params.id;
-    const student = students.find((s) => s.id === studentId);
+const getStudent = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const student = await studentModel.findOne({ user_id: userId });
     if (student) {
-      res.json(student);
+      res.send({ data: student });
     } else {
-      res.status(404).json({ message: "Student not found" });
+      res
+        .status(404)
+        .send({ error: `Student with user_id ${userId} not found` });
     }
+  } catch (error) {
+    res.status(500).send({ error: "Failed to retrieve student" });
   }
+};
 
-  static updateStudent(req, res) {
-    const studentId = req.params.id;
-    const index = students.findIndex((s) => s.id === studentId);
-    if (index !== -1) {
-      students[index] = { ...students[index], ...req.body };
-      res.json(students[index]);
+const postStudent = async (req, res) => {
+  const students = req.body; // Expecting either a single student object or an array of student objects
+
+  try {
+    // Validate that the request body is an array or a single object
+    if (!Array.isArray(students)) {
+      // If it's a single student object
+      const newStudent = new Student(students); // Create a new student instance
+      const savedStudent = await newStudent.save(); // Save the student to the database
+      res
+        .status(200)
+        .send({ data: `Student ${savedStudent.name} created successfully` }); // Send a success response
     } else {
-      res.status(404).json({ message: "Student not found" });
-    }
-  }
+      // If it's an array of student objects
+      const newStudents = await Promise.all(
+        students.map(async (studentData) => {
+          const newStudent = new Student(studentData); // Create a new student instance for each object
+          return newStudent.save(); // Save each student
+        })
+      );
 
-  static deleteStudent(req, res) {
-    const studentId = req.params.id;
-    const index = students.findIndex((s) => s.id === studentId);
-    if (index !== -1) {
-      students.splice(index, 1);
-      res.status(204).send();
+      res
+        .status(200)
+        .send({ data: `${newStudents.length} students created successfully` }); // Send a success response for multiple students
+    }
+  } catch (error) {
+    console.error("Error saving students:", error); // Log the error
+    res.status(500).send({ error: "Failed to create students" }); // Send an error response
+  }
+};
+
+const putStudent = async (req, res) => {
+  const { userId } = req.params;
+  const { name, gender, email, year, course } = req.body;
+  try {
+    const updatedStudent = await studentModel.findOneAndUpdate(
+      { user_id: userId },
+      { name, gender, email, year, course },
+      { new: true } // Return the updated document
+    );
+    if (updatedStudent) {
+      res.send({
+        data: `Student with user_id ${userId} updated successfully`,
+        updatedStudent,
+      });
     } else {
-      res.status(404).json({ message: "Student not found" });
+      res
+        .status(404)
+        .send({ error: `Student with user_id ${userId} not found` });
     }
+  } catch (error) {
+    res.status(500).send({ error: "Failed to update student" });
   }
-}
+};
 
-// // Routes for Students
-// router.get("/students", UserStudentController.getAllStudents);
-// router.post("/students", UserStudentController.createStudent);
-// router.get("/students/:id", UserStudentController.getStudentById);
-// router.put("/students/:id", UserStudentController.updateStudent);
-// router.delete("/students/:id", UserStudentController.deleteStudent);
+const deleteStudent = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const deletedStudent = await studentModel.findOneAndDelete({
+      user_id: userId,
+    });
+    if (deletedStudent) {
+      res.send({ data: `Student with user_id ${userId} deleted successfully` });
+    } else {
+      res
+        .status(404)
+        .send({ error: `Student with user_id ${userId} not found` });
+    }
+  } catch (error) {
+    res.status(500).send({ error: "Failed to delete student" });
+  }
+};
 
-// module.exports = router;
+export { getStudents, getStudent, postStudent, putStudent, deleteStudent };
