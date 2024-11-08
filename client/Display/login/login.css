@@ -22,7 +22,7 @@ body, html {
 }
 
 .nstp_logo{
-    max-height: 100px; /* Adjust the height as needed */
+    max-height: 80px; /* Adjust the height as needed */
     margin-right: 10px; /* Add space between the logo and the text */
 }
 
@@ -122,7 +122,8 @@ a.btn-outline-dark {
 /* Typography styling */
 h1 {
     color: rgb(255, 255, 255);
-    margin-bottom: 50px;
+    margin-bottom: 20px;
+    margin-top: 50px;
 
 }
 .checkbox{
@@ -165,4 +166,19 @@ p {
     .card {
         padding: 15px;
     }
+}
+
+/* Add reCAPTCHA styling */
+.g-recaptcha {
+    width: 90%;
+    height: 50px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.g-recaptcha > div {
+    transform: scale(.80); /* Adjust scale to match button size */
+    transform-origin: center;
 }
