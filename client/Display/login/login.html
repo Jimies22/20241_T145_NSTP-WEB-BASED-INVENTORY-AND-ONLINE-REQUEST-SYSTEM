@@ -1,87 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-    />
-    <link
-      rel="stylesheet"
-      href="../login/bootstrap/dist/css/bootstrap.min.css"
-    />
 
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" href="../login/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="login.css" />
-  </head>
-  <body>
+
+    <!-- Google reCAPTCHA JavaScript API -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <!-- Google Sign-In JavaScript API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
     <div class="logo">
-      <img
-        src="bootstrap/images/nstp_logo.png"
-        alt="NSTP Logo"
-        class="nstp_logo"
-      />
-      <div class="header-text">
-        <h5>NSTP INVENTORY &</h5>
-        <h5>ONLINE REQUEST</h5>
-      </div>
-    </div>
-    <form
-      action="../User/user.html"
-      class="d-flex align-items-center justify-content-center vh-100"
-    >
-      <div class="circle">
-        <div class="card text-center">
-          <div class="card-body">
-            <h1>WELCOME</h1>
-            <div>
-              <div class="form-floating mb-4">
-                <input
-                  type="email"
-                  class="form-control"
-                  id="floatingInput"
-                  placeholder="name@example.com"
-                  required
-                />
-                <label for="floatingInput">
-                  <i class="bi bi-person"></i>Email address</label
-                >
-              </div>
-              <div class="form-floating mb-4">
-                <input
-                  type="password"
-                  class="form-control"
-                  id="floatingPassword"
-                  placeholder="Password"
-                  required
-                />
-                <label for="floatingPassword"
-                  ><i class="bi bi-key"></i>Password</label
-                >
-              </div>
-              <input type="checkbox" name="checkbox" id="checkbox" />
-              <label class="checkbox" for="checkbox">Keep me logged in </label>
-              <button class="btn btn-primary">Login</button>
-              <p class="line">
-                ______________________________________________________________
-              </p>
-              <a class="btn btn-outline-dark" href="signin.html" role="button"
-                ><img
-                  class="google_logo"
-                  src="bootstrap/images/google_logo.png"
-                  alt="google_logo"
-                />Sign in with Google</a
-              >
-            </div>
-          </div>
-          <div class="nstp_bg"></div>
+        <img src="bootstrap/images/nstp_logo.png" alt="NSTP Logo" class="nstp_logo" />
+        <div class="header-text">
+            <h6>NSTP INVENTORY &</h6>
+            <h6>ONLINE REQUEST</h6>
         </div>
-      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form onsubmit="onSubmit(event)" action="../User/user.html" class="d-flex align-items-center justify-content-center vh-100">
+        <div class="circle">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h1>WELCOME</h1>
+                    <div>
+                        <div class="form-floating mb-4">
+                            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" required />
+                            <label for="floatingInput"><i class="bi bi-person"></i>Email address</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <input type="password" class="form-control" id="floatingPassword" placeholder="Password" required />
+                            <label for="floatingPassword"><i class="bi bi-key"></i>Password</label>
+                        </div>
+                        <input type="checkbox" name="checkbox" id="checkbox" />
+                        <label class="checkbox" for="checkbox">Keep me logged in</label>
+
+                        <button type="submit" class="btn btn-primary mt-3">Login</button>
+                        <p class="line">______________________________________________________________</p>
+                        
+                        <!-- Google Sign-In Button Placeholder -->
+                        <div id="google-signin-btn" class="d-flex justify-content-center mt-3 mb-5" style="width: 80%; margin: 0 auto; transform: scale(1.2);"></div>
+
+                        <!-- Google reCAPTCHA v2 Checkbox -->
+                        <div class="g-recaptcha mt-3" data-sitekey="6LdpdngqAAAAABXlZ6UpxdThGZS6oED-hvfq6h_Q"></div>
+                    </div>
+                </div>
+                <div class="nstp_bg"></div>
+            </div>
+        </div>
     </form>
-  </body>
+
+    <script>
+        // Handle Google Credential Response and Redirect
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            
+            // Redirect to Dashboard page after successful login
+            window.location.href = "../User/Dashboard.html";
+        }
+
+        // Initialize Google Sign-In API
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "941942178577-6i12rtiomnbbfgha49lna53lpbsggcbf.apps.googleusercontent.com", // Replace with your actual Client ID
+                callback: handleCredentialResponse,
+                auto_select: false // Prevent auto-selection of signed-in accounts
+            });
+            
+            // Render the Google Sign-In button in the placeholder div
+            google.accounts.id.renderButton(
+                document.getElementById("google-signin-btn"),
+                { 
+                    theme: "outline", 
+                    size: "large", 
+                    type: "standard", 
+                    shape: "rectangular", 
+                    logo_alignment: "center", 
+                    text: "signin_with",
+                    width: "305"
+                }
+            );
+
+            // Remove prompt call to prevent One Tap prompt
+            google.accounts.id.cancel();
+        }
+
+        // Form Submission Handling with reCAPTCHA Validation
+        function onSubmit(event) {
+            event.preventDefault(); // Prevent form from submitting immediately
+
+            // Get reCAPTCHA response token
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                alert("Please complete the reCAPTCHA.");
+                return;
+            }
+
+            // If reCAPTCHA is successful, submit the form
+            document.querySelector("form").submit();
+        }
+    </script>
+</body>
 </html>
