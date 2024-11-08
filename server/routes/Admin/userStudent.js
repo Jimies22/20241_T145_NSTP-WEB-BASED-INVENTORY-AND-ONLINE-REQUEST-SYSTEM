@@ -9,13 +9,15 @@ import {
 } from "../../controllers/userStudentController.js";
 
 // fetch logic from userStudentController.js
+
+// Student routes
 router.get("/", getStudents);
-router.get("/:id", getStudent);
+router.get("/:userId", getStudent);
 
 router.post("/", postStudent);
 
-router.put("/:id", putStudent);
+router.put("/:userId", putStudent);
 
-router.delete("/:id", deleteStudent);
+router.delete("/:userId", deleteStudent);
 
 export default router;

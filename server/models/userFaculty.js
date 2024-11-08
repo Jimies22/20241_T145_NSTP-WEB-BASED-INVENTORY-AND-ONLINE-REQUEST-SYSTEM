@@ -14,17 +14,14 @@ const userFacultySchema = new Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: true,
+  },
   department: {
     type: String,
-    //required: true,
+    required: true,
   },
-  //   hobby: {
-  //     type: String,
-  //   },
-  //   section: {
-  //     type: String,
-  //     required: true,
-  //   },
 });
 const facultyModel = mongoose.model("faculty", userFacultySchema);
 export default facultyModel;

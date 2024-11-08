@@ -32,7 +32,8 @@ app.use((req, res, next) => {
 });
 
 // Admin routes
-import userManRoute from "./routes/Admin/users.js";
+import userStudentRoute from "./routes/Admin/userStudent.js";
+import userFacultyRoute from "./routes/Admin/userFaculty.js";
 // import dashboardAdminRoute from "./routes/Admin/dashboard.js";
 // import authAdminRouter from "./routes/Admin/auth.js";
 // import inventoryAdminRouter from "./routes/Admin/inventory.js";
@@ -49,7 +50,9 @@ import userManRoute from "./routes/Admin/users.js";
 // import notificationRouter from "./routes/User/notificationRoute.js";
 
 // Admin API routes
-app.use("/api/admin/users", userManRoute);
+app.use("/api/admin/user/student", userStudentRoute);
+app.use("/api/admin/user/faculty", userFacultyRoute);
+
 // app.use("/api/admin/dashboard", dashboardAdminRoute);
 // app.use("/api/admin/login", authAdminRouter);
 // app.use("/api/admin/inventory", inventoryAdminRouter);
