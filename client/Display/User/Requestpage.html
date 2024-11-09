@@ -269,7 +269,8 @@
 					// Add cancellation details to the item
 					const canceledItem = {
 						...itemToCancel,
-						canceledDate: new Date().toISOString(),
+						canceledDate: new Date().toLocaleDateString(),
+						canceledTime: new Date().toLocaleTimeString(),
 						status: 'CANCELED',
 						cancelReason: 'User canceled request'
 					};
@@ -293,10 +294,11 @@
 					// Show success message
 					alert('Request has been canceled successfully');
 					
-					// Optionally redirect to canceled page
+					// Redirect to canceled page
 					window.location.href = 'Canceled.html';
 				} else {
 					console.error('Item not found:', itemId);
+					alert('Error: Item not found');
 				}
 			}
 		}

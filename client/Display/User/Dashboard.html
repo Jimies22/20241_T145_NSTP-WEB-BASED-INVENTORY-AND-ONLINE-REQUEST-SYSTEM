@@ -129,13 +129,33 @@
 			// Store updated requests
 			localStorage.setItem('requestedItems', JSON.stringify(requestedItems));
 
-			// Show success message with animation
+			// Add notification for the booking
+			const notification = {
+				id: 'notif_' + Date.now(),
+				type: 'booking',
+				title: title,
+				message: `You have requested to borrow ${title} for ${formattedDate} at ${formattedTime}`,
+				timestamp: new Date().toISOString(),
+				read: false,
+				status: 'Pending'  // Add status to track the booking state
+			};
+
+			// Get existing notifications or initialize empty array
+			let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+			notifications.unshift(notification);  // Add new notification at the beginning
+			localStorage.setItem('notifications', JSON.stringify(notifications));
+
+			// Update notification count immediately
+			updateNotificationCount();
+
+			// Show success message with notification icon
 			const successMessage = document.createElement('div');
 			successMessage.className = 'success-message';
 			successMessage.innerHTML = `
 				<div class="success-content">
 					<i class='bx bx-check-circle'></i>
 					<p>Request submitted successfully!</p>
+					<p><i class='bx bx-bell'></i> Check your notifications for updates</p>
 					<p>Redirecting to requests page...</p>
 				</div>
 			`;
@@ -244,6 +264,9 @@
 				}, 300);
 			}
 		});
+
+		// Initialize notification count
+		updateNotificationCount();
 	});
 
 	function toggleFilterMenu() {
@@ -272,6 +295,52 @@
 			const shouldShow = selectedFilters.some(filter => status.includes(filter));
 			card.style.display = shouldShow ? '' : 'none';
 		});
+	}
+
+	// Update the notification count function to be more visible
+	function updateNotificationCount() {
+		const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+		const unreadCount = notifications.filter(notif => !notif.read).length;
+		const numElement = document.querySelector('.notification .num');
+		
+		if (unreadCount > 0) {
+			numElement.style.display = 'block';
+			numElement.textContent = unreadCount;
+			
+			// Add a brief animation to make the notification more noticeable
+			numElement.classList.remove('pulse');
+			void numElement.offsetWidth; // Trigger reflow
+			numElement.classList.add('pulse');
+		} else {
+			numElement.style.display = 'none';
+		}
+	}
+
+	// Add function to handle request status changes
+	function updateRequestStatus(requestId, newStatus) {
+		let requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
+		const request = requestedItems.find(item => item.id === requestId);
+		
+		if (request) {
+			request.status = newStatus;
+			localStorage.setItem('requestedItems', JSON.stringify(requestedItems));
+
+			// Add notification for status change
+			const notification = {
+				id: 'notif_' + Date.now(),
+				type: newStatus.toLowerCase(),
+				title: request.title,
+				message: `Your request for ${request.title} has been ${newStatus}`,
+				timestamp: new Date().toISOString(),
+				read: false
+			};
+
+			let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+			notifications.unshift(notification);
+			localStorage.setItem('notifications', JSON.stringify(notifications));
+
+			updateNotificationCount();
+		}
 	}
 	</script>
 </head>
