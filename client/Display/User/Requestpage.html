@@ -8,6 +8,7 @@
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<!-- My CSS -->
 	<link rel="stylesheet" href="Requestpage.css">
+	<link rel="stylesheet" href="overlay.css">
 
 	<title>User</title>
 </head>
@@ -123,181 +124,12 @@
 						<table>
 							<thead>
 								<tr>
-									<th>Item Descrription</th>
+									<th>Item Description</th>
 									<th>Status</th>
-
 								</tr>
 							</thead>
-							<tbody>
-								<tr>
-									<td class="card">
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-										<td>
-											<span class="status R1">Waiting for Approval</span>
-										</td>
-										<td>
-											<i class='bx bx-x'></i>
-										</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R1">Waiting for Approval</span>
-									</td>
-									<td>
-										<i class='bx bx-x'></i>
-									</td>
-								</tr>
+							<tbody id="requested-items-list">
+								<!-- Items will be inserted here dynamically -->
 							</tbody>
 						</table>
 					</div>
@@ -339,5 +171,241 @@
 	
 
 	<script src="script.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			updateTable(); // Initial table load
+
+			// Get overlay elements
+			const overlay = document.getElementById('orderOverlay');
+			const closeBtn = document.querySelector('.close-btn');
+			const cancelBtn = document.querySelector('.cancel-request-btn');
+
+			if (!overlay || !closeBtn || !cancelBtn) {
+				console.error('Required overlay elements not found');
+				return;
+			}
+
+			// Close button event listener
+			closeBtn.addEventListener('click', closeOverlay);
+
+			// Cancel button event listener
+			cancelBtn.addEventListener('click', function() {
+				const currentItemId = overlay.dataset.currentItemId;
+				if (currentItemId) {
+					cancelRequest(currentItemId);
+				} else {
+					console.error('No item ID found');
+				}
+			});
+
+			// Close overlay when clicking outside
+			overlay.addEventListener('click', function(e) {
+				if (e.target === overlay) {
+					closeOverlay();
+				}
+			});
+		});
+
+		function updateTable() {
+			const tableBody = document.getElementById('requested-items-list');
+			const requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
+			
+			tableBody.innerHTML = ''; // Clear existing rows
+			
+			requestedItems.forEach(item => {
+				const row = `
+					<tr data-item='${JSON.stringify(item)}'>
+						<td>
+							<img src="${item.image}" alt="${item.title}">
+							<p>${item.title}</p>
+						</td>
+						<td><span class="status pending">PENDING</span></td>
+					</tr>
+				`;
+				tableBody.innerHTML += row;
+			});
+
+			// Add click listeners to new rows
+			const rows = tableBody.getElementsByTagName('tr');
+			Array.from(rows).forEach(row => {
+				row.addEventListener('click', function() {
+					const item = JSON.parse(this.dataset.item);
+					showOrderDetails(item);
+				});
+			});
+		}
+
+		function showOrderDetails(item) {
+			const overlay = document.getElementById('orderOverlay');
+			
+			// Store the current item ID in the overlay's dataset
+			overlay.dataset.currentItemId = item.id;
+
+			// Update overlay content
+			document.getElementById('orderImage').src = item.image;
+			document.getElementById('orderImage').alt = item.title;
+			document.getElementById('orderId').textContent = item.id || 'N/A';
+			document.getElementById('itemDescription').textContent = item.title;
+			document.getElementById('borrowDate').textContent = item.date || 'N/A';
+			document.getElementById('borrowTime').textContent = item.time || 'N/A';
+
+			// Show overlay with animation
+			overlay.style.display = 'block';
+			setTimeout(() => {
+				overlay.classList.add('active');
+			}, 10);
+		}
+
+		function cancelRequest(itemId) {
+			if (confirm('Are you sure you want to cancel this request?')) {
+				// Get current items from localStorage
+				let requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
+				let canceledItems = JSON.parse(localStorage.getItem('canceledItems')) || [];
+
+				// Find the item to cancel
+				const itemToCancel = requestedItems.find(item => item.id === itemId);
+				
+				if (itemToCancel) {
+					// Add cancellation details to the item
+					const canceledItem = {
+						...itemToCancel,
+						canceledDate: new Date().toISOString(),
+						status: 'CANCELED',
+						cancelReason: 'User canceled request'
+					};
+
+					// Remove item from requested items
+					requestedItems = requestedItems.filter(item => item.id !== itemId);
+					
+					// Add to canceled items
+					canceledItems.push(canceledItem);
+
+					// Update localStorage
+					localStorage.setItem('requestedItems', JSON.stringify(requestedItems));
+					localStorage.setItem('canceledItems', JSON.stringify(canceledItems));
+
+					// Close the overlay
+					closeOverlay();
+					
+					// Update the table immediately
+					updateTable();
+
+					// Show success message
+					alert('Request has been canceled successfully');
+					
+					// Optionally redirect to canceled page
+					window.location.href = 'Canceled.html';
+				} else {
+					console.error('Item not found:', itemId);
+				}
+			}
+		}
+
+		function closeOverlay() {
+			const overlay = document.getElementById('orderOverlay');
+			overlay.classList.remove('active');
+			
+			setTimeout(() => {
+				overlay.style.display = 'none';
+			}, 300);
+		}
+
+		// Close overlay when clicking the close button
+		document.querySelector('.close-btn').addEventListener('click', function() {
+			document.getElementById('orderOverlay').style.display = 'none';
+		});
+
+		// Close overlay when clicking outside the content
+		document.getElementById('orderOverlay').addEventListener('click', function(e) {
+			if (e.target === this) {
+				this.style.display = 'none';
+			}
+		});
+	</script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Get requested items from localStorage
+			const requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
+			const requestContainer = document.querySelector('.request-container'); // Add this container in your HTML
+
+			if (requestedItems.length === 0) {
+				requestContainer.innerHTML = `
+					<div class="no-requests">
+						<i class='bx bx-package'></i>
+						<p>No requests found</p>
+					</div>
+				`;
+				return;
+			}
+
+			// Sort requests by date (newest first)
+			requestedItems.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+
+			// Display each request
+			requestedItems.forEach(item => {
+				const requestCard = document.createElement('div');
+				requestCard.className = 'request-card';
+				requestCard.innerHTML = `
+					<div class="request-image">
+						<img src="${item.image}" alt="${item.title}">
+					</div>
+					<div class="request-details">
+						<h3>${item.title}</h3>
+						<p class="request-date">Date: ${item.date}</p>
+						<p class="request-time">Time: ${item.time}</p>
+						<p class="request-status ${item.status.toLowerCase()}">${item.status}</p>
+					</div>
+					<div class="request-actions">
+						<button onclick="cancelRequest('${item.id}')" class="cancel-btn">
+							<i class='bx bx-x'></i> Cancel
+						</button>
+					</div>
+				`;
+				requestContainer.appendChild(requestCard);
+			});
+		});
+
+		function cancelRequest(requestId) {
+			if (confirm('Are you sure you want to cancel this request?')) {
+				let requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
+				requestedItems = requestedItems.filter(item => item.id !== requestId);
+				localStorage.setItem('requestedItems', JSON.stringify(requestedItems));
+				location.reload();
+			}
+		}
+	</script>
+
+	<!-- Add this right before the closing body tag -->
+	<div id="orderOverlay" class="overlay">
+		<div class="overlay-content">
+			<span class="close-btn">&times;</span>
+			<div class="order-details">
+				<div class="order-image">
+					<img id="orderImage" src="" alt="">
+				</div>
+				<div class="order-info">
+					<div class="info-group">
+						<label>Order ID:</label>
+						<span id="orderId"></span>
+					</div>
+					<div class="info-group">
+						<label>Item Description:</label>
+						<span id="itemDescription"></span>
+					</div>
+					<div class="info-group">
+						<label>Borrow Date:</label>
+						<span id="borrowDate"></span>
+					</div>
+					<div class="info-group">
+						<label>Borrow Time:</label>
+						<span id="borrowTime"></span>
+					</div>
+				</div>
+				<div class="action-buttons">
+					<button class="cancel-request-btn">Cancel Request</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

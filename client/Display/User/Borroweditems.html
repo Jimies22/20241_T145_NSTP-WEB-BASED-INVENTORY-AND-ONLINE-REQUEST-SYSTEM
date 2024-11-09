@@ -123,67 +123,8 @@
 									<th>Status</th>
 								</tr>
 							</thead>
-							<tbody>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                        <td><span class="status R1">To Return</span></td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                        <td><span class="status R1">Returned</span></td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-								</tr>
-                                <tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                        <td><span class="status R1">Returned</span></td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                        <td><span class="status R1">Returned</span></td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                        <td><span class="status R1">Returned</span></td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-								</tr>
+							<tbody id="borrowed-items-list">
+								<!-- Items will be inserted here dynamically -->
 							</tbody>
 						</table>
 					</div>
@@ -227,5 +168,29 @@
 	
 
 	<script src="script.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const borrowedItems = JSON.parse(localStorage.getItem('borrowedItems')) || [];
+			const tableBody = document.getElementById('borrowed-items-list');
+			
+			borrowedItems.forEach(item => {
+				const row = `
+					<tr>
+						<td>
+							<img src="${item.image}" alt="Item Image">
+							<p>${item.title}</p>
+						</td>
+						<td><span class="status R1">${item.status}</span></td>
+						<td>
+							<a href="#">
+								<span class="status R2">view</span>
+							</a>
+						</td>
+					</tr>
+				`;
+				tableBody.innerHTML += row;
+			});
+		});
+	</script>
 </body>
 </html>

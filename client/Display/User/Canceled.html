@@ -9,7 +9,102 @@
 	<!-- My CSS -->
 	<link rel="stylesheet" href="Canceled.css">
 
-	<title>User</title>
+	<title>Canceled Requests</title>
+	<style>
+		.status.canceled {
+			background: #ffcdd2;
+			color: #c62828;
+			padding: 5px 10px;
+			border-radius: 5px;
+		}
+		
+		table img {
+			width: 50px;
+			height: 50px;
+			object-fit: cover;
+		}
+
+		.no-items {
+			text-align: center;
+			padding: 40px;
+		}
+
+		.no-items i {
+			font-size: 48px;
+			color: #ccc;
+			margin-bottom: 16px;
+		}
+
+		.no-items p {
+			color: #666;
+		}
+
+		.canceled-requests {
+			width: 100%;
+			padding: 24px;
+			background: var(--light);
+			border-radius: 20px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		}
+
+		.canceled-requests table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		.canceled-requests table th,
+		.canceled-requests table td {
+			padding: 12px;
+			text-align: left;
+			border-bottom: 1px solid #eee;
+		}
+
+		.canceled-requests table img {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			object-fit: cover;
+			margin-right: 10px;
+		}
+
+		.item-info {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.item-info img {
+			width: 50px;
+			height: 50px;
+			object-fit: cover;
+			border-radius: 8px;
+		}
+
+		.status.canceled {
+			padding: 6px 12px;
+			border-radius: 20px;
+			font-size: 14px;
+			font-weight: 500;
+			background: #ffcdd2;
+			color: #c62828;
+		}
+
+		.empty-state {
+			text-align: center;
+			padding: 40px 0;
+		}
+
+		.empty-state i {
+			font-size: 48px;
+			color: #ccc;
+			margin-bottom: 16px;
+		}
+
+		.empty-state p {
+			color: #666;
+			font-size: 16px;
+		}
+	</style>
 </head>
 <body>
 
@@ -93,7 +188,7 @@
 		<main>
 			<div class="head-title">
 				<div class="left">
-					<h1>Request</h1>
+					<h1>Canceled Requests</h1>
 					<ul class="breadcrumb">
 						<li>
 							<a href="#">Canceled</a>
@@ -114,7 +209,7 @@
 				</a> -->
 			</div>
 			<div class="table-data">
-				<div class="pending-requests">
+				<div class="canceled-requests">
 					<div class="head">
 						<h3>Canceled Requests</h3>
 						<i class='bx bx-filter'></i>
@@ -123,171 +218,18 @@
 						<table>
 							<thead>
 								<tr>
-									<th>Item Descrription</th>
+									<th>Item Description</th>
+									<th>Original Request Date</th>
+									<th>Canceled Date</th>
 									<th>Status</th>
-
 								</tr>
 							</thead>
-							<tbody>
-								<tr>
-									<td class="card">
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-
-									<td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-										<td>
-											<span class="status R5">Canceled</span>
-										</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-									<td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-									</td>
-                                    <td>
-										<span class="status R5">Canceled</span>
-									</td>
-								</tr>
+							<tbody id="canceled-items-list">
+								<!-- Canceled items will be displayed here -->
 							</tbody>
 						</table>
 					</div>
-				</div>			
-				<!-- <div class="todo">
-					<div class="head">
-						<h3>Todos</h3>
-						<i class='bx bx-plus' ></i>
-						<i class='bx bx-filter' ></i>
-					</div>
-					<ul class="todo-list">
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="not-completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="not-completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-					</ul>
-				</div> -->
+				</div>
 			</div>
 		</main>
 		<!-- MAIN -->
@@ -295,6 +237,53 @@
 	<!-- CONTENT -->
 	
 
-	<script src="script.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			displayCanceledItems();
+		});
+
+		function displayCanceledItems() {
+			const tableBody = document.getElementById('canceled-items-list');
+			const canceledItems = JSON.parse(localStorage.getItem('canceledItems')) || [];
+			
+			if (canceledItems.length === 0) {
+				tableBody.innerHTML = `
+					<tr>
+						<td colspan="4" class="no-items">
+							<div class="empty-state">
+								<i class='bx bx-calendar-x'></i>
+								<p>No canceled requests found</p>
+							</div>
+						</td>
+					</tr>
+				`;
+				return;
+			}
+
+			// Sort by canceled date (newest first)
+			canceledItems.sort((a, b) => new Date(b.canceledDate) - new Date(a.canceledDate));
+
+			// Display each canceled item
+			canceledItems.forEach(item => {
+				const requestDate = new Date(item.date).toLocaleDateString();
+				const canceledDate = new Date(item.canceledDate).toLocaleDateString();
+				
+				const row = `
+					<tr>
+						<td>
+							<div class="item-info">
+								<img src="${item.image}" alt="${item.title}">
+								<p>${item.title}</p>
+							</div>
+						</td>
+						<td>${requestDate}</td>
+						<td>${canceledDate}</td>
+						<td><span class="status canceled">CANCELED</span></td>
+					</tr>
+				`;
+				tableBody.innerHTML += row;
+			});
+		}
+	</script>
 </body>
 </html>
