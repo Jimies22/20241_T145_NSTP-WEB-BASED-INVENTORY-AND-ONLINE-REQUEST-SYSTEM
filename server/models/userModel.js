@@ -1,7 +1,7 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const userFacultySchema = new Schema({
+const userSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -18,10 +18,10 @@ const userFacultySchema = new Schema({
     type: String,
     required: true,
   },
-  department: {
+  description: {
     type: String,
-    required: true,
+    required: false,
   },
 });
-const facultyModel = mongoose.model("faculty", userFacultySchema);
-export default facultyModel;
+const userModel = mongoose.model("user", userSchema);
+export default userModel;

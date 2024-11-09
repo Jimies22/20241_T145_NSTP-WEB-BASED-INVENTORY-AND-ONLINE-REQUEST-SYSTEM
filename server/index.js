@@ -25,15 +25,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(json({ limit: "50mb" })); // Middleware
 app.use(urlencoded({ extended: true, limit: "50mb", parameterLimit: 10000 }));
+
 // Logging middleware
 app.use((req, res, next) => {
   console.log(`Request Method: ${req.method}, URL: ${req.url}`);
   next();
 });
 
+import userRoute from "./routes/UAData/userRoute.js"; // Import the user route from UAData directory
+
 // Admin routes
-import userStudentRoute from "./routes/Admin/userStudent.js";
-import userFacultyRoute from "./routes/Admin/userFaculty.js";
 // import dashboardAdminRoute from "./routes/Admin/dashboard.js";
 // import authAdminRouter from "./routes/Admin/auth.js";
 // import inventoryAdminRouter from "./routes/Admin/inventory.js";
@@ -50,8 +51,7 @@ import userFacultyRoute from "./routes/Admin/userFaculty.js";
 // import notificationRouter from "./routes/User/notificationRoute.js";
 
 // Admin API routes
-app.use("/api/admin/user/student", userStudentRoute);
-app.use("/api/admin/user/faculty", userFacultyRoute);
+app.use("/api/data/user", userRoute);
 
 // app.use("/api/admin/dashboard", dashboardAdminRoute);
 // app.use("/api/admin/login", authAdminRouter);
