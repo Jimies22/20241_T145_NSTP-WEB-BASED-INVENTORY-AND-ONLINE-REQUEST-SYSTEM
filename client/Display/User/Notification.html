@@ -10,6 +10,86 @@
 	<link rel="stylesheet" href="Notification.css">
 
 	<title>User</title>
+	<style>
+		.notification-list {
+			max-width: 800px;
+			margin: 20px auto;
+		}
+
+		.notification-item {
+			padding: 15px;
+			margin-bottom: 10px;
+			border-radius: 8px;
+			background: #fff;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+		}
+
+		.notification-item.unread {
+			background: #f0f7ff;
+		}
+
+		.notification-icon {
+			margin-right: 15px;
+			font-size: 24px;
+		}
+
+		.notification-content {
+			flex-grow: 1;
+		}
+
+		.notification-title {
+			font-weight: bold;
+			margin-bottom: 5px;
+		}
+
+		.notification-message {
+			color: #666;
+		}
+
+		.notification-time {
+			color: #999;
+			font-size: 0.8em;
+		}
+
+		/* Status-specific colors */
+		.booking .notification-icon { color: #3498db; }
+		.accepted .notification-icon { color: #2ecc71; }
+		.canceled .notification-icon { color: #e74c3c; }
+		.returned .notification-icon { color: #f1c40f; }
+
+		.no-notifications {
+			text-align: center;
+			padding: 40px;
+			color: #666;
+		}
+
+		.no-notifications i {
+			font-size: 48px;
+			margin-bottom: 10px;
+			color: #999;
+		}
+
+		.notification-item {
+			transition: background-color 0.3s ease;
+		}
+
+		.notification-item:hover {
+			background-color: #f5f5f5;
+		}
+
+		.notification-item.unread {
+			border-left: 4px solid #3498db;
+		}
+
+		.notification-item .notification-time {
+			font-size: 0.8em;
+			color: #999;
+			margin-top: 5px;
+		}
+	</style>
 </head>
 <body>
 
@@ -95,128 +175,19 @@
 				<div class="left">
 					<h1>Notifications</h1>
 					<ul class="breadcrumb">
-						<li>
-							<a href="#">Notifications</a>
-						</li>
-						<li><i class='bx bx-chevron-right' ></i></li>
-						<li>
-							<a class="active" href="Dashboard.html">Home</a>
-						</li>
+						<!-- ... existing breadcrumb ... -->
 					</ul>
 				</div>
-				<!-- <a href="#" class="btn-download">
-					<i class='bx bxs-cloud-download' ></i>
-					<span class="text">Download PDF</span>
-				</a> -->
-		
-                <div class="table-data">
-                    <div class="pending-requests">
-                        <div class="head">
-                            <h3>Notifications</h3>
-                            <i class='bx bx-filter'></i>
-                        </div>
-                        <div class="order">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>User ID</th>
-                                        <th>Description </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="card">
-                                            <img src="img/people.png" alt="User Image">
-                                            <p>220011</p>
-                                        </td>
-                                        <td>Successfully Booked an Item</td>
-                                        <td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="card">
-                                            <img src="img/people.png" alt="User Image">
-                                            <p>220011</p>
-                                        </td>
-                                        <td>Successfully returned an Item</td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="card">
-                                            <img src="img/people.png" alt="User Image">
-                                            <p>220011</p>
-                                        </td>
-                                        <td>Successfully Booked an Item</td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="card">
-                                            <img src="img/people.png" alt="User Image">
-                                            <p>220011</p>
-                                        </td>
-                                        <td>Successfully Booked an Item</td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="card">
-                                            <img src="img/people.png" alt="User Image">
-                                            <p>220011</p>
-                                        </td>
-                                        <td>Successfully returned an Item</td>
-										<td>
-											<a href="">
-											<span class="status R2">view</span>
-											</a>
-										</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-				<!-- <div class="todo">
-					<div class="head">
-						<h3>Todos</h3>
-						<i class='bx bx-plus' ></i>
-						<i class='bx bx-filter' ></i>
-					</div>
-					<ul class="todo-list">
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="not-completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="not-completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-					</ul>
-				</div> -->
+				<div class="right">
+					<button class="btn-download" onclick="markAllNotificationsAsRead()">
+						<i class='bx bx-check-double'></i>
+						<span class="text">Mark all as read</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="notification-list" id="notificationList">
+				<!-- Notifications will be inserted here dynamically -->
 			</div>
 		</main>
 		<!-- MAIN -->
@@ -224,6 +195,111 @@
 	<!-- CONTENT -->
 	
 
-	<script src="script.js"></script>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		// Get notifications from localStorage
+		const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+
+		function createNotificationElement(notification) {
+			const timeAgo = getTimeAgo(notification.timestamp);
+			return `
+				<div class="notification-item ${notification.read ? '' : 'unread'} ${notification.type}">
+					<div class="notification-icon">
+						${getIconForType(notification.type)}
+					</div>
+					<div class="notification-content">
+						<div class="notification-title">${notification.title}</div>
+						<div class="notification-message">${notification.message}</div>
+						<div class="notification-time">${timeAgo}</div>
+					</div>
+				</div>
+			`;
+		}
+
+		function getIconForType(type) {
+			const icons = {
+				'booking': '<i class="bx bx-package"></i>',
+				'canceled': '<i class="bx bx-x-circle"></i>',
+				'returned': '<i class="bx bx-check-circle"></i>',
+				'accepted': '<i class="bx bx-check-double"></i>',
+				'rejected': '<i class="bx bx-x"></i>',
+				'cancel-request': '<i class="bx bx-block"></i>'
+			};
+			return icons[type] || '<i class="bx bx-bell"></i>';
+		}
+
+		function getTimeAgo(timestamp) {
+			const now = new Date();
+			const past = new Date(timestamp);
+			const diffInSeconds = Math.floor((now - past) / 1000);
+
+			if (diffInSeconds < 60) {
+				return 'Just now';
+			} else if (diffInSeconds < 3600) {
+				const minutes = Math.floor(diffInSeconds / 60);
+				return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+			} else if (diffInSeconds < 86400) {
+				const hours = Math.floor(diffInSeconds / 3600);
+				return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+			} else {
+				const days = Math.floor(diffInSeconds / 86400);
+				return `${days} day${days > 1 ? 's' : ''} ago`;
+			}
+		}
+
+		function displayNotifications() {
+			const notificationList = document.getElementById('notificationList');
+			if (notifications.length === 0) {
+				notificationList.innerHTML = `
+					<div class="no-notifications">
+						<i class='bx bx-bell-off'></i>
+						<p>No notifications yet</p>
+					</div>
+				`;
+			} else {
+				notificationList.innerHTML = notifications
+					.map(notification => createNotificationElement(notification))
+					.join('');
+			}
+		}
+
+		// Function to mark all notifications as read
+		window.markAllNotificationsAsRead = function() {
+			notifications.forEach(notification => notification.read = true);
+			localStorage.setItem('notifications', JSON.stringify(notifications));
+			displayNotifications();
+			updateNotificationCount();
+		};
+
+		function updateNotificationCount() {
+			const unreadCount = notifications.filter(n => !n.read).length;
+			const numElement = document.querySelector('.notification .num');
+			if (unreadCount > 0) {
+				numElement.style.display = 'block';
+				numElement.textContent = unreadCount;
+			} else {
+				numElement.style.display = 'none';
+			}
+		}
+
+		// Add click event listeners to notification items
+		document.getElementById('notificationList').addEventListener('click', function(e) {
+			const notificationItem = e.target.closest('.notification-item');
+			if (notificationItem) {
+				const index = Array.from(notificationItem.parentElement.children).indexOf(notificationItem);
+				if (index !== -1 && !notifications[index].read) {
+					notifications[index].read = true;
+					localStorage.setItem('notifications', JSON.stringify(notifications));
+					notificationItem.classList.remove('unread');
+					updateNotificationCount();
+				}
+			}
+		});
+
+		// Initial display
+		displayNotifications();
+		updateNotificationCount();
+	});
+	</script>
 </body>
 </html>
