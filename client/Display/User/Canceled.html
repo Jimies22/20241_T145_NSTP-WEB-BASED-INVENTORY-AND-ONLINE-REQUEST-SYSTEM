@@ -12,8 +12,8 @@
 	<title>Canceled Requests</title>
 	<style>
 		.status.canceled {
-			background: #ffcdd2;
-			color: #c62828;
+			background: #ffadad;
+			color: #de3545;
 			padding: 5px 10px;
 			border-radius: 5px;
 		}
@@ -21,7 +21,7 @@
 		table img {
 			width: 50px;
 			height: 50px;
-			object-fit: cover;
+				object-fit: cover;
 		}
 
 		.no-items {
@@ -85,8 +85,8 @@
 			border-radius: 20px;
 			font-size: 14px;
 			font-weight: 500;
-			background: #ffcdd2;
-			color: #c62828;
+			background: #ffadad;
+			color: #de3545;
 		}
 
 		.empty-state {
@@ -225,7 +225,7 @@
 								</tr>
 							</thead>
 							<tbody id="canceled-items-list">
-								<!-- Canceled items will be displayed here -->
+								<!-- Canceled items will be inserted here dynamically -->
 							</tbody>
 						</table>
 					</div>
@@ -238,36 +238,96 @@
 	
 
 	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			const canceledItems = JSON.parse(localStorage.getItem('canceledItems')) || [];
+		function updateCanceledTable() {
 			const tableBody = document.getElementById('canceled-items-list');
+			const canceledOrders = JSON.parse(localStorage.getItem('canceledOrders')) || [];
 			
-			if (canceledItems.length === 0) {
-				tableBody.innerHTML = `
-					<tr>
-						<td colspan="3" class="no-items">No canceled requests found</td>
-					</tr>
-				`;
-				return;
+			console.log('Checking localStorage content:');
+			console.log('canceledOrders:', localStorage.getItem('canceledOrders'));
+			console.log('allOrders:', localStorage.getItem('orders')); // Check other related data
+			console.log('Number of canceled orders:', canceledOrders.length);
+			
+			tableBody.innerHTML = ''; // Clear existing rows
+			
+			if (canceledOrders.length === 0) {
+					tableBody.innerHTML = `
+						<tr>
+							<td colspan="4" style="text-align: center; padding: 20px;">
+								<div class="no-items">
+									<i class='bx bx-package' style="font-size: 48px; color: #ccc; display: block; margin-bottom: 10px;"></i>
+									<p>No canceled requests found</p>
+								</div>
+							</td>
+						</tr>
+					`;
+					return;
 			}
 			
-			// Sort by canceledDate (newest first)
-			canceledItems.sort((a, b) => new Date(b.canceledDate) - new Date(a.canceledDate));
+			// Sort canceled orders by date (most recent first)
+			canceledOrders.sort((a, b) => {
+				const dateA = new Date(a.canceledDate + ' ' + a.canceledTime);
+				const dateB = new Date(b.canceledDate + ' ' + b.canceledTime);
+				return dateB - dateA;
+			});
 			
-			canceledItems.forEach(item => {
+			canceledOrders.forEach(order => {
+				console.log('Processing order:', order);
+				
 				const row = `
 					<tr>
 						<td>
-							<img src="${item.image}" alt="${item.title}">
-							<p>${item.title}</p>
+							<div class="item-info">
+								<img src="${order.image || 'img/default-image.png'}" alt="${order.itemName || 'Item'}" 
+									 style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+								<p>${order.itemName || 'Unknown Item'}</p>
+							</div>
 						</td>
-						<td>${new Date(item.canceledDate).toLocaleDateString()}</td>
+						<td>${order.originalDate || 'N/A'}</td>
+						<td>${order.canceledDate} ${order.canceledTime}</td>
 						<td><span class="status canceled">CANCELED</span></td>
 					</tr>
 				`;
 				tableBody.innerHTML += row;
 			});
+		}
+
+		// Modify the cancelRequest function to ensure proper data structure
+		function cancelRequest(order) {
+			const canceledOrders = JSON.parse(localStorage.getItem('canceledOrders')) || [];
+			
+			const canceledOrder = {
+				itemName: order.itemName,
+				image: order.image,
+				originalDate: order.requestDate || order.originalDate,
+				canceledDate: new Date().toLocaleDateString(),
+				canceledTime: new Date().toLocaleTimeString(),
+				status: 'CANCELED'  // Add explicit status
+			};
+			
+			console.log('Adding new canceled order:', canceledOrder);
+			canceledOrders.push(canceledOrder);
+			localStorage.setItem('canceledOrders', JSON.stringify(canceledOrders));
+			console.log('Updated canceledOrders in localStorage:', localStorage.getItem('canceledOrders'));
+		}
+
+		// Add this function to help with debugging
+		function checkLocalStorage() {
+			console.log('All localStorage keys:', Object.keys(localStorage));
+			for (let i = 0; i < localStorage.length; i++) {
+				const key = localStorage.key(i);
+				console.log(`${key}:`, localStorage.getItem(key));
+			}
+		}
+
+		// Call both functions when page loads
+		document.addEventListener('DOMContentLoaded', function() {
+			console.log('Page loaded, checking storage and updating table...');
+			checkLocalStorage();
+			updateCanceledTable();
 		});
+
+		// Refresh the table periodically (optional)
+		setInterval(updateCanceledTable, 30000); // Updates every 30 seconds
 	</script>
 </body>
 </html>
