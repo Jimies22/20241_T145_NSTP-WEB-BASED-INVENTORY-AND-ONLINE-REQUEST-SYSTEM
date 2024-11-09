@@ -1,30 +1,43 @@
 import React, { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style/login.css";
-//import background from "../style/image/nstp_cover.png";
 import logo from "../style/image/nstp_logo.png";
+//import jwt_decode from "jwt-decode";
 
 function Login() {
   useEffect(() => {
-    // Initialize Google Sign-In API
-    window.google?.accounts.id.initialize({
-      client_id:
-        "941942178577-6i12rtiomnbbfgha49lna53lpbsggcbf.apps.googleusercontent.com", // Replace with your actual Client ID
-      callback: handleCredentialResponse,
-    });
+    // Load Google Sign-In script
+    const loadGoogleScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
 
-    window.google?.accounts.id.renderButton(
-      document.getElementById("google-signin-btn"),
-      {
-        theme: "outline",
-        size: "large",
-        type: "standard",
-        shape: "rectangular",
-        logo_alignment: "center",
-        text: "signin_with",
-        width: "305",
-      }
-    );
+      script.onload = () => {
+        // Initialize Google Sign-In API after script loads
+        window.google.accounts.id.initialize({
+          client_id:
+            "941942178577-6i12rtiomnbbfgha49lna49lpbsggcbf.apps.googleusercontent.com", // Your client ID
+          callback: handleCredentialResponse,
+        });
+
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-btn"),
+          {
+            theme: "outline",
+            size: "large",
+            type: "standard",
+            shape: "rectangular",
+            logo_alignment: "center",
+            text: "signin_with",
+            width: "305",
+          }
+        );
+      };
+    };
+
+    loadGoogleScript();
 
     // Load reCAPTCHA v2 on load
     const loadRecaptcha = () => {
@@ -54,7 +67,8 @@ function Login() {
   };
 
   return (
-    <div className="nstp_bg">
+    <div className="login-container">
+      <div className="nstp_bg"></div>
       <div className="logo">
         <img src={logo} alt="NSTP Logo" className="nstp_logo" />
         <div className="header-text">
