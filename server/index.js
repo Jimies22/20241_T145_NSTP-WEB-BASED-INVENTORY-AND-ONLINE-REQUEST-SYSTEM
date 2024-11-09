@@ -32,12 +32,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// Data routes
 import userRoute from "./routes/UAData/userRoute.js"; // Import the user route from UAData directory
 
 // Admin routes
 // import dashboardAdminRoute from "./routes/Admin/dashboard.js";
 // import authAdminRouter from "./routes/Admin/auth.js";
-// import inventoryAdminRouter from "./routes/Admin/inventory.js";
+import inventoryAdminRouter from "./routes/Admin/inventory.js";
 // import notificationAdminRouter from "./routes/Admin/notification.js";
 // import reportRouter from "./routes/Admin/report.js";
 // import requestRouter from "./routes/Admin/request.js";
@@ -55,7 +56,7 @@ app.use("/api/data/user", userRoute);
 
 // app.use("/api/admin/dashboard", dashboardAdminRoute);
 // app.use("/api/admin/login", authAdminRouter);
-// app.use("/api/admin/inventory", inventoryAdminRouter);
+app.use("/api/admin/inventory", inventoryAdminRouter);
 // app.use("/api/admin/notifications", notificationAdminRouter);
 // app.use("/api/admin/reports", reportRouter);
 // app.use("/api/admin/requests", requestRouter);

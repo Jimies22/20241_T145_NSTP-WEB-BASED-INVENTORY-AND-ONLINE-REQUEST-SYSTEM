@@ -1,27 +1,29 @@
-// // inventory
-// import { Router } from "express";
-// const router = Router();
+// inventory
+import { Router } from "express";
+const router = Router();
 
-// // Get item list
-// router.get("/", (req, res) => {
-//   res.send({ data: "Item list" });
-// });
+// import controller functions
+import {
+  getItems,
+  getItem,
+  postItem,
+  putItem,
+  deleteItem,
+} from "../../controllers/itemController.js";
 
-// // Create a new item
-// router.post("/", (req, res) => {
-//   res.send({ data: "Item Created" });
-// });
+// Get item list
+router.get("/", getItems);
 
-// // Update an item by ID
-// router.put("/:id", (req, res) => {
-//   const { id } = req.params; // Get item ID from the request parameters
-//   res.send({ data: `Item with ID ${id} Updated` });
-// });
+// get item by ID
+router.get("/:item_id", getItem);
 
-// // Delete an item by ID
-// router.delete("/:id", (req, res) => {
-//   const { id } = req.params; // Get item ID from the request parameters
-//   res.send({ data: `Item with ID ${id} Deleted` });
-// });
+// Create a new item
+router.post("/", postItem);
 
-// export default router;
+// Update an item by ID
+router.put("/:item_id", putItem);
+
+// Delete an item by ID
+router.delete("/:item_id", deleteItem);
+
+export default router;
