@@ -11,9 +11,6 @@
 	<link rel="stylesheet" href="overlay.css">
 
 	<title>User</title>
-
-	<!-- Add in the head section -->
-	<script src="js/notifications.js"></script>
 </head>
 <body>
 
@@ -84,8 +81,8 @@
 			<input type="checkbox" id="switch-mode" hidden>
 			<label for="switch-mode" class="switch-mode"></label>
 			<a href="Notification.html" class="notification">
-				<i class='bx bxs-bell'></i>
-				<span class="num">0</span>
+				<i class='bx bxs-bell' ></i>
+				<span class="num">8</span>
 			</a>
 			<a href="StaffProfile.html" class="profile">
 				<img src="img/Screen-Shot-2024-06-11-at-11.54.30-AM-e1718634535872.webp">
@@ -239,12 +236,10 @@
 		}
 
 		function showOrderDetails(item) {
-			console.log('Showing details for item:', item);
 			const overlay = document.getElementById('orderOverlay');
 			
 			// Store the current item ID in the overlay's dataset
-				overlay.dataset.currentItemId = item.id;
-			console.log('Set currentItemId to:', item.id);
+			overlay.dataset.currentItemId = item.id;
 
 			// Update overlay content
 			document.getElementById('orderImage').src = item.image;
@@ -262,105 +257,59 @@
 		}
 
 		function cancelRequest(itemId) {
-			console.log('Cancel request initiated for ID:', itemId);
-			
-			if (!confirm('Are you sure you want to cancel this request?')) {
-				return;
-			}
-
-			try {
+			if (confirm('Are you sure you want to cancel this request?')) {
 				// Get current items from localStorage
 				let requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
 				let canceledItems = JSON.parse(localStorage.getItem('canceledItems')) || [];
-				
+
 				// Find the item to cancel
 				const itemToCancel = requestedItems.find(item => item.id === itemId);
 				
-				if (!itemToCancel) {
+				if (itemToCancel) {
+					// Add cancellation details to the item
+					const canceledItem = {
+						...itemToCancel,
+						canceledDate: new Date().toLocaleDateString(),
+						canceledTime: new Date().toLocaleTimeString(),
+						status: 'CANCELED',
+						cancelReason: 'User canceled request'
+					};
+
+					// Remove item from requested items
+					requestedItems = requestedItems.filter(item => item.id !== itemId);
+					
+					// Add to canceled items
+					canceledItems.push(canceledItem);
+
+					// Update localStorage
+					localStorage.setItem('requestedItems', JSON.stringify(requestedItems));
+					localStorage.setItem('canceledItems', JSON.stringify(canceledItems));
+
+					// Close the overlay
+					closeOverlay();
+					
+					// Update the table immediately
+					updateTable();
+
+					// Show success message
+					alert('Request has been canceled successfully');
+					
+					// Redirect to canceled page
+					window.location.href = 'Canceled.html';
+				} else {
 					console.error('Item not found:', itemId);
 					alert('Error: Item not found');
-					return;
 				}
-
-				// Add cancellation details to the item
-				const canceledItem = {
-					...itemToCancel,
-					canceledDate: new Date().toLocaleDateString(),
-					canceledTime: new Date().toLocaleTimeString(),
-					status: 'CANCELED',
-					canceledAt: new Date().toISOString()
-				};
-
-				// Remove item from requested items
-				requestedItems = requestedItems.filter(item => item.id !== itemId);
-				
-				// Add to canceled items
-				canceledItems.push(canceledItem);
-
-				// Update localStorage
-				localStorage.setItem('requestedItems', JSON.stringify(requestedItems));
-				localStorage.setItem('canceledItems', JSON.stringify(canceledItems));
-
-				// Create and save notification
-				const notification = {
-					id: 'notif_' + Date.now(),
-					type: 'cancel-request',
-					title: 'Request Canceled',
-					message: `Your request for ${canceledItem.title} has been canceled`,
-					timestamp: new Date().toISOString(),
-					read: false
-				};
-
-				let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
-				notifications.unshift(notification);
-				localStorage.setItem('notifications', JSON.stringify(notifications));
-
-				// Update notification count in the UI
-				const notificationCount = document.querySelector('.notification .num');
-				if (notificationCount) {
-					notificationCount.textContent = notifications.filter(n => !n.read).length;
-				}
-
-				// Close overlay if it's open
-				closeOverlay();
-				
-				// Show success message
-				const successMessage = document.createElement('div');
-				successMessage.className = 'success-message';
-				successMessage.innerHTML = `
-					<div class="success-content">
-						<i class='bx bx-check-circle'></i>
-						<p>Request canceled successfully!</p>
-					</div>
-				`;
-				document.body.appendChild(successMessage);
-
-				// Add show class after a brief delay
-				setTimeout(() => {
-					successMessage.classList.add('show');
-				}, 10);
-
-				// Remove success message and redirect
-				setTimeout(() => {
-					successMessage.remove();
-					window.location.href = 'Canceled.html';
-				}, 2000);
-
-			} catch (error) {
-				console.error('Error in cancelRequest:', error);
-				alert('An error occurred while canceling the request');
 			}
 		}
 
-		// Make sure the overlay close function exists
 		function closeOverlay() {
 			const overlay = document.getElementById('orderOverlay');
-			if (overlay) {
-				overlay.classList.remove('active');
-				setTimeout(() => {
-					overlay.style.display = 'none';
-				}, 300);
-			}
+			overlay.classList.remove('active');
+			
+			setTimeout(() => {
+				overlay.style.display = 'none';
+			}, 300);
 		}
 
 		// Close overlay when clicking the close button
@@ -409,9 +358,8 @@
 						<p class="request-status ${item.status.toLowerCase()}">${item.status}</p>
 					</div>
 					<div class="request-actions">
-						<button class="cancel-btn" onclick="cancelRequest('${item.id}')">
-							<i class='bx bx-x'></i>
-							Cancel Request
+						<button onclick="cancelRequest('${item.id}')" class="cancel-btn">
+							<i class='bx bx-x'></i> Cancel
 						</button>
 					</div>
 				`;
@@ -420,65 +368,12 @@
 		});
 
 		function cancelRequest(requestId) {
-			// Show confirmation dialog
-			if (!confirm('Are you sure you want to cancel this request?')) {
-				return;
-			}
-
-			// Get requested items from localStorage
-			let requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
-			
-			// Find the request to cancel
-			const requestIndex = requestedItems.findIndex(item => item.id === requestId);
-			if (requestIndex === -1) return;
-
-			const canceledRequest = requestedItems[requestIndex];
-
-			// Update request status
-			canceledRequest.status = 'Canceled';
-			requestedItems[requestIndex] = canceledRequest;
-			localStorage.setItem('requestedItems', JSON.stringify(requestedItems));
-
-			// Create notification for canceled request
-			const notification = {
-				id: 'notif_' + Date.now(),
-				type: 'cancel-request',
-				title: 'Request Canceled',
-				message: `You have canceled your request for ${canceledRequest.title} scheduled for ${canceledRequest.date} at ${canceledRequest.time}`,
-				timestamp: new Date().toISOString(),
-				read: false
-			};
-
-			// Add notification to localStorage
-			let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
-			notifications.unshift(notification);
-			localStorage.setItem('notifications', JSON.stringify(notifications));
-
-			// Update notification count
-			updateNotificationCount();
-
-			// Show success message
-			const successMessage = document.createElement('div');
-			successMessage.className = 'success-message';
-			successMessage.innerHTML = `
-				<div class="success-content">
-					<i class='bx bx-x-circle'></i>
-					<p>Request canceled successfully!</p>
-				</div>
-			`;
-			document.body.appendChild(successMessage);
-
-			// Add show class after a brief delay
-			setTimeout(() => {
-				successMessage.classList.add('show');
-			}, 10);
-
-			// Remove success message after 2 seconds
-			setTimeout(() => {
-				successMessage.remove();
-				// Refresh the page or update the UI
+			if (confirm('Are you sure you want to cancel this request?')) {
+				let requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
+				requestedItems = requestedItems.filter(item => item.id !== requestId);
+				localStorage.setItem('requestedItems', JSON.stringify(requestedItems));
 				location.reload();
-			}, 2000);
+			}
 		}
 	</script>
 
@@ -509,9 +404,7 @@
 					</div>
 				</div>
 				<div class="action-buttons">
-					<button class="cancel-request-btn" onclick="cancelRequest(this.closest('#orderOverlay').dataset.currentItemId)">
-						Cancel Request
-					</button>
+					<button class="cancel-request-btn">Cancel Request</button>
 				</div>
 			</div>
 		</div>
