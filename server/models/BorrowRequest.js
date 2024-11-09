@@ -22,7 +22,7 @@ const borrowSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  borrowModel: {
+  reqDate: {
     type: Date,
     required: true,
   },
