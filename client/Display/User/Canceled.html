@@ -239,51 +239,35 @@
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
-			displayCanceledItems();
-		});
-
-		function displayCanceledItems() {
-			const tableBody = document.getElementById('canceled-items-list');
 			const canceledItems = JSON.parse(localStorage.getItem('canceledItems')) || [];
+			const tableBody = document.getElementById('canceled-items-list');
 			
 			if (canceledItems.length === 0) {
 				tableBody.innerHTML = `
 					<tr>
-						<td colspan="4" class="no-items">
-							<div class="empty-state">
-								<i class='bx bx-calendar-x'></i>
-								<p>No canceled requests found</p>
-							</div>
-						</td>
+						<td colspan="3" class="no-items">No canceled requests found</td>
 					</tr>
 				`;
 				return;
 			}
-
-			// Sort by canceled date (newest first)
+			
+			// Sort by canceledDate (newest first)
 			canceledItems.sort((a, b) => new Date(b.canceledDate) - new Date(a.canceledDate));
-
-			// Display each canceled item
+			
 			canceledItems.forEach(item => {
-				const requestDate = new Date(item.date).toLocaleDateString();
-				const canceledDate = new Date(item.canceledDate).toLocaleDateString();
-				
 				const row = `
 					<tr>
 						<td>
-							<div class="item-info">
-								<img src="${item.image}" alt="${item.title}">
-								<p>${item.title}</p>
-							</div>
+							<img src="${item.image}" alt="${item.title}">
+							<p>${item.title}</p>
 						</td>
-						<td>${requestDate}</td>
-						<td>${canceledDate}</td>
+						<td>${new Date(item.canceledDate).toLocaleDateString()}</td>
 						<td><span class="status canceled">CANCELED</span></td>
 					</tr>
 				`;
 				tableBody.innerHTML += row;
 			});
-		}
+		});
 	</script>
 </body>
 </html>

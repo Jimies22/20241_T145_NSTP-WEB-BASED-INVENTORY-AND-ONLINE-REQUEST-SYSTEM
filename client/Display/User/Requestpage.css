@@ -701,13 +701,18 @@ body {
 
 .no-requests {
     text-align: center;
-    padding: 40px;
-    color: #666;
+    padding: 20px;
 }
 
 .no-requests i {
     font-size: 48px;
+    color: #888;
     margin-bottom: 10px;
+}
+
+.no-requests p {
+    color: #666;
+    font-size: 16px;
 }
 
 /* Order Details Overlay */
@@ -769,4 +774,9 @@ body {
 
 #requested-items-list tr:hover {
     background-color: rgba(0, 0, 0, 0.05);
+}
+
+.status.canceled {
+    background: #ffadad;
+    color: #de3545;
 }
