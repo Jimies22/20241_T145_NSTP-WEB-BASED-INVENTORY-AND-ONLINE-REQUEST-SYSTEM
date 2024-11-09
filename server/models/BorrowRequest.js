@@ -2,7 +2,7 @@ import mongoose, { mongo } from "mongoose";
 const { Schema } = mongoose;
 
 const borrowSchema = new Schema({
-  name: {
+  user_id: {
     type: String,
     required: true,
   },
@@ -16,6 +16,22 @@ const borrowSchema = new Schema({
   },
   category: {
     type: String,
+    required: true,
+  },
+  Date: {
+    type: Date,
+    default: Date.now,
+  },
+  borrowModel: {
+    type: Date,
+    required: true,
+  },
+  returnDate: {
+    type: Date,
+    required: true,
+  },
+  status: {
+    type: Boolean,
     required: true,
   },
 });
