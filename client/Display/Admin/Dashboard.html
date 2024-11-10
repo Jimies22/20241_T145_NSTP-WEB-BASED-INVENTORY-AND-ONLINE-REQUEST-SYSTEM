@@ -10,6 +10,11 @@
 	<link rel="stylesheet" href="Dashboard.css">
 
 	<title>Admin</title>
+
+	<!-- Poppins Font -->
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+	<script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
 </head>
 <body>
 
@@ -22,7 +27,7 @@
 		</a>
 		<ul class="side-menu top">
 			<li>
-				<a href="#">
+				<a href="Dashboard.html">
 					<i class='bx bxs-dashboard'></i>
 					<span class="text">Dashboard</span>
 				</a>
@@ -49,6 +54,13 @@
 				<a href="Archived.html">
 					<i class='bx bxs-archive'></i>
 					<span class="text">Archived Items</span>
+				</a>
+			</li>
+
+			<li>
+				<a href="activitylog.html">
+					<i class='bx bx-history'></i>
+					<span class="text">Activity Log</span>
 				</a>
 			</li>
 		</ul>
@@ -117,50 +129,79 @@
 			</div>
 			<ul class="box-info">
 				<li>
-					<i class='bx bxs-calendar-check' ></i>
+					<i class='bx bxs-calendar-check'></i>
 					<span class="text">
 						<h3>13</h3>
-						<p>Total Request</p>
+						<p>Pending Requests</p>
 					</span>
 				</li>
 				<li>
-					<i class='bx bxs-calendar-check' ></i>
+					<i class='bx bxs-group'></i>
 					<span class="text">
 						<h3>5</h3>
-						<p>Total Items Borrowed</p>
+						<p>Active Borrowers</p>
 					</span>
 				</li>
-                </ul>
-				<!-- <div class="todo">
+				<li>
+					<i class='bx bxs-error-circle'></i>
+					<span class="text">
+						<h3>3</h3>
+						<p>Overdue Items</p>
+					</span>
+				</li>
+			</ul>
+
+			<!-- Main Dashboard Content -->
+			<div class="table-data">
+				<!-- Recent Requests Table -->
+				<div class="order">
 					<div class="head">
-						<h3>Todos</h3>
-						<i class='bx bx-plus' ></i>
-						<i class='bx bx-filter' ></i>
+						<h3>Recent Requests</h3>
+						<a href="Mainpage.html" class="view-all">View All</a>
 					</div>
-					<ul class="todo-list">
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="not-completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-						<li class="not-completed">
-							<p>Todo List</p>
-							<i class='bx bx-dots-vertical-rounded' ></i>
-						</li>
-					</ul>
-				</div> -->
-			</div>
+					<table>
+						<thead>
+							<tr>
+								<th>User</th>
+								<th>Item</th>
+								<th>Date</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Ian Dave Javier</td>
+								<td>LCD Projector</td>
+								<td>March 15, 2024</td>
+								<td><span class="status pending">Pending</span></td>
+							</tr>
+							<tr>
+								<td>Sern Ponce</td>
+								<td>HDMI Cable</td>
+								<td>March 14, 2024</td>
+								<td><span class="status completed">Approved</span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Quick Actions -->
+				<div class="quick-actions">
+					<h2>Quick Actions</h2>
+					<a href="AddItem.html">
+						<button class="action-btn add-new">
+							<i class="bx bx-plus-circle"></i>
+							Add New Item
+						</button>
+					</a>
+					<a href="Mainpage.html">
+						<button class="action-btn review">
+							<i class="bx bx-list-check"></i>
+							Review Requests
+						</button>
+					</a>
+				</div>
+			</div>	
 		</main>
 		<!-- MAIN -->
 	</section>
@@ -168,5 +209,6 @@
 	
 
 	<script src="script.js"></script>
+
 </body>
 </html>

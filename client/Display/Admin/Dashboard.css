@@ -47,11 +47,6 @@ body {
 }
 
 
-
-.card{
-	
-}
-
 /* SIDEBAR */
 #sidebar {
 	position: fixed;
@@ -682,6 +677,1236 @@ body {
 
 .status.unavailable {
     color: #dc3545;
+}
+
+.scanner-section {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.viewport {
+    position: relative;
+    max-width: 320px;
+    height: 240px;
+    margin: 20px auto;
+    display: none;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #ccc;
+}
+
+/* Optional: Make the viewport responsive for mobile */
+@media screen and (max-width: 480px) {
+    .viewport {
+        max-width: 280px;
+        height: 210px;
+    }
+}
+
+.viewport.active {
+    display: block;
+}
+
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: red;
+    animation: scan 2s linear infinite;
+    box-shadow: 0 0 4px rgba(255, 0, 0, 0.5);
+    display: none;
+}
+
+.viewport.active .scan-line {
+    display: block;
+}
+
+@keyframes scan {
+    0% {
+        top: 0;
+    }
+    50% {
+        top: 100%;
+    }
+    100% {
+        top: 0;
+    }
+}
+
+.scan-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.scan-btn i {
+    font-size: 2rem;
+    color: var(--dark);
+}
+
+.scan-text {
+    font-size: 1rem;
+    color: var(--dark);
+    font-weight: 700;
+}
+
+.scan-btn:hover i,
+.scan-btn:hover .scan-text {
+    color: var(--blue);
+}
+
+#scan-result {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.product-details {
+    background: var(--light);
+    padding: 24px;
+    border-radius: 20px;
+    margin-top: 24px;
+}
+
+.product-details h2 {
+    margin-bottom: 24px;
+    color: var(--dark);
+}
+
+.details-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.details-list {
+    flex: 1;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--grey);
+}
+
+.detail-item .label {
+    font-size: 1rem;
+    color: var(--dark);
+}
+
+.detail-item .value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.active-items {
+    flex: 1;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+}
+
+.donut-chart {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(
+        #40c4a7 81%,
+        #e8f8f5 81%
+    );
+    position: relative;
+}
+
+.donut-chart::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 70%;
+    background: white;
+    border-radius: 50%;
+}
+
+.center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--dark);
+}
+
+.view-all {
+    color: var(--blue);
+    font-size: 14px;
+    text-decoration: none;
+}
+
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background: var(--grey);
+    color: var(--dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    background: var(--blue);
+    color: var(--light);
+}
+
+.action-btn i {
+    font-size: 1.2rem;
+}
+
+/* Dropdown Select Styling */
+select {
+    padding: 8px 35px 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--grey);
+    background-color: var(--light);
+    color: var(--dark);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+select:hover {
+    border-color: var(--blue);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.2);
+}
+
+/* Optional: Add container styling if needed */
+.filter-container {
+    margin: 10px 0;
+}
+
+.scanner-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--light);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    z-index: 1000;
+    width: 90%;
+    max-width: 500px;
+}
+
+.scanner-container.active {
+    display: block;
+}
+
+.scanner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--dark);
+}
+
+.viewport {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border: 2px solid var(--grey);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.viewport video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: var(--blue);
+    top: 50%;
+    animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+    0% {
+        top: 0;
+    }
+    50% {
+        top: 100%;
+    }
+    100% {
+        top: 0;
+    }
+}
+
+#scan-result {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Scanner styles */
+.scanner-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.scanner-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.scanner-container.active,
+.scanner-overlay.active {
+    display: block;
+}
+
+.scanner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#interactive.viewport {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#interactive.viewport > video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#interactive.viewport > canvas {
+    display: none;
+}
+
+#scan-result {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Scanner Modal Styles */
+.scanner-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.scanner-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--light);
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.scanner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.scanner-header button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.scanner-body {
+    position: relative;
+}
+
+#reader {
+    width: 100% !important;
+}
+
+#reader video {
+    border-radius: 8px !important;
+}
+
+#scan-result {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Scanner Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 640px;
+    position: relative;
+}
+
+.viewport {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.viewport > video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#interactive.viewport > canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#scan-result {
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    display: none;
+    text-align: center;
+    font-size: 16px;
+}
+
+.close-modal {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-modal:hover {
+    color: #000;
+}
+
+/* Scanner Button Styles */
+.scan-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #3C91E6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.scan-btn:hover {
+    background-color: #2d7bc7;
+}
+
+.scan-btn i {
+    font-size: 20px;
+}
+
+/* Scanner Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 640px;
+    position: relative;
+    border-radius: 8px;
+}
+
+.close-modal {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-modal:hover {
+    color: #000;
+}
+
+.viewport {
+    width: 100%;
+    height: 400px;
+    position: relative;
+    overflow: hidden;
+    margin: 20px 0;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+.viewport > video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#interactive.viewport > canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#interactive.viewport > canvas.drawingBuffer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#scan-result {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    display: none;
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid #ddd;
+}
+
+/* Dark mode support */
+body.dark .modal-content {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+body.dark #scan-result {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border-color: #404040;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+    .modal-content {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        border-radius: 0;
+    }
+
+    .viewport {
+        height: 60vh;
+    }
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 640px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.close-modal {
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #666;
+}
+
+.viewport {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    position: relative;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#interactive.viewport > video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#interactive.viewport > canvas.drawingBuffer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#scan-result {
+    padding: 15px;
+    margin-top: 10px;
+    display: none;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* Scanning guide overlay */
+.viewport::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 100px;
+    border: 2px solid #3C91E6;
+    border-radius: 10px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+/* Dark mode support */
+body.dark .modal-content {
+    background-color: #1a1a1a;
+    color: #fff;
+}
+
+body.dark #scan-result {
+    background-color: #2d2d2d;
+    color: #fff;
+}
+
+.status {
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.status.completed {
+    background: #e6f4ea;
+    color: #1e8449;
+}
+
+.status.pending {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.status.process {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+table tbody tr:hover {
+    background: #f9f9f9;
+    transition: 0.3s ease;
+}
+
+.view-all {
+    padding: 6px 12px;
+    background: #1a73e8;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.view-all:hover {
+    background: #053b81;
+}
+
+.todo-list .action-item {
+    margin-bottom: 3px;
+    padding: 8px;
+    background: var(--light);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.todo-list .action-item:hover {
+    background: var(--grey) !important;  /* Force grey background on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.todo-list .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--dark);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.todo-list .action-btn i {
+    font-size: 1.2rem;
+    color: var(--blue);
+}
+
+/* Ensure last item has no margin */
+.todo-list .action-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Dark mode specific styles */
+body.dark .todo-list .action-item {
+    background: var(--dark);
+}
+
+body.dark .todo-list .action-item:hover {
+    background: var(--grey);
+}
+
+body.dark .todo-list .action-btn {
+    color: var(--light);
+}
+
+body.dark .todo-list .action-btn i {
+    color: var(--blue);
+}
+
+/* Quick Actions dark mode styles */
+.todo-list .action-item {
+    margin-bottom: 3px;
+    padding: 8px;
+    background: transparent;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.todo-list .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    width: 100%;
+}
+
+/* Dark mode styles - make text white */
+body.dark .todo-list .action-btn {
+    color: #ffffff !important; /* Force white text in dark mode */
+}
+
+body.dark .todo-list .action-btn i {
+    color: var(--blue); /* Keep icon color */
+}
+
+/* Remove any borders and backgrounds */
+.todo-list .action-item,
+.todo-list .action-btn {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.quick-actions .action-btn:hover {
+    background: var(--grey) !important;  /* Change from blue to gray */
+    color: var(--dark);  /* Maintain text contrast */
+}
+
+/* Keep icon colors consistent on hover */
+.quick-actions .action-btn:hover i {
+    color: var(--blue);
+}
+
+/* Dark mode adjustments */
+body.dark .quick-actions .action-btn:hover {
+    color: var(--light);  /* Keep text visible in dark mode */
+}
+
+/* Quick Actions buttons in dark mode */
+body.dark .quick-actions .action-btn {
+    border: none;  /* Remove white border */
+    background: var(--dark-alt);  /* Match dark mode background */
+}
+
+body.dark .quick-actions .action-btn:hover {
+    background: var(--grey);
+    color: var(--light);
+}
+
+/* Quick Actions buttons base style */
+.quick-actions .action-btn {
+    border: none;  /* Remove border completely */
+    background: var(--blue);  /* For Add New Item */
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    color: var(--light);
+}
+
+/* Dark background for Review Requests and Scan Barcode */
+.quick-actions .action-btn.dark-btn {
+    background: var(--dark-alt);
+}
+
+/* Dark mode specific styles */
+body.dark .quick-actions .action-btn {
+    border: none;
+    box-shadow: none;  /* Remove any box shadow */
+    background: var(--dark-alt);
+}
+
+body.dark .quick-actions .action-btn:hover {
+    background: var(--grey);
+}
+
+/* Quick Actions Container */
+.quick-actions {
+    padding: 20px;
+    border-radius: 15px;
+    background: var(--light);
+    transition: all 0.3s ease;
+}
+
+body.dark .quick-actions {
+    background: var(--dark);
+}
+
+/* Quick Actions Title */
+.quick-actions h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--dark);
+}
+
+body.dark .quick-actions h2 {
+    color: var(--light);
+}
+
+/* Quick Actions Buttons */
+.quick-actions .action-btn {
+    border: none;
+    margin-bottom: 15px;
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: #1a1a1a;  /* Dark color for both modes */
+    color: #ffffff;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.quick-actions .action-btn i {
+    color: #ffffff;
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+/* Add New Item Button */
+.quick-actions .action-btn.add-new {
+    background: #3C91E6;
+}
+
+/* Review Requests Button */
+.quick-actions .action-btn.review {
+    background:#3C91E6;
+}
+
+/* Scan Barcode Button */
+.quick-actions .action-btn.scan {
+    background: #3C91E6;
+}
+
+/* Hover Effects */
+.quick-actions .action-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+
+/* Dark Mode Specific Styles */
+body.dark .quick-actions .action-btn {
+    background: #3C91E6;  /* Slightly darker blue for dark mode */
+}
+
+/* Maintain white text and icons in both modes */
+.quick-actions .action-btn,
+.quick-actions .action-btn i,
+body.dark .quick-actions .action-btn,
+body.dark .quick-actions .action-btn i {
+    color: #ffffff;
+}
+
+/* Quick Actions Container */
+.quick-actions {
+    padding: 20px;
+    border-radius: 15px;
+}
+
+/* Quick Actions Title */
+.quick-actions h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+body.dark .quick-actions h2 {
+    color: #ffffff;
+}
+
+/* Quick Actions Buttons - Single Color Design */
+.quick-actions .action-btn,
+body.dark .quick-actions .action-btn {
+    border: none;
+    margin-bottom: 15px;
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 10px;
+    background: #3C91E6;  /* Modern blue color */
+    color: #ffffff;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+}
+
+/* Hover Effects for both modes */
+.quick-actions .action-btn:hover,
+body.dark .quick-actions .action-btn:hover {
+    transform: translateY(-2px);
+    background: #2563eb;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+/* Icons for both modes */
+.quick-actions .action-btn i,
+body.dark .quick-actions .action-btn i {
+    color: #ffffff;
+    margin-right: 12px;
+    font-size: 1.2rem;
+}
+
+/* Quick Actions Buttons - Light Mode */
+.quick-actions .action-btn {
+    border: none;
+    margin-bottom: 15px;
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 10px;
+    background: #3a7abd;
+    color: #ffffff;  /* White text for light mode */
+    font-size: 1.1rem;
+    font-family: 'Poppins', sans-serif;  /* Added font family */
+    font-weight: 500;  /* Regular weight */
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+/* Quick Actions Title */
+.quick-actions h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+/* Dark Mode Specific Styles */
+body.dark .quick-actions .action-btn {
+    background: #3a7abd;
+    color: #000000 !important;  /* Dark text in dark mode */
+}
+
+body.dark .quick-actions .action-btn i {
+    color: #000000;  /* Dark icons in dark mode */
+}
+
+/* Hover Effects */
+body.dark .quick-actions .action-btn:hover {
+    background: #2d2d2d;  /* Darker background on hover */
+    color: #ffffff !important;  /* White text on hover */
+}
+
+body.dark .quick-actions .action-btn:hover i {
+    color: #ffffff;  /* White icons on hover */
+}
+
+/* General Hover Effect */
+.quick-actions .action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.viewport {
+    width: 640px;
+    height: 480px;
+    max-width: 90vw;
+    max-height: 90vh;
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.viewport video, .viewport canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.drawingBuffer {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.viewport {
+    background: rgba(0, 0, 0, 0.9);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.scan-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 20px;
+}
+
+.scan-frame {
+    position: relative;
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.scan-frame video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scan-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid #3498db;
+    border-radius: 12px;
+}
+
+.scan-corners {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.scan-corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #3498db;
+}
+
+.top-left {
+    top: 20px;
+    left: 20px;
+    border-right: 0;
+    border-bottom: 0;
+}
+
+.top-right {
+    top: 20px;
+    right: 20px;
+    border-left: 0;
+    border-bottom: 0;
+}
+
+.bottom-left {
+    bottom: 20px;
+    left: 20px;
+    border-right: 0;
+    border-top: 0;
+}
+
+.bottom-right {
+    bottom: 20px;
+    right: 20px;
+    border-left: 0;
+    border-top: 0;
+}
+
+.scan-text {
+    color: white;
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.close-scanner {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.close-scanner:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 
