@@ -8,6 +8,7 @@ import {
   getItem,
   postItem,
   putItem,
+  patchItem,
   deleteItem,
 } from "../../controllers/itemController.js";
 
@@ -22,6 +23,9 @@ router.post("/", postItem);
 
 // Update an item by ID
 router.put("/:item_id", putItem);
+
+// Patch an item by ID
+router.patch("/:itemId", patchItem);
 
 // Delete an item by ID
 router.delete("/:item_id", deleteItem);

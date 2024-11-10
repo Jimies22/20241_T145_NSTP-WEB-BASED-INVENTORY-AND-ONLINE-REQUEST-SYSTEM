@@ -1,30 +1,50 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style/login.css";
-//import background from "../style/image/nstp_cover.png";
 import logo from "../style/image/nstp_logo.png";
+import { authConfig } from "../config/auth.config";
 
 function Login() {
-  useEffect(() => {
-    // Initialize Google Sign-In API
-    window.google?.accounts.id.initialize({
-      client_id:
-        "941942178577-6i12rtiomnbbfgha49lna53lpbsggcbf.apps.googleusercontent.com", // Replace with your actual Client ID
-      callback: handleCredentialResponse,
-    });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    window.google?.accounts.id.renderButton(
-      document.getElementById("google-signin-btn"),
-      {
-        theme: "outline",
-        size: "large",
-        type: "standard",
-        shape: "rectangular",
-        logo_alignment: "center",
-        text: "signin_with",
-        width: "305",
-      }
-    );
+  useEffect(() => {
+    // Load Google Sign-In script
+    const loadGoogleScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+
+      script.onload = () => {
+        // Initialize Google Sign-In API after script loads
+        window.google.accounts.id.initialize({
+          client_id:
+            "941942178577-6i12rtiomnbbfgha49lna49lpbsggcbf.apps.googleusercontent.com", // Your client ID
+          callback: handleCredentialResponse,
+        });
+
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-btn"),
+          {
+            theme: "outline",
+            size: "large",
+            type: "standard",
+            shape: "rectangular",
+            logo_alignment: "center",
+            text: "signin_with",
+            width: "305",
+          }
+        );
+      };
+    };
+
+    loadGoogleScript();
 
     // Load reCAPTCHA v2 on load
     const loadRecaptcha = () => {
@@ -42,19 +62,55 @@ function Login() {
     window.location.href = "/dashboard";
   };
 
-  const onSubmit = (event) => {
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const onSubmit = async (event) => {
     event.preventDefault();
-    const recaptchaResponse = window.grecaptcha.getResponse();
-    if (!recaptchaResponse) {
-      alert("Please complete the reCAPTCHA.");
-      return;
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch(authConfig.login, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email.toLowerCase(),
+          password: formData.password,
+        }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // Store the token
+      localStorage.setItem("adminToken", data.data.token);
+
+      // Store admin info
+      localStorage.setItem("adminInfo", JSON.stringify(data.data.admin));
+
+      // Redirect to dashboard
+      window.location.href = "/admin/dashboard";
+    } catch (err) {
+      setError(err.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    console.log("Form submitted with reCAPTCHA response:", recaptchaResponse);
-    // Redirect or proceed with authentication
   };
 
   return (
-    <div className="nstp_bg">
+    <div className="login-container">
+      <div className="nstp_bg"></div>
       <div className="logo">
         <img src={logo} alt="NSTP Logo" className="nstp_logo" />
         <div className="header-text">
@@ -71,60 +127,47 @@ function Login() {
           <div className="card text-center">
             <div className="card-body">
               <h1>WELCOME</h1>
-              <div>
-                <div className="form-floating mb-4">
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="floatingInput"
-                    placeholder="name@example.com"
-                    required
-                  />
-                  <label htmlFor="floatingInput">
-                    <i className="bi bi-person"></i> Email address
-                  </label>
-                </div>
-                <div className="form-floating mb-4">
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="floatingPassword"
-                    placeholder="Password"
-                    required
-                  />
-                  <label htmlFor="floatingPassword">
-                    <i className="bi bi-key"></i> Password
-                  </label>
-                </div>
-                <input type="checkbox" id="checkbox" />
-                <label htmlFor="checkbox" className="checkbox">
-                  Keep me logged in
+              {error && <div className="alert alert-danger">{error}</div>}
+
+              <div className="form-floating mb-4">
+                <input
+                  type="email"
+                  className="form-control"
+                  id="floatingInput"
+                  placeholder="name@example.com"
+                  required
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+                <label htmlFor="floatingInput">
+                  <i className="bi bi-envelope"></i> Email address
                 </label>
-
-                <button type="submit" className="btn btn-primary mt-3">
-                  Login
-                </button>
-                <p className="line">
-                  ______________________________________________________________
-                </p>
-
-                {/* Google Sign-In Button Placeholder */}
-                <div
-                  id="google-signin-btn"
-                  className="d-flex justify-content-center mt-3 mb-5"
-                  style={{
-                    width: "80%",
-                    margin: "0 auto",
-                    transform: "scale(1.2)",
-                  }}
-                ></div>
-
-                {/* Google reCAPTCHA v2 Checkbox */}
-                <div
-                  className="g-recaptcha mt-3"
-                  data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
-                ></div>
               </div>
+
+              <div className="form-floating mb-4">
+                <input
+                  type="password"
+                  className="form-control"
+                  id="floatingPassword"
+                  placeholder="Password"
+                  required
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+                <label htmlFor="floatingPassword">
+                  <i className="bi bi-key"></i> Password
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-primary mt-3"
+                disabled={loading}
+              >
+                {loading ? "Logging in..." : "Login"}
+              </button>
             </div>
           </div>
         </div>

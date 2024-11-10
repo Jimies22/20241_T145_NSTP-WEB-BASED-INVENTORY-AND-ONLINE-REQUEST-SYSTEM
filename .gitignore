@@ -1,5 +1,6 @@
 # exclude node_modules
 node_modules/
+./server/node_modules/
 
 # Log files
 logs/
@@ -8,7 +9,7 @@ npm-debug.log*
 
 # Environment variables
 .env
-
+./server/.env
 # OS-generated files
 .DS_Store
 

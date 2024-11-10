@@ -139,17 +139,6 @@ p {
 
 .login-container {
   height: 100vh; /* Make the container full height */
-  background: radial-gradient(
-      circle at top right,
-      rgba(15, 28, 166, 0.919),
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at bottom center,
-      rgba(164, 16, 23, 0.775),
-      transparent 45%
-    ),
-    url("../style/image/nstp_cover.png") no-repeat center center;
   background-size: cover; /* Cover the entire container */
   background-position: center; /* Center the background image */
   display: flex; /* Use flexbox for centering content */
@@ -174,7 +163,7 @@ p {
       rgba(164, 16, 23, 0.775),
       transparent 45%
     ),
-    url("../style/image/nstp_cover.png") no-repeat center center;
+    url("../style/image/nstp_cover.png") no-repeat center center; /* Absolute path from public directory */
   background-size: cover; /* Show the image in its original size, contain it within the viewport */
   background-attachment: fixed; /* Keep the image fixed on scroll */
   background-position: center; /* Keep it centered */

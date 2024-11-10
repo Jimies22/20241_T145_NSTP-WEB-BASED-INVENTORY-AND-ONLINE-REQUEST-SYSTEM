@@ -11,9 +11,6 @@
 	<link rel="stylesheet" href="overlay.css">
 
 	<title>User</title>
-
-	<!-- Add in the head section -->
-	<script src="js/notifications.js"></script>
 </head>
 <body>
 
@@ -222,6 +219,7 @@
 				// Get current items from localStorage
 				let requestedItems = JSON.parse(localStorage.getItem('requestedItems')) || [];
 				let canceledItems = JSON.parse(localStorage.getItem('canceledItems')) || [];
+
 
 				// Find the item to cancel
 				const itemIndex = requestedItems.findIndex(item => item.id === itemId);
