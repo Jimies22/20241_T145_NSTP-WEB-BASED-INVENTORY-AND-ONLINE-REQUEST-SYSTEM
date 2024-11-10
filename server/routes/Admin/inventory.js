@@ -1,5 +1,6 @@
 // inventory
 import { Router } from "express";
+import { authenticateToken } from "../../middleware/authMiddleware.js";
 const router = Router();
 
 // import controller functions
@@ -11,6 +12,9 @@ import {
   patchItem,
   deleteItem,
 } from "../../controllers/itemController.js";
+
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
 
 // Get item list
 router.get("/", getItems);

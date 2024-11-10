@@ -8,10 +8,20 @@ import { createInitialAdmin } from "./controllers/loginController.js";
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB once
+// Enhanced MongoDB connection with better error handling
 try {
-  await mongoose.connect(process.env.MONGODB);
-  console.log("DB connected successfully");
+  await mongoose.connect(process.env.MONGODB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  console.log("Connected to MongoDB Atlas successfully");
+
+  // Test database operations (from test.js)
+  const collections = await mongoose.connection.db.collections();
+  console.log("Available collections:");
+  collections.forEach((collection) => {
+    console.log(" -", collection.collectionName);
+  });
 } catch (error) {
   console.error("MongoDB connection error:", error);
   process.exit(1);
@@ -20,7 +30,7 @@ try {
 import { run as testDbConnection } from "./config/testDB.js";
 const app = express();
 
-// CORS configuration
+// Enhanced CORS configuration
 const corsOptions = {
   origin: ["http://localhost:3000", "http://127.0.0.1:5500"],
   methods: ["GET", "POST", "PUT", "DELETE"],
@@ -51,7 +61,16 @@ app.use("/api/admin/settings", settingsRoute);
 app.use("/api/admin/inventory", inventoryAdminRouter);
 app.use("/api/data/user", userRoute);
 
-// Error handling middleware
+// Backend connection test endpoint (from server.js)
+app.get("/api/test", (req, res) => {
+  res.json({
+    message: "Backend is connected!",
+    dbStatus:
+      mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+  });
+});
+
+// Enhanced error handling middleware
 app.use((err, req, res, next) => {
   console.error(`[Error] ${err.stack}`);
   res.status(500).json({
@@ -61,7 +80,21 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
+// MongoDB connection event handlers
+mongoose.connection.on("error", (err) => {
+  console.error("MongoDB connection error:", err);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.log("MongoDB disconnected");
+});
+
+process.on("SIGINT", async () => {
+  await mongoose.connection.close();
+  process.exit(0);
+});
+
+// Start server with enhanced initialization
 app.listen(PORT, async () => {
   try {
     console.log(`Server is running on port ${PORT}`);
