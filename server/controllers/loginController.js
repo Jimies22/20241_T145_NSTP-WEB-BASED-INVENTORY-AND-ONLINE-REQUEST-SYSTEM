@@ -5,8 +5,47 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
-// Now you can use it
 const JWT_SECRET = process.env.JWT_SECRET;
+const SALT_ROUNDS = 10; // for bcrypt
+
+// Helper function to hash password
+const hashPassword = async (password) => {
+  try {
+    const salt = await bcrypt.genSalt(SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+  } catch (error) {
+    console.error("Password hashing error:", error);
+    throw new Error("Password hashing failed");
+  }
+};
+
+// Function to create initial admin (use this once to set up admin)
+const createInitialAdmin = async () => {
+  try {
+    // Check if admin already exists
+    const existingAdmin = await Admin.findOne({ email: "admin@example.com" });
+    if (existingAdmin) {
+      console.log("Admin already exists");
+      return;
+    }
+
+    // Hash the password
+    const hashedPassword = await hashPassword("admin123"); // Change this password
+
+    // Create new admin
+    const newAdmin = new Admin({
+      email: "admin@example.com", // Change this email
+      password: hashedPassword,
+      role: "admin",
+    });
+
+    await newAdmin.save();
+    console.log("Initial admin created successfully");
+  } catch (error) {
+    console.error("Error creating initial admin:", error);
+  }
+};
 
 // Admin login
 const adminLogin = async (req, res) => {
@@ -72,51 +111,16 @@ const adminLogin = async (req, res) => {
   }
 };
 
-// Helper function to hash password for new admin creation
-const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
-};
-
-// Optional: Admin registration function
-const registerAdmin = async (req, res) => {
-  const { email, password } = req.body;
-
+// Function to update admin password
+const updateAdminPassword = async (adminId, newPassword) => {
   try {
-    // Check if admin already exists
-    const existingAdmin = await Admin.findOne({ email: email.toLowerCase() });
-
-    if (existingAdmin) {
-      return res.status(400).json({
-        success: false,
-        message: "Email already exists",
-      });
-    }
-
-    // Hash password
-    const hashedPassword = await hashPassword(password);
-
-    // Create new admin
-    const newAdmin = new Admin({
-      email,
-      password: hashedPassword,
-    });
-
-    await newAdmin.save();
-
-    return res.status(201).json({
-      success: true,
-      message: "Admin registered successfully",
-    });
+    const hashedPassword = await hashPassword(newPassword);
+    await Admin.findByIdAndUpdate(adminId, { password: hashedPassword });
+    return true;
   } catch (error) {
-    console.error("Registration error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Error during registration",
-      error: error.message,
-    });
+    console.error("Password update error:", error);
+    return false;
   }
 };
 
-// Add this at the bottom of the file
-export { adminLogin, hashPassword, registerAdmin };
+export { adminLogin, createInitialAdmin, updateAdminPassword };

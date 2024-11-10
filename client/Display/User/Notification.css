@@ -47,11 +47,6 @@ body {
 }
 
 
-
-.card{
-	
-}
-
 /* SIDEBAR */
 #sidebar {
 	position: fixed;
@@ -252,6 +247,18 @@ body {
 	outline: none;
 	border-radius: 0 36px 36px 0;
 	cursor: pointer;
+}
+.badge {
+	position: absolute;
+	top: -8px;
+	right: -8px;
+	background: #ff0000;
+	color: white;
+	border-radius: 50%;
+	padding: 2px 6px;
+	font-size: 12px;
+	min-width: 18px;
+	text-align: center;
 }
 #content nav .notification {
 	font-size: 20px;
@@ -623,8 +630,154 @@ body {
 	}
 	
 }
+.notification-list {
+	max-width: 800px;
+	margin: 20px auto;
+}
 
+.notification-item {
+	padding: 15px;
+	margin-bottom: 10px;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
 
+.notification-item.unread {
+	background: #f0f7ff;
+}
+
+.notification-icon {
+	margin-right: 15px;
+	font-size: 24px;
+}
+
+.notification-content {
+	flex-grow: 1;
+}
+
+.notification-title {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.notification-message {
+	color: #666;
+}
+
+.notification-time {
+	color: #999;
+	font-size: 0.8em;
+}
+
+/* Status-specific colors - update these to match dashboard */
+.booking .notification-icon { color: #3498db; }  /* Blue */
+.accepted .notification-icon { color: #2ecc71; }  /* Green */
+.rejected .notification-icon { color: #e74c3c; }  /* Red */
+.cancel-request .notification-icon { color: #e74c3c; }  /* Red */
+.canceled .notification-icon { color: #e74c3c; }  /* Red */
+.returned .notification-icon { color: #f1c40f; }  /* Yellow */
+
+.no-notifications {
+	text-align: center;
+	padding: 40px;
+	color: #666;
+}
+
+.no-notifications i {
+	font-size: 48px;
+	margin-bottom: 10px;
+	color: #999;
+}
+
+.notification-item {
+	transition: background-color 0.3s ease;
+}
+
+.notification-item:hover {
+	background-color: #f5f5f5;
+}
+
+.notification-item.unread {
+	border-left: 4px solid #3498db;
+}
+
+.notification-item .notification-time {
+	font-size: 0.8em;
+	color: #999;
+	margin-top: 5px;
+}
+
+/* Add these styles to your existing styles */
+.notification {
+	position: relative;
+}
+
+.notification .num {
+	position: absolute;
+	top: -6px;
+	right: -6px;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 2px solid var(--light);
+	background: var(--red);
+	color: var(--light);
+	font-weight: 700;
+	font-size: 12px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Add pulse animation for notifications */
+@keyframes pulse {
+	0% { transform: scale(1); }
+	50% { transform: scale(1.2); }
+	100% { transform: scale(1); }
+}
+
+.notification .num.pulse {
+	animation: pulse 0.5s ease-in-out;
+}
+
+/* Add these new styles */
+.notification .badge {
+	position: absolute;
+	top: -6px;
+	right: -6px;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 2px solid var(--light);
+	background: var(--red);
+	color: var(--light);
+	font-weight: 700;
+	font-size: 12px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.notification .badge.zero {
+	background: #808080; /* Gray color for zero notifications */
+}
+
+.trash-icon {
+	cursor: pointer;
+	margin-left: 10px;
+	font-size: 24px; /* Adjust size */
+	color: #e74c3c; /* Red color for visibility */
+	transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.trash-icon:hover {
+	transform: scale(1.1); /* Slightly enlarge on hover */
+	color: #c0392b; /* Darker red on hover */
+}
 
 
 

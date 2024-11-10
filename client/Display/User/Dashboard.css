@@ -266,6 +266,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+    
 }
 #content nav .profile img {
 	width: 36px;
@@ -1277,4 +1278,20 @@ body.dark .overlay-content {
     color: #333;
 }
 
+.badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff0000;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    min-width: 18px;
+    text-align: center;
+}
+ /* Add these new styles */
 
+.notification .badge.zero {
+    background: #808080; /* Gray color for zero notifications */
+}

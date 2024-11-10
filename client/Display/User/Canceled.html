@@ -10,101 +10,8 @@
 	<link rel="stylesheet" href="Canceled.css">
 
 	<title>Canceled Requests</title>
-	<style>
-		.status.canceled {
-			background: #ffadad;
-			color: #de3545;
-			padding: 5px 10px;
-			border-radius: 5px;
-		}
-		
-		table img {
-			width: 50px;
-			height: 50px;
-				object-fit: cover;
-		}
-
-		.no-items {
-			text-align: center;
-			padding: 40px;
-		}
-
-		.no-items i {
-			font-size: 48px;
-			color: #ccc;
-			margin-bottom: 16px;
-		}
-
-		.no-items p {
-			color: #666;
-		}
-
-		.canceled-requests {
-			width: 100%;
-			padding: 24px;
-			background: var(--light);
-			border-radius: 20px;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-		}
-
-		.canceled-requests table {
-			width: 100%;
-			border-collapse: collapse;
-		}
-
-		.canceled-requests table th,
-		.canceled-requests table td {
-			padding: 12px;
-			text-align: left;
-			border-bottom: 1px solid #eee;
-		}
-
-		.canceled-requests table img {
-			width: 36px;
-			height: 36px;
-			border-radius: 50%;
-			object-fit: cover;
-			margin-right: 10px;
-		}
-
-		.item-info {
-			display: flex;
-			align-items: center;
-			gap: 12px;
-		}
-
-		.item-info img {
-			width: 50px;
-			height: 50px;
-			object-fit: cover;
-			border-radius: 8px;
-		}
-
-		.status.canceled {
-			padding: 6px 12px;
-			border-radius: 20px;
-			font-size: 14px;
-			font-weight: 500;
-			background: #ffadad;
-			color: #de3545;
-		}
-
-		.empty-state {
-			text-align: center;
-			padding: 40px 0;
-		}
-
-		.empty-state i {
-			font-size: 48px;
-			color: #ccc;
-			margin-bottom: 16px;
-		}
-
-		.empty-state p {
-			color: #666;
-			font-size: 16px;
-		}
-	</style>
+	
+	<script src="../../js/notifications.js"></script>
 </head>
 <body>
 
@@ -174,10 +81,12 @@
 			</form>
 			<input type="checkbox" id="switch-mode" hidden>
 			<label for="switch-mode" class="switch-mode"></label>
-			<a href="Notification.html" class="notification">
-				<i class='bx bxs-bell' ></i>
-				<span class="num">8</span>
-			</a>
+			<div class="notification-container">
+				<a href="Notification.html" class="notification">
+					<i class='bx bxs-bell'></i>
+					<span class="badge" id="notification-count">0</span>
+				</a>
+			</div>
 			<a href="StaffProfile.html" class="profile">
 				<img src="img/Screen-Shot-2024-06-11-at-11.54.30-AM-e1718634535872.webp">
 			</a>
@@ -212,20 +121,28 @@
 				<div class="canceled-requests">
 					<div class="head">
 						<h3>Canceled Requests</h3>
-						<i class='bx bx-filter'></i>
+						<div class="filter-container">
+							<i class='bx bx-filter' id="filterIcon"></i>
+							<div class="filter-dropdown">
+								<div class="filter-option" data-sort="date-newest">Sort by Date (Newest)</div>
+								<div class="filter-option" data-sort="date-oldest">Sort by Date (Oldest)</div>
+								<div class="filter-option" data-sort="name-asc">Sort by Name (A-Z)</div>
+								<div class="filter-option" data-sort="name-desc">Sort by Name (Z-A)</div>
+							</div>
+						</div>
 					</div>
 					<div class="order">
 						<table>
 							<thead>
 								<tr>
 									<th>Item Description</th>
-									<th>Original Request Date</th>
-									<th>Canceled Date</th>
 									<th>Status</th>
+									<th>Canceled Date</th>
+									<th>Action</th>
 								</tr>
 							</thead>
 							<tbody id="canceled-items-list">
-								<!-- Canceled items will be inserted here dynamically -->
+								<!-- Items will be inserted here dynamically -->
 							</tbody>
 						</table>
 					</div>
@@ -238,96 +155,276 @@
 	
 
 	<script>
-		function updateCanceledTable() {
+		let currentSort = ''; // Track current sort type
+
+		document.addEventListener('DOMContentLoaded', function() {
+			console.log('Page loaded'); // Debug log
+			displayCanceledItems();
+
+			const filterIcon = document.getElementById('filterIcon');
+			const filterDropdown = document.querySelector('.filter-dropdown');
+			
+			// Toggle dropdown on icon click
+			filterIcon.addEventListener('click', function(e) {
+				e.stopPropagation();
+				filterDropdown.classList.toggle('show');
+			});
+
+			// Close dropdown when clicking outside
+			document.addEventListener('click', function(e) {
+				if (!filterDropdown.contains(e.target) && e.target !== filterIcon) {
+					filterDropdown.classList.remove('show');
+				}
+			});
+
+			// Handle filter options
+			document.querySelectorAll('.filter-option').forEach(option => {
+				option.addEventListener('click', function(e) {
+					e.stopPropagation();
+					const sortType = this.dataset.sort;
+					
+					// Remove active class from all options
+					document.querySelectorAll('.filter-option').forEach(opt => {
+						opt.classList.remove('active');
+					});
+					
+					// Add active class to clicked option
+					this.classList.add('active');
+					
+					// Sort items (your existing sort function)
+					sortItems(sortType);
+					
+					// Close dropdown
+					setTimeout(() => {
+						filterDropdown.classList.remove('show');
+					}, 150);
+				});
+			});
+
+			// Add notification count update
+			updateNotificationCount();
+
+			initializeNotifications();
+		});
+
+		function sortItems(sortType) {
+			const canceledItems = JSON.parse(localStorage.getItem('canceledItems')) || [];
+			
+			switch(sortType) {
+				case 'date-newest':
+					canceledItems.sort((a, b) => new Date(b.canceledAt) - new Date(a.canceledAt));
+					break;
+				case 'date-oldest':
+					canceledItems.sort((a, b) => new Date(a.canceledAt) - new Date(b.canceledAt));
+					break;
+				case 'name-asc':
+					canceledItems.sort((a, b) => a.title.localeCompare(b.title));
+					break;
+				case 'name-desc':
+					canceledItems.sort((a, b) => b.title.localeCompare(a.title));
+					break;
+			}
+
+			displayCanceledItems(canceledItems);
+		}
+
+		// Update the display function to accept sorted items
+		function displayCanceledItems(items = null) {
 			const tableBody = document.getElementById('canceled-items-list');
-			const canceledOrders = JSON.parse(localStorage.getItem('canceledOrders')) || [];
+			const canceledItems = items || JSON.parse(localStorage.getItem('canceledItems')) || [];
 			
-			console.log('Checking localStorage content:');
-			console.log('canceledOrders:', localStorage.getItem('canceledOrders'));
-			console.log('allOrders:', localStorage.getItem('orders')); // Check other related data
-			console.log('Number of canceled orders:', canceledOrders.length);
+			if (canceledItems.length === 0) {
+				tableBody.innerHTML = `
+					<tr>
+						<td colspan="4">
+							<div class="empty-state">
+								<i class='bx bx-calendar-x'></i>
+								<p>No canceled requests found</p>
+							</div>
+						</td>
+					</tr>
+				`;
+				return;
+			}
 			
-			tableBody.innerHTML = ''; // Clear existing rows
+			tableBody.innerHTML = '';
 			
-			if (canceledOrders.length === 0) {
-					tableBody.innerHTML = `
+			canceledItems.forEach(item => {
+				try {
+					const canceledDate = new Date(item.canceledAt).toLocaleDateString();
+					const row = `
 						<tr>
-							<td colspan="4" style="text-align: center; padding: 20px;">
-								<div class="no-items">
-									<i class='bx bx-package' style="font-size: 48px; color: #ccc; display: block; margin-bottom: 10px;"></i>
-									<p>No canceled requests found</p>
-								</div>
+							<td class="item-info">
+								<img src="${item.image || 'placeholder.jpg'}" alt="${item.title}">
+								<p>${item.title}</p>
+							</td>
+							<td><span class="status canceled">CANCELED</span></td>
+							<td>${canceledDate}</td>
+							<td>
+								<button class="delete-btn" onclick="deleteCanceledItem('${item.id}')">
+									<i class='bx bx-trash'></i>
+								</button>
 							</td>
 						</tr>
 					`;
-					return;
-			}
-			
-			// Sort canceled orders by date (most recent first)
-			canceledOrders.sort((a, b) => {
-				const dateA = new Date(a.canceledDate + ' ' + a.canceledTime);
-				const dateB = new Date(b.canceledDate + ' ' + b.canceledTime);
-				return dateB - dateA;
-			});
-			
-			canceledOrders.forEach(order => {
-				console.log('Processing order:', order);
-				
-				const row = `
-					<tr>
-						<td>
-							<div class="item-info">
-								<img src="${order.image || 'img/default-image.png'}" alt="${order.itemName || 'Item'}" 
-									 style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
-								<p>${order.itemName || 'Unknown Item'}</p>
-							</div>
-						</td>
-						<td>${order.originalDate || 'N/A'}</td>
-						<td>${order.canceledDate} ${order.canceledTime}</td>
-						<td><span class="status canceled">CANCELED</span></td>
-					</tr>
-				`;
-				tableBody.innerHTML += row;
+					tableBody.innerHTML += row;
+				} catch (error) {
+					console.error('Error creating row for item:', item, error);
+				}
 			});
 		}
 
-		// Modify the cancelRequest function to ensure proper data structure
-		function cancelRequest(order) {
-			const canceledOrders = JSON.parse(localStorage.getItem('canceledOrders')) || [];
-			
-			const canceledOrder = {
-				itemName: order.itemName,
-				image: order.image,
-				originalDate: order.requestDate || order.originalDate,
-				canceledDate: new Date().toLocaleDateString(),
-				canceledTime: new Date().toLocaleTimeString(),
-				status: 'CANCELED'  // Add explicit status
-			};
-			
-			console.log('Adding new canceled order:', canceledOrder);
-			canceledOrders.push(canceledOrder);
-			localStorage.setItem('canceledOrders', JSON.stringify(canceledOrders));
-			console.log('Updated canceledOrders in localStorage:', localStorage.getItem('canceledOrders'));
-		}
-
-		// Add this function to help with debugging
+		// Debug function to check localStorage
 		function checkLocalStorage() {
-			console.log('All localStorage keys:', Object.keys(localStorage));
+			console.log('All localStorage items:');
 			for (let i = 0; i < localStorage.length; i++) {
 				const key = localStorage.key(i);
 				console.log(`${key}:`, localStorage.getItem(key));
 			}
 		}
 
-		// Call both functions when page loads
-		document.addEventListener('DOMContentLoaded', function() {
-			console.log('Page loaded, checking storage and updating table...');
-			checkLocalStorage();
-			updateCanceledTable();
-		});
+		// Call debug function
+		checkLocalStorage();
 
-		// Refresh the table periodically (optional)
-		setInterval(updateCanceledTable, 30000); // Updates every 30 seconds
+		// Update the delete function
+		function deleteCanceledItem(itemId) {
+			if (!confirm('Are you sure you want to delete this canceled request?')) {
+				return;
+			}
+
+			try {
+				let canceledItems = JSON.parse(localStorage.getItem('canceledItems')) || [];
+				const itemToDelete = canceledItems.find(item => item.id === itemId);
+				
+				if (!itemToDelete) {
+					throw new Error('Item not found');
+				}
+				
+				// Remove the item
+				canceledItems = canceledItems.filter(item => item.id !== itemId);
+				localStorage.setItem('canceledItems', JSON.stringify(canceledItems));
+				
+				// Add to notifications
+				const notification = {
+					id: generateUniqueId(),
+					type: 'CANCELED_DELETE',
+					title: 'Request Deleted',
+					message: `The canceled request "${itemToDelete.title}" has been permanently deleted`,
+					timestamp: new Date().toISOString(),
+					read: false,
+					itemDetails: itemToDelete
+				};
+
+				// Get existing notifications and add new one
+				let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+				notifications.unshift(notification);
+
+				// Keep only the most recent notifications (e.g., last 50)
+				const maxNotifications = 50;
+				if (notifications.length > maxNotifications) {
+					notifications = notifications.slice(0, maxNotifications);
+				}
+
+				localStorage.setItem('notifications', JSON.stringify(notifications));
+				
+				// Update shared notification count in localStorage
+				const currentCount = parseInt(localStorage.getItem('notificationCount') || '0');
+				localStorage.setItem('notificationCount', currentCount + 1);
+				
+				// Show success notification
+				showNotification('Request deleted successfully', 'success');
+				
+				// Update notification count display
+				updateNotificationCount();
+				
+				// Refresh display
+				displayCanceledItems();
+				
+			} catch (error) {
+				console.error('Error deleting item:', error);
+					showNotification('Failed to delete request', 'error');
+			}
+		}
+
+		// Helper function to generate unique ID
+		function generateUniqueId() {
+			return Date.now().toString(36) + Math.random().toString(36).substr(2);
+		}
+
+		// Updated notification function to match other notifications styling
+		function showNotification(message, type = 'success') {
+			const notificationContainer = document.createElement('div');
+			notificationContainer.className = 'notification-popup';
+			
+			const icon = document.createElement('i');
+			icon.className = type === 'success' ? 'bx bx-check-circle' : 'bx bx-x-circle';
+			
+			const textContainer = document.createElement('div');
+			textContainer.className = 'notification-text';
+			
+			const title = document.createElement('span');
+			title.className = 'notification-title';
+			title.textContent = type === 'success' ? 'Success' : 'Error';
+			
+			const text = document.createElement('span');
+			text.className = 'notification-message';
+			text.textContent = message;
+			
+			textContainer.appendChild(title);
+			textContainer.appendChild(text);
+			
+			notificationContainer.appendChild(icon);
+			notificationContainer.appendChild(textContainer);
+			
+			document.body.appendChild(notificationContainer);
+			
+			// Add show class after a brief delay to trigger animation
+			setTimeout(() => {
+				notificationContainer.classList.add('show');
+			}, 10);
+			
+			// Remove notification after 3 seconds
+			setTimeout(() => {
+				notificationContainer.classList.remove('show');
+				setTimeout(() => {
+					notificationContainer.remove();
+				}, 300); // Wait for fade out animation
+			}, 3000);
+		}
+
+		// Update the notification count function
+		function updateNotificationCount() {
+			const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+			const unreadCount = notifications.filter(notification => !notification.read).length;
+			
+			// Update the count in localStorage
+			localStorage.setItem('notificationCount', unreadCount.toString());
+			
+			// Update the display
+			const countElement = document.getElementById('notification-count');
+			if (countElement) {
+				countElement.textContent = unreadCount;
+				
+				// Add animation class if count increased
+				countElement.classList.add('pulse');
+				setTimeout(() => {
+					countElement.classList.remove('pulse');
+				}, 500);
+			}
+		}
+
+		// Add this function to initialize notification handling
+		function initializeNotifications() {
+			// Initial count update
+			updateNotificationCount();
+			
+			// Listen for storage changes from other tabs/windows
+			window.addEventListener('storage', (e) => {
+				if (e.key === 'notifications' || e.key === 'notificationCount') {
+					updateNotificationCount();
+				}
+			});
+		}
 	</script>
 </body>
 </html>

@@ -15,7 +15,16 @@
 	<script src="js/notifications.js"></script>
 </head>
 <body>
-
+	<!-- Modal Structure -->
+	<div id="itemModal" class="modal" style="display: none;">
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<h2>Item Details</h2>
+			<p><strong>Item ID:</strong> <span id="modal-item-id"></span></p>
+			<p><strong>Item Description:</strong> <span id="modal-item-description"></span></p>
+			<p><strong>Date and Time Borrowed:</strong> <span id="modal-date-time"></span></p>
+		</div>
+	</div>
 
 	<!-- SIDEBAR -->
 	<section id="sidebar">
@@ -84,7 +93,7 @@
 			<label for="switch-mode" class="switch-mode"></label>
 			<a href="Notification.html" class="notification">
 				<i class='bx bxs-bell'></i>
-				<span class="num">0</span>
+				<span class="badge" id="notification-count">0</span>
 			</a>
 			<a href="StaffProfile.html" class="profile">
 				<img src="img/Screen-Shot-2024-06-11-at-11.54.30-AM-e1718634535872.webp">
@@ -173,9 +182,35 @@
 	<script src="script.js"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
-			const borrowedItems = JSON.parse(localStorage.getItem('borrowedItems')) || [];
+			// Mock data for borrowed items
+			const borrowedItems = [
+				{
+					id: '001',
+					image: 'img/item1.png',
+					title: 'Book Title 1',
+					status: 'Borrowed',
+					dateTimeBorrowed: '2023-10-01 10:00 AM'
+				},
+				{
+					id: '002',
+					image: 'img/item2.png',
+					title: 'Book Title 2',
+					status: 'Borrowed',
+					dateTimeBorrowed: '2023-10-02 11:00 AM'
+				},
+				{
+					id: '003',
+					image: 'img/item3.png',
+					title: 'Book Title 3',
+					status: 'Returned',
+					dateTimeBorrowed: '2023-10-03 12:00 PM'
+				}
+			];
+
 			const tableBody = document.getElementById('borrowed-items-list');
-			
+			const modal = document.getElementById('itemModal');
+			const closeModal = document.querySelector('.close');
+
 			borrowedItems.forEach(item => {
 				const row = `
 					<tr>
@@ -185,7 +220,7 @@
 						</td>
 						<td><span class="status R1">${item.status}</span></td>
 						<td>
-							<a href="#">
+							<a href="#" class="view-link" data-id="${item.id}">
 								<span class="status R2">view</span>
 							</a>
 						</td>
@@ -193,20 +228,34 @@
 				`;
 				tableBody.innerHTML += row;
 			});
+
+			// Event delegation for view links
+			tableBody.addEventListener('click', function(event) {
+				if (event.target.classList.contains('view-link')) {
+					event.preventDefault();
+					const itemId = event.target.getAttribute('data-id');
+					const item = borrowedItems.find(i => i.id === itemId);
+					if (item) {
+						document.getElementById('modal-item-id').textContent = item.id;
+						document.getElementById('modal-item-description').textContent = item.title;
+						document.getElementById('modal-date-time').textContent = item.dateTimeBorrowed;
+						modal.style.display = 'block';
+					}
+				}
+			});
+
+			// Close modal
+			closeModal.addEventListener('click', function() {
+				modal.style.display = 'none';
+			});
+
+			// Close modal when clicking outside of it
+			window.addEventListener('click', function(event) {
+				if (event.target === modal) {
+					modal.style.display = 'none';
+				}
+			});
 		});
-
-		// Update your return handling function
-		function handleReturn(itemId) {
-			// Your existing return logic
-			// ...
-
-			// Add notification for returned item
-			addNotification(
-				'returned',
-				itemTitle,
-				`You have returned ${itemTitle}`
-			);
-		}
 	</script>
 </body>
 </html>
