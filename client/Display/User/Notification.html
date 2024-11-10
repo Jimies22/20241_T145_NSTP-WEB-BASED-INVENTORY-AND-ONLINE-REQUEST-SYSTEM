@@ -9,87 +9,10 @@
 	<!-- My CSS -->
 	<link rel="stylesheet" href="Notification.css">
 
+	<!-- Add this line after your CSS links -->
+	<script src="js/notifications.js"></script>
+
 	<title>User</title>
-	<style>
-		.notification-list {
-			max-width: 800px;
-			margin: 20px auto;
-		}
-
-		.notification-item {
-			padding: 15px;
-			margin-bottom: 10px;
-			border-radius: 8px;
-			background: #fff;
-			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-			display: flex;
-			align-items: center;
-			cursor: pointer;
-		}
-
-		.notification-item.unread {
-			background: #f0f7ff;
-		}
-
-		.notification-icon {
-			margin-right: 15px;
-			font-size: 24px;
-		}
-
-		.notification-content {
-			flex-grow: 1;
-		}
-
-		.notification-title {
-			font-weight: bold;
-			margin-bottom: 5px;
-		}
-
-		.notification-message {
-			color: #666;
-		}
-
-		.notification-time {
-			color: #999;
-			font-size: 0.8em;
-		}
-
-		/* Status-specific colors */
-		.booking .notification-icon { color: #3498db; }
-		.accepted .notification-icon { color: #2ecc71; }
-		.canceled .notification-icon { color: #e74c3c; }
-		.returned .notification-icon { color: #f1c40f; }
-
-		.no-notifications {
-			text-align: center;
-			padding: 40px;
-			color: #666;
-		}
-
-		.no-notifications i {
-			font-size: 48px;
-			margin-bottom: 10px;
-			color: #999;
-		}
-
-		.notification-item {
-			transition: background-color 0.3s ease;
-		}
-
-		.notification-item:hover {
-			background-color: #f5f5f5;
-		}
-
-		.notification-item.unread {
-			border-left: 4px solid #3498db;
-		}
-
-		.notification-item .notification-time {
-			font-size: 0.8em;
-			color: #999;
-			margin-top: 5px;
-		}
-	</style>
 </head>
 <body>
 
@@ -159,11 +82,16 @@
 			</form>
 			<input type="checkbox" id="switch-mode" hidden>
 			<label for="switch-mode" class="switch-mode"></label>
-			<a href="#" class="notification">
-				<i class='bx bxs-bell' ></i>
-				<span class="num">8</span>
-			</a>
-			<a href="#" class="profile">
+			<div class="notification-container">
+				<a href="Notification.html" class="notification">
+					<i class='bx bxs-bell'></i>
+					<span class="badge" id="notification-count">0</span>
+				</a>
+				<div class="notification-dropdown" id="notification-dropdown">
+					<!-- Notifications will be populated here -->
+				</div>
+			</div>
+			<a href="StaffProfile.html" class="profile">
 				<img src="img/Screen-Shot-2024-06-11-at-11.54.30-AM-e1718634535872.webp">
 			</a>
 		</nav>
@@ -178,11 +106,12 @@
 						<!-- ... existing breadcrumb ... -->
 					</ul>
 				</div>
-				<div class="right">
+				<div class="right" style="display: flex; align-items: center;">
 					<button class="btn-download" onclick="markAllNotificationsAsRead()">
 						<i class='bx bx-check-double'></i>
 						<span class="text">Mark all as read</span>
 					</button>
+					<i class='bx bx-trash trash-icon' onclick="deleteAllNotifications()"></i>
 				</div>
 			</div>
 
@@ -197,17 +126,22 @@
 
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
-		// Get notifications from localStorage
+		// Initialize notification count first
 		const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+		const notificationCounter = document.getElementById('notification-count');
+		if (notificationCounter) {
+			notificationCounter.textContent = notifications.filter(n => !n.read).length;
+		}
 
-		function createNotificationElement(notification) {
+		function createNotificationElement(notification, index) {
 			const timeAgo = getTimeAgo(notification.timestamp);
 			return `
-				<div class="notification-item ${notification.read ? '' : 'unread'} ${notification.type}">
+				<div class="notification-item ${notification.read ? '' : 'unread'} ${notification.type}" data-index="${index}">
+					<input type="checkbox" class="select-notification checkbox-spacing" data-index="${index}" onclick="toggleNotificationSelection(${index})">
 					<div class="notification-icon">
 						${getIconForType(notification.type)}
 					</div>
-					<div class="notification-content">
+					<div class="notification-content" onclick="toggleCheckboxAndMarkAsRead(${index})">
 						<div class="notification-title">${notification.title}</div>
 						<div class="notification-message">${notification.message}</div>
 						<div class="notification-time">${timeAgo}</div>
@@ -219,11 +153,11 @@
 		function getIconForType(type) {
 			const icons = {
 				'booking': '<i class="bx bx-package"></i>',
-				'canceled': '<i class="bx bx-x-circle"></i>',
-				'returned': '<i class="bx bx-check-circle"></i>',
 				'accepted': '<i class="bx bx-check-double"></i>',
 				'rejected': '<i class="bx bx-x"></i>',
-				'cancel-request': '<i class="bx bx-block"></i>'
+				'cancel-request': '<i class="bx bx-block"></i>',
+				'canceled': '<i class="bx bx-x-circle"></i>',
+				'returned': '<i class="bx bx-check-circle"></i>'
 			};
 			return icons[type] || '<i class="bx bx-bell"></i>';
 		}
@@ -258,12 +192,19 @@
 				`;
 			} else {
 				notificationList.innerHTML = notifications
-					.map(notification => createNotificationElement(notification))
+					.map((notification, index) => createNotificationElement(notification, index))
 					.join('');
+			}
+			updateNotificationCount();
+		}
+
+		function updateNotificationCount() {
+			const unreadCount = notifications.filter(n => !n.read).length;
+			if (notificationCounter) {
+				notificationCounter.textContent = unreadCount;
 			}
 		}
 
-		// Function to mark all notifications as read
 		window.markAllNotificationsAsRead = function() {
 			notifications.forEach(notification => notification.read = true);
 			localStorage.setItem('notifications', JSON.stringify(notifications));
@@ -271,34 +212,51 @@
 			updateNotificationCount();
 		};
 
-		function updateNotificationCount() {
-			const unreadCount = notifications.filter(n => !n.read).length;
-			const numElement = document.querySelector('.notification .num');
-			if (unreadCount > 0) {
-				numElement.style.display = 'block';
-				numElement.textContent = unreadCount;
-			} else {
-				numElement.style.display = 'none';
+		window.markNotificationAsRead = function(index) {
+			const notification = notifications[index];
+			if (!notification.read) {
+				notification.read = true; // Mark as read
+				localStorage.setItem('notifications', JSON.stringify(notifications));
+				displayNotifications();
+				updateNotificationCount();
 			}
-		}
+		};
 
-		// Add click event listeners to notification items
-		document.getElementById('notificationList').addEventListener('click', function(e) {
-			const notificationItem = e.target.closest('.notification-item');
-			if (notificationItem) {
-				const index = Array.from(notificationItem.parentElement.children).indexOf(notificationItem);
-				if (index !== -1 && !notifications[index].read) {
-					notifications[index].read = true;
-					localStorage.setItem('notifications', JSON.stringify(notifications));
-					notificationItem.classList.remove('unread');
-					updateNotificationCount();
+		window.toggleNotificationSelection = function(index) {
+			const checkbox = document.querySelector(`.select-notification[data-index="${index}"]`);
+			if (checkbox) {
+				const notificationItem = checkbox.closest('.notification-item');
+				if (checkbox.checked) {
+						notificationItem.classList.add('selected');
+				} else {
+						notificationItem.classList.remove('selected');
 				}
 			}
-		});
+		};
 
-		// Initial display
+		window.deleteAllNotifications = function() {
+			const selectedNotifications = document.querySelectorAll('.notification-item.selected');
+			const indicesToDelete = Array.from(selectedNotifications).map(item => parseInt(item.getAttribute('data-index')));
+			indicesToDelete.sort((a, b) => b - a); // Sort in descending order to avoid index shifting issues
+
+			indicesToDelete.forEach(index => {
+				notifications.splice(index, 1); // Remove the notification
+			});
+			localStorage.setItem('notifications', JSON.stringify(notifications));
+			displayNotifications();
+			updateNotificationCount();
+		};
+
+		window.toggleCheckboxAndMarkAsRead = function(index) {
+			const checkbox = document.querySelector(`.select-notification[data-index="${index}"]`);
+			if (checkbox) {
+				checkbox.checked = !checkbox.checked;
+				toggleNotificationSelection(index);
+			}
+			markNotificationAsRead(index);
+		};
+
 		displayNotifications();
-		updateNotificationCount();
 	});
 	</script>
 </body>

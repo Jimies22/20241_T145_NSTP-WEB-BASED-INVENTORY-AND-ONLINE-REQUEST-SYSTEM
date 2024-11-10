@@ -9,6 +9,9 @@
 	<!-- My CSS -->
 	<link rel="stylesheet" href="Borrowed.css">
 
+	<!-- Add this line after your CSS links -->
+	<script src="js/notifications.js"></script>
+
 	<title>User</title>
 </head>
 <body>
@@ -86,8 +89,8 @@
 			<input type="checkbox" id="switch-mode" hidden>
 			<label for="switch-mode" class="switch-mode"></label>
 			<a href="Notification.html" class="notification">
-				<i class='bx bxs-bell' ></i>
-				<span class="num">8</span>
+				<i class='bx bxs-bell'></i>
+				<span class="badge" id="notification-count">0</span>
 			</a>
 			<a href="StaffProfile.html" class="profile">
 				<img src="img/Screen-Shot-2024-06-11-at-11.54.30-AM-e1718634535872.webp">
@@ -128,6 +131,7 @@
 									<th>User</th>
 									<th>Date Order</th>
 									<th>Status</th>
+									<th>Items Borrowed</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -137,31 +141,17 @@
 										<p>John Doe</p>
 									</td>
 									<td>01-10-2021</td>
-									<td><span class="status R1">Returned</span></td>
+									<td><span class="status accepted">Accepted</span></td>
+									<td>Uniform #123, Belt #456</td>
 								</tr>
 								<tr>
 									<td>
 										<img src="img/people.png" alt="User Image">
-										<p>John Doe</p>
+										<p>Jane Smith</p>
 									</td>
-									<td>01-10-2021</td>
-									<td><span class="status R2">Canceled</span></td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>John Doe</p>
-									</td>
-									<td>01-10-2021</td>
+									<td>01-09-2021</td>
 									<td><span class="status R1">Returned</span></td>
-								</tr>
-								<tr>
-									<td>
-										<img src="img/people.png" alt="User Image">
-										<p>John Doe</p>
-									</td>
-									<td>01-10-2021</td>
-									<td><span class="status R1">Returned</span></td>
+									<td>Boots #789</td>
 								</tr>
 								<tr>
 									<td>
@@ -170,6 +160,25 @@
 									</td>
 									<td>01-10-2021</td>
 									<td><span class="status R1">Returned</span></td>
+									<td>Uniform #123, Belt #456</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>John Doe</p>
+									</td>
+									<td>01-10-2021</td>
+									<td><span class="status R1">Returned</span></td>
+									<td>Uniform #123, Belt #456</td>
+								</tr>
+								<tr>
+									<td>
+										<img src="img/people.png" alt="User Image">
+										<p>John Doe</p>
+									</td>
+									<td>01-10-2021</td>
+									<td><span class="status R1">Returned</span></td>
+									<td>Uniform #123, Belt #456</td>
 								</tr>
 							</tbody>
 						</table>
@@ -213,6 +222,16 @@
 	<!-- CONTENT -->
 	
 
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Initialize notification count
+			const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+			const notificationCounter = document.getElementById('notification-count');
+			if (notificationCounter) {
+				notificationCounter.textContent = notifications.filter(n => !n.read).length;
+			}
+		});
+	</script>
 	<script src="script.js"></script>
 </body>
 </html>
