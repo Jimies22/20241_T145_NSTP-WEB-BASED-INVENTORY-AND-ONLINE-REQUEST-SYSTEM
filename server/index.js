@@ -1,16 +1,18 @@
 import express, { json, urlencoded } from "express";
-import { connect } from "mongoose";
-import { config } from "dotenv";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 import cors from "cors";
+const PORT = process.env.PORT;
 
-config(); // Load environment variables
+mongoose.connect(process.env.MONGODB);
+dotenv.config(); // Load environment variables
 import { run as testDbConnection } from "./config/testDB.js"; // Import the testdb connection
 const app = express();
-const PORT = process.env.PORT;
-connect(process.env.MONGODB);
+
+mongoose.connect(process.env.MONGODB);
 
 // second test
-if (connect(process.env.MONGODB)) {
+if (mongoose.connect(process.env.MONGODB)) {
   console.log("DB connected");
 } else {
   console.log("connection error");

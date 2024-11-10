@@ -1,31 +1,32 @@
-//import Student from "../models/usertudent.js";
+//import Admin from "../models/admin.js";
 
-const getStudents = async (req, res) => {
+const getAdmins = async (req, res) => {
   try {
-    const students = await Student.find();
-    res.status(200).json(students);
+    const admins = await Admin.find();
+    res.status(200).json(admins);
   } catch (error) {
     console.log(error);
   }
 };
-const getStudent = async (req, res) => {
+
+const getAdmin = async (req, res) => {
   try {
-    const student = await Student.findById(req.params.id);
-    res.status(200).json(student);
+    const admin = await Admin.findById(req.params.id);
+    res.status(200).json(admin);
   } catch (error) {
     console.log(error);
   }
 };
 
 // POST
-const postStudent = async (req, res) => {
+const postAdmin = async (req, res) => {
   try {
-    const newStudent = new Student(req.body);
-    const saveStudent = await newStudent.save();
-    res.status(200).send(saveStudent);
+    const newAdmin = new Admin(req.body);
+    const saveAdmin = await newAdmin.save();
+    res.status(200).send(saveAdmin);
   } catch (error) {
     console.log(error);
   }
 };
 
-export { getStudents, getStudent, postStudent };
+export { getAdmins, getAdmin, postAdmin };

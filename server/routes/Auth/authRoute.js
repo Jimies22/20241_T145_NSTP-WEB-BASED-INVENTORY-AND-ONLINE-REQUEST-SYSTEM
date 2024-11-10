@@ -1,5 +1,9 @@
 import { Router } from "express";
 const router = Router();
+import loginController from "../../controllers/loginController.js";
+
+// Should be in your backend routes file
+router.post("/api/auth/login", loginController);
 
 // User login
 router.post("/login", (req, res) => {

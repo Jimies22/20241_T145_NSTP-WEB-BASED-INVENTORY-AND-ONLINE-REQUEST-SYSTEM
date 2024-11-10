@@ -76,20 +76,62 @@ const putItem = async (req, res) => {
   }
 };
 
-const deleteItem = async (req, res) => {
+const patchItem = async (req, res) => {
   const { itemId } = req.params;
+  const updates = req.body; // Contains only the fields to be updated
+
   try {
-    const deletedItem = await itemModel.findOneAndDelete({
-      item_id: itemId,
-    });
-    if (deletedItem) {
-      res.send({ data: `Item with item_id ${itemId} deleted successfully` });
+    const updatedItem = await itemModel.findOneAndUpdate(
+      { item_id: itemId },
+      { $set: updates },
+      { new: true }
+    );
+
+    if (updatedItem) {
+      res.send({
+        data: `Item with item_id ${itemId} patched successfully`,
+        updatedItem,
+      });
     } else {
       res.status(404).send({ error: `Item with item_id ${itemId} not found` });
     }
   } catch (error) {
-    res.status(500).send({ error: "Failed to delete item" });
+    res.status(500).send({ error: "Failed to patch item" });
   }
 };
 
-export { getItems, getItem, postItem, putItem, deleteItem };
+const deleteItem = async (req, res) => {
+  const { item_id } = req.params; // Match the parameter name with getItem
+
+  if (!item_id) {
+    return res.status(400).send({ error: "Item ID is required" });
+  }
+
+  try {
+    const deletedItem = await itemModel.findOneAndDelete({ item_id }); // Match the query structure with getItem
+
+    if (!deletedItem) {
+      return res.status(404).send({
+        success: false,
+        error: `Item with item_id ${item_id} not found`,
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+      data: {
+        message: `Item with item_id ${item_id} deleted successfully`,
+        deletedItem,
+      },
+    });
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    return res.status(500).send({
+      success: false,
+      error: "Failed to delete item",
+      details: error.message,
+    });
+  }
+};
+
+export { getItems, getItem, postItem, putItem, patchItem, deleteItem };
