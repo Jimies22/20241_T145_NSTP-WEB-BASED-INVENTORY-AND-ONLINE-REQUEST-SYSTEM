@@ -1,16 +1,35 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../style/login.css";
-import logo from "../style/image/nstp_logo.png";
-import { authConfig } from "../config/auth.config";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "./style/login.css";
+import logo from "../assets/nstp_logo.png";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
+
+function ErrorFallback({ error }) {
+  return (
+    <div className="alert alert-danger">
+      <p>Something went wrong:</p>
+      <pre>{error.message}</pre>
+    </div>
+  );
+}
 
 function Login() {
+  console.log("Login component rendering");
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const API_URL = "http://localhost:3000/api";
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Load Google Sign-In script
@@ -22,11 +41,11 @@ function Login() {
       document.body.appendChild(script);
 
       script.onload = () => {
-        // Initialize Google Sign-In API after script loads
         window.google.accounts.id.initialize({
           client_id:
-            "941942178577-6i12rtiomnbbfgha49lna49lpbsggcbf.apps.googleusercontent.com", // Your client ID
+            "941942178577-6i12rtiomnbbfgha49lna53lpbsggcbf.apps.googleusercontent.com",
           callback: handleCredentialResponse,
+          auto_select: false,
         });
 
         window.google.accounts.id.renderButton(
@@ -41,32 +60,47 @@ function Login() {
             width: "305",
           }
         );
+
+        window.google.accounts.id.cancel();
       };
     };
 
     loadGoogleScript();
-
-    // Load reCAPTCHA v2 on load
-    const loadRecaptcha = () => {
-      const recaptchaScript = document.createElement("script");
-      recaptchaScript.src = "https://www.google.com/recaptcha/api.js";
-      recaptchaScript.async = true;
-      document.body.appendChild(recaptchaScript);
-    };
-    loadRecaptcha();
+    checkAuth();
   }, []);
 
-  const handleCredentialResponse = (response) => {
-    console.log("Encoded JWT ID token: " + response.credential);
-    // Redirect to Dashboard page after successful login
-    window.location.href = "/dashboard";
+  const handleCredentialResponse = async (response) => {
+    try {
+      const decodedToken = jwtDecode(response.credential);
+      const userData = {
+        credential: response.credential,
+        email: decodedToken.email,
+        name: decodedToken.name,
+        picture: decodedToken.picture,
+        given_name: decodedToken.given_name,
+        family_name: decodedToken.family_name,
+        googleId: decodedToken.sub,
+      };
+
+      const result = await axios.post(`${API_URL}/auth/google-login`, userData);
+
+      if (result.data.success) {
+        localStorage.setItem("authToken", result.data.data.token);
+        localStorage.setItem("userInfo", JSON.stringify(result.data.data.user));
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      setError("Google login failed. Please try again.");
+    }
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const onSubmit = async (event) => {
@@ -74,43 +108,54 @@ function Login() {
     setError("");
     setLoading(true);
 
+    // Get reCAPTCHA response
+    const recaptchaResponse = window.grecaptcha.getResponse();
+    if (!recaptchaResponse) {
+      setError("Please complete the reCAPTCHA.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch(authConfig.login, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email.toLowerCase(),
-          password: formData.password,
-        }),
-        credentials: "include",
+      const response = await axios.post(`${API_URL}/auth/admin/login`, {
+        email: formData.email,
+        password: formData.password,
+        recaptchaResponse: recaptchaResponse,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+      if (response.data.success) {
+        if (formData.rememberMe) {
+          localStorage.setItem("authToken", response.data.data.token);
+        } else {
+          sessionStorage.setItem("authToken", response.data.data.token);
+        }
+        localStorage.setItem(
+          "adminInfo",
+          JSON.stringify(response.data.data.admin)
+        );
+        navigate("/dashboard");
       }
-
-      // Store the token
-      localStorage.setItem("adminToken", data.data.token);
-
-      // Store admin info
-      localStorage.setItem("adminInfo", JSON.stringify(data.data.admin));
-
-      // Redirect to dashboard
-      window.location.href = "/admin/dashboard";
-    } catch (err) {
-      setError(err.message || "Login failed. Please try again.");
+    } catch (error) {
+      console.error("Login error:", error);
+      setError(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
+      window.grecaptcha.reset();
     } finally {
       setLoading(false);
     }
   };
 
+  const checkAuth = () => {
+    const token =
+      localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+    if (token) {
+      navigate("/dashboard");
+    }
+  };
+
   return (
-    <div className="login-container">
-      <div className="nstp_bg"></div>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
       <div className="logo">
         <img src={logo} alt="NSTP Logo" className="nstp_logo" />
         <div className="header-text">
@@ -129,50 +174,83 @@ function Login() {
               <h1>WELCOME</h1>
               {error && <div className="alert alert-danger">{error}</div>}
 
-              <div className="form-floating mb-4">
+              <div>
+                <div className="form-floating mb-4">
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="floatingInput"
+                    placeholder="name@example.com"
+                    required
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="floatingInput">
+                    <i className="bi bi-person"></i>Email address
+                  </label>
+                </div>
+
+                <div className="form-floating mb-4">
+                  <input
+                    type="password"
+                    className="form-control"
+                    id="floatingPassword"
+                    placeholder="Password"
+                    required
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="floatingPassword">
+                    <i className="bi bi-key"></i>Password
+                  </label>
+                </div>
+
                 <input
-                  type="email"
-                  className="form-control"
-                  id="floatingInput"
-                  placeholder="name@example.com"
-                  required
-                  name="email"
-                  value={formData.email}
+                  type="checkbox"
+                  name="rememberMe"
+                  id="checkbox"
+                  checked={formData.rememberMe}
                   onChange={handleChange}
                 />
-                <label htmlFor="floatingInput">
-                  <i className="bi bi-envelope"></i> Email address
+                <label className="checkbox" htmlFor="checkbox">
+                  Keep me logged in
                 </label>
-              </div>
 
-              <div className="form-floating mb-4">
-                <input
-                  type="password"
-                  className="form-control"
-                  id="floatingPassword"
-                  placeholder="Password"
-                  required
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-                <label htmlFor="floatingPassword">
-                  <i className="bi bi-key"></i> Password
-                </label>
-              </div>
+                <button
+                  type="submit"
+                  className="btn btn-primary mt-3"
+                  disabled={loading}
+                >
+                  {loading ? "Logging in..." : "Login"}
+                </button>
 
-              <button
-                type="submit"
-                className="btn btn-primary mt-3"
-                disabled={loading}
-              >
-                {loading ? "Logging in..." : "Login"}
-              </button>
+                <p className="line">
+                  ______________________________________________________________
+                </p>
+
+                <div
+                  id="google-signin-btn"
+                  className="d-flex justify-content-center mt-3 mb-5"
+                  style={{
+                    width: "80%",
+                    margin: "0 auto",
+                    transform: "scale(1.2)",
+                  }}
+                ></div>
+
+                <div
+                  className="g-recaptcha mt-3"
+                  data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
+                ></div>
+              </div>
             </div>
+            <div className="nstp_bg"></div>
           </div>
         </div>
       </form>
-    </div>
+    </ErrorBoundary>
   );
 }
 
