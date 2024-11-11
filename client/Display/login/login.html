@@ -169,13 +169,35 @@
       // Handle Google Credential Response
       async function handleCredentialResponse(response) {
         try {
-          const result = await axios.post(`${API_URL}/auth/google-login`, {
+          // Decode the JWT token from Google
+          const decodedToken = jwt_decode(response.credential);
+
+          // Prepare user data
+          const userData = {
             credential: response.credential,
-          });
+            email: decodedToken.email,
+            name: decodedToken.name,
+            picture: decodedToken.picture,
+            given_name: decodedToken.given_name,
+            family_name: decodedToken.family_name,
+            googleId: decodedToken.sub,
+          };
+
+          console.log("User Data:", userData); // For debugging
+
+          // Send to backend
+          const result = await axios.post(
+            `${API_URL}/auth/google-login`,
+            userData
+          );
 
           if (result.data.success) {
-            // Store token
+            // Store user info and token
             localStorage.setItem("authToken", result.data.data.token);
+            localStorage.setItem(
+              "userInfo",
+              JSON.stringify(result.data.data.user)
+            );
 
             // Redirect to dashboard
             window.location.href = "../User/Dashboard.html";
