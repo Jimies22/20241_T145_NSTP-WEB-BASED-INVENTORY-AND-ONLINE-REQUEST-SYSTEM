@@ -32,42 +32,53 @@ function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load Google Sign-In script
-    const loadGoogleScript = () => {
+    // Add reCAPTCHA script
+    const loadRecaptchaScript = () => {
       const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
+      script.src = "https://www.google.com/recaptcha/api.js";
       script.async = true;
       script.defer = true;
-      document.body.appendChild(script);
-
-      script.onload = () => {
-        window.google.accounts.id.initialize({
-          client_id:
-            "941942178577-6i12rtiomnbbfgha49lna53lpbsggcbf.apps.googleusercontent.com",
-          callback: handleCredentialResponse,
-          auto_select: false,
-        });
-
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-signin-btn"),
-          {
-            theme: "outline",
-            size: "large",
-            type: "standard",
-            shape: "rectangular",
-            logo_alignment: "center",
-            text: "signin_with",
-            width: "305",
-          }
-        );
-
-        window.google.accounts.id.cancel();
-      };
+      document.head.appendChild(script);
     };
 
+    // Load both Google Sign-In and reCAPTCHA scripts
+    loadRecaptchaScript();
     loadGoogleScript();
     checkAuth();
   }, []);
+
+  // Load Google Sign-In script
+  const loadGoogleScript = () => {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      window.google.accounts.id.initialize({
+        client_id:
+          "941942178577-6i12rtiomnbbfgha49lna53lpbsggcbf.apps.googleusercontent.com",
+        callback: handleCredentialResponse,
+        auto_select: false,
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById("google-signin-btn"),
+        {
+          theme: "outline",
+          size: "large",
+          type: "standard",
+          shape: "rectangular",
+          logo_alignment: "center",
+          text: "signin_with",
+          width: "305",
+        }
+      );
+
+      window.google.accounts.id.cancel();
+    };
+  };
 
   const handleCredentialResponse = async (response) => {
     try {
@@ -242,7 +253,12 @@ function Login() {
 
                 <div
                   className="g-recaptcha mt-3"
-                  data-sitekey="YOUR_RECAPTCHA_SITE_KEY"
+                  data-sitekey="6LdpdngqAAAAABXlZ6UpxdThGZS6oED-hvfq6h_Q"
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    margin: "20px auto",
+                  }}
                 ></div>
               </div>
             </div>
