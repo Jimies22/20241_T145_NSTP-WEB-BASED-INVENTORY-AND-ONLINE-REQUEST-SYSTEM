@@ -13,6 +13,11 @@ try {
   await mongoose.connect(process.env.MONGODB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    ssl: true,
+    tls: true,
+    //tlsInsecure: true, // Only for development/testing
+    retryWrites: true,
+    w: "majority",
   });
   console.log("Connected to MongoDB Atlas successfully");
 
