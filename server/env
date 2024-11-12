@@ -1,0 +1,6 @@
+PORT=3000
+MONGODB=mongodb+srv://dbNSTP2024:64TdeuiZqloXVJ2c@nstp-cluster0.hh2gd.mongodb.net/?retryWrites=true&w=majority&appName=NSTP-Cluster0
+GOOGLE_CLIENT_ID=<My Client ID from JSON>
+GOOGLE_CLIENT_SECRET=<My Client Secret from JSON>
+GOOGLE_REDIRECT_URI=http://localhost:3000/oauth2callback
+RECAPTCHA_SECRET_KEY=my_secret_key_here
