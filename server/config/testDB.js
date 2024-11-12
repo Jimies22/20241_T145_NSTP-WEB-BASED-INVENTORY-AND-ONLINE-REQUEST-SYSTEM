@@ -1,36 +1,32 @@
 // Import dotenv to load environment variables
 import dotenv from "dotenv";
-import { MongoClient, ServerApiVersion } from "mongodb";
 import mongoose from "mongoose";
 
 dotenv.config(); // Load environment variables only once
 
-const client = new MongoClient(process.env.MONGODB, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
 // Function to test the MongoDB connection
 export async function run() {
-  // Use 'export' to make this function available for ES modules
   try {
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
-
+    // Connect only once using mongoose
     await mongoose.connect(process.env.MONGODB, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // Remove deprecated options
     });
 
     console.log("Successfully connected to MongoDB!");
   } catch (error) {
-    console.error("MongoDB Connection Error", error);
-
-    process.exit(1); // Exit with failure
-  } finally {
-    await client.close();
+    console.error("MongoDB Connection Error:", error);
+    process.exit(1);
   }
 }
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`MongoDB connection error: ${error}`);
+    process.exit(1);
+  }
+};
+
+export default connectDB;

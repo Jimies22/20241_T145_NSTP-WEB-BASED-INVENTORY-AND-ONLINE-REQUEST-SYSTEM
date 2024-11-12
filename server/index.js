@@ -2,37 +2,20 @@ import express, { json, urlencoded } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-import { createInitialAdmin } from "./controllers/loginController.js";
+import {
+  createInitialAdmin,
+  verifyAdmin,
+} from "./controllers/adminLoginController.js";
 
 // Load environment variables first
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 
-// Enhanced MongoDB connection with better error handling
-try {
-  await mongoose.connect(process.env.MONGODB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  console.log("Connected to MongoDB Atlas successfully");
-
-  // Test database operations (from test.js)
-  const collections = await mongoose.connection.db.collections();
-  console.log("Available collections:");
-  collections.forEach((collection) => {
-    console.log(" -", collection.collectionName);
-  });
-} catch (error) {
-  console.error("MongoDB connection error:", error);
-  process.exit(1);
-}
-
-import { run as testDbConnection } from "./config/testDB.js";
 const app = express();
 
 // Enhanced CORS configuration
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://127.0.0.1:5500"],
+  origin: ["http://localhost:3000", "http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -55,13 +38,15 @@ import settingsRoute from "./routes/Admin/settingsRoute.js";
 import inventoryAdminRouter from "./routes/Admin/inventory.js";
 import userRoute from "./routes/UAData/userRoute.js";
 
+// Protected routes example
+app.use("/api/admin/settings", verifyAdmin, settingsRoute);
+
 // Route middleware
-app.use("/api/auth", authAdminRoute);
-app.use("/api/admin/settings", settingsRoute);
+app.use("/api/auth/admin", authAdminRoute);
 app.use("/api/admin/inventory", inventoryAdminRouter);
 app.use("/api/data/user", userRoute);
 
-// Backend connection test endpoint (from server.js)
+// Backend connection test endpoint
 app.get("/api/test", (req, res) => {
   res.json({
     message: "Backend is connected!",
@@ -80,25 +65,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// MongoDB connection event handlers
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB connection error:", err);
-});
-
-mongoose.connection.on("disconnected", () => {
-  console.log("MongoDB disconnected");
-});
-
-process.on("SIGINT", async () => {
-  await mongoose.connection.close();
-  process.exit(0);
-});
-
 // Start server with enhanced initialization
 app.listen(PORT, async () => {
   try {
+    // Connect to MongoDB
+    await mongoose.connect(process.env.MONGODB);
+    console.log(`MongoDB Connected: ${mongoose.connection.host}`);
+
     console.log(`Server is running on port ${PORT}`);
-    await testDbConnection();
     await createInitialAdmin();
     console.log("Server initialization completed");
   } catch (error) {

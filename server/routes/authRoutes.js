@@ -1,9 +1,12 @@
 import express from "express";
-import { adminLogin } from "../controllers/loginController.js";
+import {
+  adminLogin,
+  checkAdminExists,
+} from "../controllers/adminLoginController.js";
 
 const router = express.Router();
 
-// Admin login route
-router.post("/admin/login", adminLogin);
+router.post("/login", adminLogin);
+router.get("/check", checkAdminExists);
 
 export default router;
