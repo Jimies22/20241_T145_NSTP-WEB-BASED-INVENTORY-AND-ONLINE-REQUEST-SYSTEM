@@ -514,6 +514,13 @@ body {
     background: var(--orange);
 }
 
+.status.accepted {
+    background: #86e49d;
+    color: #006b21;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
 
 /* #content main .table-data .todo {
 	flex-grow: 1;
@@ -619,4 +626,16 @@ body {
 		min-width: 420px;
 	}
 	
+}
+.badge {
+	position: absolute;
+	top: -8px;
+	right: -8px;
+	background: #ff0000;
+	color: white;
+	border-radius: 50%;
+	padding: 2px 6px;
+	font-size: 12px;
+	min-width: 18px;
+	text-align: center;
 }

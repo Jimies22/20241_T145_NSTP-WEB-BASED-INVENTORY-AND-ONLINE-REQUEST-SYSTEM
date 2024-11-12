@@ -1,10 +1,10 @@
-// notification
-const express = require("express");
-const router = express.Router();
+// // notification
+// import { Router } from "express";
+// const router = Router();
 
-// Notifications
-router.get("/notification", (req, res) => {
-  res.send({ data: "Notifications" });
-});
+// // Notifications
+// router.get("/notification", (req, res) => {
+//   res.send({ data: "Notifications" });
+// });
 
-module.exports = router;
+// export default router;

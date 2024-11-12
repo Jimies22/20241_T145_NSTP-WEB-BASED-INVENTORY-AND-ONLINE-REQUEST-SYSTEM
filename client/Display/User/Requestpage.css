@@ -622,3 +622,168 @@ body {
 	}
 	
 }
+
+.request-container {
+    display: grid;
+    gap: 20px;
+    padding: 20px;
+}
+
+.request-card {
+    display: flex;
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.request-card:hover {
+    transform: translateY(-2px);
+}
+
+.request-image {
+    width: 120px;
+    height: 120px;
+    margin-right: 20px;
+}
+
+.request-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.request-details {
+    flex: 1;
+}
+
+.request-details h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.request-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.request-status.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.request-actions {
+    display: flex;
+    align-items: center;
+}
+
+.cancel-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background: #dc3545;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.2s ease;
+}
+
+.cancel-btn:hover {
+    background: #c82333;
+}
+
+.no-requests {
+    text-align: center;
+    padding: 20px;
+}
+
+.no-requests i {
+    font-size: 48px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.no-requests p {
+    color: #666;
+    font-size: 16px;
+}
+
+/* Order Details Overlay */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+.overlay-content {
+    position: relative;
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    width: 70%;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.order-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.order-details img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+}
+
+.details-text {
+    width: 100%;
+}
+
+.details-text p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+#requested-items-list tr {
+    cursor: pointer;
+}
+
+#requested-items-list tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+.badge {
+	position: absolute;
+	top: -8px;
+	right: -8px;
+	background: #ff0000;
+	color: white;
+	border-radius: 50%;
+	padding: 2px 6px;
+	font-size: 12px;
+	min-width: 18px;
+	text-align: center;
+}

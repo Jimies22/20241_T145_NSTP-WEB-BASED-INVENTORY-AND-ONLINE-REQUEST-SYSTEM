@@ -1,10 +1,10 @@
-// report generation
-const express = require("express");
-const router = express.Router();
+// // report generation
+// import { Router } from "express";
+// const router = Router();
 
-// Reporting
-router.get("/report", (req, res) => {
-  res.send({ data: "Reports" });
-});
+// // Reporting
+// router.get("/report", (req, res) => {
+//   res.send({ data: "Reports" });
+// });
 
-module.exports = router;
+// export default router;

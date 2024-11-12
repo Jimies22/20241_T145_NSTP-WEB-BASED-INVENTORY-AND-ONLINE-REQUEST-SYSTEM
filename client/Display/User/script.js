@@ -59,10 +59,18 @@ const switchMode = document.getElementById('switch-mode');
 switchMode.addEventListener('change', function () {
     if (this.checked) {
         document.body.classList.add('dark');
+        localStorage.setItem('darkMode', 'enabled');
     } else {
         document.body.classList.remove('dark');
+        localStorage.removeItem('darkMode');
     }
 });
+
+// Check for saved dark mode preference
+if (localStorage.getItem('darkMode') === 'enabled') {
+    switchMode.checked = true;
+    document.body.classList.add('dark');
+}
 
 document.addEventListener("DOMContentLoaded", function() {
     const submitBtn = document.getElementById('submitBtn');
@@ -95,5 +103,43 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     checkInputs(); // Initial check
+});
+
+// Search functionality
+function searchItems() {
+    const searchInput = document.getElementById('searchInput');
+    const filter = searchInput.value.toLowerCase();
+    const cards = document.querySelectorAll('.projector-card');
+    let hasVisibleCards = false;
+
+    cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const status = card.querySelector('.status').textContent.toLowerCase();
+        
+        if (title.includes(filter) || status.includes(filter)) {
+            card.style.display = '';
+            hasVisibleCards = true;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    // Handle no results message
+    let noResults = document.getElementById('no-results');
+    if (!noResults) {
+        noResults = document.createElement('div');
+        noResults.id = 'no-results';
+        noResults.className = 'no-results';
+        noResults.textContent = 'No items found';
+        document.querySelector('.projector-grid').after(noResults);
+    }
+    noResults.style.display = hasVisibleCards ? 'none' : 'block';
+}
+
+// Clear search when clicking the X button in search input
+document.getElementById('searchInput').addEventListener('search', function() {
+    if (this.value === '') {
+        searchItems();
+    }
 });
 

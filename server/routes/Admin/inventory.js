@@ -1,27 +1,37 @@
 // inventory
-const express = require("express");
-const router = express.Router();
+import { Router } from "express";
+import { authenticateToken } from "../../middleware/authMiddleware.js";
+const router = Router();
+
+// import controller functions
+import {
+  getItems,
+  getItem,
+  postItem,
+  putItem,
+  patchItem,
+  deleteItem,
+} from "../../controllers/itemController.js";
+
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
 
 // Get item list
-router.get("/", (req, res) => {
-  res.send({ data: "Item list" });
-});
+router.get("/", getItems);
+
+// get item by ID
+router.get("/:item_id", getItem);
 
 // Create a new item
-router.post("/", (req, res) => {
-  res.send({ data: "Item Created" });
-});
+router.post("/", postItem);
 
 // Update an item by ID
-router.put("/:id", (req, res) => {
-  const { id } = req.params; // Get item ID from the request parameters
-  res.send({ data: `Item with ID ${id} Updated` });
-});
+router.put("/:item_id", putItem);
+
+// Patch an item by ID
+router.patch("/:itemId", patchItem);
 
 // Delete an item by ID
-router.delete("/:id", (req, res) => {
-  const { id } = req.params; // Get item ID from the request parameters
-  res.send({ data: `Item with ID ${id} Deleted` });
-});
+router.delete("/:item_id", deleteItem);
 
-module.exports = router;
+export default router;
