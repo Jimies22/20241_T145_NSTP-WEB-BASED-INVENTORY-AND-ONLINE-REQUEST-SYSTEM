@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import nstpLogo from "../assets/nstp_logo.png";
+import nstpLogo from "../../assets/nstp_logo.png";
 
 function Sidebar() {
   return (

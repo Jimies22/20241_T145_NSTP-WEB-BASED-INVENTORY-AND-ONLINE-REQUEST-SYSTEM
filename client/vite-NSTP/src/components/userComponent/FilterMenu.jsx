@@ -1,4 +1,6 @@
 import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+// import "";
 
 function FilterMenu({ show, onToggle, selectedFilters, onFilterChange }) {
   const handleFilterChange = (e) => {

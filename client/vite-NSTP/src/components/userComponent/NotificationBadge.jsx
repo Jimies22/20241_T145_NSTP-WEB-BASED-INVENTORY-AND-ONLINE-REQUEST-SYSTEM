@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "./styles/notifications.css"; // Ensure this path is correct
+import "../styles/Notification.css"; // Ensure this path is correct
 
 function NotificationBadge() {
   const [notifications, setNotifications] = useState([]);
@@ -26,12 +26,12 @@ function NotificationBadge() {
     <div className="notification-container">
       <Link
         to="/notifications"
-        className={`notification ${unreadCount === 0 ? "notification-zero" : ""}`}
+        className={`notification ${
+          unreadCount === 0 ? "notification-zero" : ""
+        }`}
       >
         <i className="bx bxs-bell"></i>
-        {unreadCount > 0 && (
-          <span className="badge num">{unreadCount}</span>
-        )}
+        {unreadCount > 0 && <span className="badge num">{unreadCount}</span>}
       </Link>
     </div>
   );

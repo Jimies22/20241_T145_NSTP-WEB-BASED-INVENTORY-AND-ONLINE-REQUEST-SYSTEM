@@ -1,43 +1,43 @@
 import React, { useState } from "react";
 
 function BookingOverlay({ item, onClose }) {
-  const [bookingDate, setBookingDate] = useState("");
-  const [startTime, setStartTime] = useState("");
+  // const [bookingDate, setBookingDate] = useState("");
+  // const [startTime, setStartTime] = useState("");
 
-  const handleBooking = async () => {
-    if (!bookingDate || !startTime) {
-      alert("Please select date and time");
-      return;
-    }
+  // const handleBooking = async () => {
+  //   if (!bookingDate || !startTime) {
+  //     alert("Please select date and time");
+  //     return;
+  //   }
 
-    try {
-      // Add your booking logic here
-      const requestItem = {
-        id: "req_" + Date.now(),
-        title: item.title,
-        image: item.image,
-        date: new Date(bookingDate).toLocaleDateString(),
-        time: new Date(`2000/01/01 ${startTime}`).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        status: "Pending",
-        itemStatus: item.status,
-      };
+  //   try {
+  //     // Add your booking logic here
+  //     const requestItem = {
+  //       id: "req_" + Date.now(),
+  //       title: item.title,
+  //       image: item.image,
+  //       date: new Date(bookingDate).toLocaleDateString(),
+  //       time: new Date(`2000/01/01 ${startTime}`).toLocaleTimeString([], {
+  //         hour: "2-digit",
+  //         minute: "2-digit",
+  //       }),
+  //       status: "Pending",
+  //       itemStatus: item.status,
+  //     };
 
-      // Store in localStorage (this should be replaced with API calls)
-      const requestedItems =
-        JSON.parse(localStorage.getItem("requestedItems")) || [];
-      requestedItems.unshift(requestItem);
-      localStorage.setItem("requestedItems", JSON.stringify(requestedItems));
+  //     // Store in localStorage (this should be replaced with API calls)
+  //     const requestedItems =
+  //       JSON.parse(localStorage.getItem("requestedItems")) || [];
+  //     requestedItems.unshift(requestItem);
+  //     localStorage.setItem("requestedItems", JSON.stringify(requestedItems));
 
-      alert("Booking submitted successfully!");
-      onClose();
-    } catch (error) {
-      console.error("Booking error:", error);
-      alert("Error submitting booking. Please try again.");
-    }
-  };
+  //     alert("Booking submitted successfully!");
+  //     onClose();
+  //   } catch (error) {
+  //     console.error("Booking error:", error);
+  //     alert("Error submitting booking. Please try again.");
+  //   }
+  // };
 
   return (
     <div
