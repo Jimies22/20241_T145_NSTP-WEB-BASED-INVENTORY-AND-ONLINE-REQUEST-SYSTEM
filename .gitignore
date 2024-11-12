@@ -8,10 +8,13 @@ logs/
 npm-debug.log*
 
 # Environment variables
+
 .env
 ./server/.env
 # OS-generated files
 .DS_Store
+
+d41d8cd9.env
 
 # IDE settings
 .vscode/
