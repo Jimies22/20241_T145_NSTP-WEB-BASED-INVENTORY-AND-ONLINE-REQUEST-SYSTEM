@@ -1,0 +1,135 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
+
+:root {
+  --poppins: "Poppins", sans-serif;
+  --lato: "Lato", sans-serif;
+
+  --light: #f9f9f9;
+  --blue: #3c91e6;
+  --light-blue: #cfe8ff;
+  --grey: #eee;
+  --dark-grey: #aaaaaa;
+  --dark: #342e37;
+  --red: #db504a;
+  --yellow: #ffce26;
+  --light-yellow: #fff2c6;
+  --orange: #fd7238;
+  --light-orange: #ffe0d3;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--grey);
+  overflow-x: hidden;
+  overflow-y: hidden;
+  min-height: 100vh;
+}
+
+.admin-dashboard {
+  display: flex;
+  flex-direction: row;
+}
+
+#content {
+  flex-grow: 1;
+  background-color: #f4f4f4; /* Content background color */
+  margin-top: 0; /* Remove margin to align with the navbar */
+  height: calc(100vh - 56px); /* Set height to fill the remaining viewport */
+  overflow: hidden; /* Prevent scrolling */
+}
+
+/* NAVBAR */
+.navbar {
+  position: fixed; /* Make the navbar fixed */
+  top: 0; /* Align it to the top */
+  left: 280px; /* Adjust according to your layout */
+  width: calc(100% - 280px); /* Full width minus sidebar */
+  z-index: 1000; /* Ensure it stays above other content */
+  background-color: var(--light); /* Background color for visibility */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+  margin: 0; /* Remove any margin */
+  padding: 0; /* Remove any padding */
+}
+
+/* MAIN */
+#content main {
+  width: 100%;
+  padding: 10px; /* Remove padding */
+  font-family: var(--poppins);
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+#content main .head-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  grid-gap: 16px;
+}
+
+#content main .head-title .left h1 {
+  margin-top: 10px;
+  font-size: 36px;
+  font-weight: 600;
+  margin-bottom: 0px;
+  color: var(--dark);
+}
+
+#content main .head-title .left .breadcrumb {
+  display: flex;
+  align-items: center;
+  grid-gap: 16px;
+}
+
+#content main .head-title .left .breadcrumb li {
+  color: var(--dark);
+}
+
+#content main .head-title .left .breadcrumb li a {
+  color: var(--dark-grey);
+  pointer-events: none;
+}
+
+#content main .head-title .left .breadcrumb li a.active {
+  color: var(--blue);
+  pointer-events: unset;
+}
+
+/* TABLE DATA */
+#content main .table-data {
+  display: flex;
+  flex-wrap: wrap;
+  grid-gap: 24px;
+  margin-top: 24px;
+  width: 100%;
+  color: var(--dark);
+}
+
+#content main .table-data > div {
+  flex-grow: 1;
+  flex-basis: 300px;
+  max-height: 700px; /* Adjust the height as needed */
+  overflow-y: auto; /* Enables vertical scrolling */
+  border-radius: 20px; /* Retain existing styles */
+  background: var(--light);
+  padding: 24px;
+}
+
+/* Additional styles for the table and other elements can be added here */
