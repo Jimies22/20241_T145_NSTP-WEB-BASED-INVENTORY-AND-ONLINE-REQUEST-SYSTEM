@@ -1,95 +1,126 @@
-import userModel from "../models/User.js";
+import User from "../models/userModel.js";
 
-const getUsers = async (req, res) => {
-  try {
-    const users = await userModel.find();
-    res.send({ data: users });
-  } catch (error) {
-    res.status(500).send({ error: "Failed to retrieve users" });
-  }
-};
+// Create a new user
+const createUser = async (req, res) => {
+  const { email, role, name, picture, department } = req.body;
 
-const getUser = async (req, res) => {
-  const { user_id } = req.params; // Assuming user_id is in the route parameters
   try {
-    const user = await userModel.findOne({ user_id }); // Querying with user_id
-    if (user) {
-      res.send({ data: user });
-    } else {
-      res.status(404).send({ error: `User with user_id ${user_id} not found` });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
-  } catch (error) {
-    res.status(500).send({ error: "Failed to retrieve user" });
-  }
-};
 
-const postUser = async (req, res) => {
-  const users = req.body; // Expecting either a single user object or an array of user objects
+    // Find the last inserted user and increment userID
+    const lastUser = await User.findOne().sort({ userID: -1 });
+    const nextUserID = lastUser ? lastUser.userID + 1 : 1;
 
-  try {
-    // Validate that the request body is an array or a single object
-    if (!Array.isArray(users)) {
-      // If it's a single user object
-      const newUser = new userModel(users); // Create a new user instance
-      const savedUser = await newUser.save(); // Save the user to the database
-      res
-        .status(200)
-        .send({ data: `User ${savedUser.name} created successfully` }); // Send a success response
-    } else {
-      // If it's an array of user objects
-      const newUsers = await Promise.all(
-        users.map(async (userData) => {
-          const newUser = new userModel(userData); // Create a new user instance for each object
-          return newUser.save(); // Save each user
-        })
-      );
-
-      res.status(200).send({
-        data: `${newUsers.length} users created successfully`,
-      }); // Send a success response for multiple users
-    }
-  } catch (error) {
-    console.error("Error saving users:", error); // Log the error
-    res.status(500).send({ error: "Failed to create users" }); // Send an error response
-  }
-};
-
-const putUser = async (req, res) => {
-  const { userId } = req.params;
-  const { name, gender, email, department, position } = req.body;
-  try {
-    const updatedUser = await userModel.findOneAndUpdate(
-      { user_id: userId },
-      { name, gender, email, department, position },
-      { new: true } // Return the updated document
-    );
-    if (updatedUser) {
-      res.send({
-        data: `User with user_id ${userId} updated successfully`,
-        updatedUser,
-      });
-    } else {
-      res.status(404).send({ error: `User with user_id ${userId} not found` });
-    }
-  } catch (error) {
-    res.status(500).send({ error: "Failed to update user" });
-  }
-};
-
-const deleteUser = async (req, res) => {
-  const { userId } = req.params;
-  try {
-    const deletedUser = await userModel.findOneAndDelete({
-      user_id: userId,
+    const newUser = new User({
+      email,
+      role,
+      name,
+      picture,
+      department,
+      userID: nextUserID,
     });
-    if (deletedUser) {
-      res.send({ data: `User with user_id ${userId} deleted successfully` });
-    } else {
-      res.status(404).send({ error: `User with user_id ${userId} not found` });
-    }
+
+    newUser.generateGoogleId();
+    await newUser.save();
+
+    res
+      .status(201)
+      .json({ message: "User registered successfully", user: newUser });
   } catch (error) {
-    res.status(500).send({ error: "Failed to delete user" });
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export { getUsers, getUser, postUser, putUser, deleteUser };
+// Fetch all users
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Get a user by userID
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findOne({ userID: req.params.userID });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user by userID:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Search users by name
+const searchUsersByName = async (req, res) => {
+  try {
+    const users = await User.find({ name: new RegExp(req.params.name, "i") });
+    res.json(users);
+  } catch (error) {
+    console.error("Error searching users by name:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Update user information by userID
+const updateUser = async (req, res) => {
+  const { name, role, picture, email, department, userID } = req.body;
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { userID: req.params.userID },
+      {
+        $set: {
+          name: name || undefined,
+          role: role || undefined,
+          picture: picture || undefined,
+          email: email || undefined,
+          department: department || undefined,
+          userID: userID || undefined,
+        },
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User updated successfully", user });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Delete a user by userID
+const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findOneAndDelete({ userID: req.params.userID });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export default {
+  createUser,
+  getAllUsers,
+  getUserById,
+  searchUsersByName,
+  updateUser,
+  deleteUser,
+};
