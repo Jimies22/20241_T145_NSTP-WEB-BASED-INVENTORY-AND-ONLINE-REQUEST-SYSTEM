@@ -131,19 +131,22 @@ function Login() {
       const response = await axios.post(`${API_URL}/auth/admin/login`, {
         email: formData.email,
         password: formData.password,
-        recaptchaResponse: recaptchaResponse,
       });
 
       if (response.data.success) {
         if (formData.rememberMe) {
           localStorage.setItem("authToken", response.data.data.token);
+          localStorage.setItem(
+            "adminInfo",
+            JSON.stringify(response.data.data.admin)
+          );
         } else {
           sessionStorage.setItem("authToken", response.data.data.token);
+          sessionStorage.setItem(
+            "adminInfo",
+            JSON.stringify(response.data.data.admin)
+          );
         }
-        localStorage.setItem(
-          "adminInfo",
-          JSON.stringify(response.data.data.admin)
-        );
         navigate("/dashboard");
       }
     } catch (error) {
