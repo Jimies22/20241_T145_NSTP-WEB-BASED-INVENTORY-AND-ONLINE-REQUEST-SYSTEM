@@ -1,26 +1,21 @@
-# exclude node_modules
-node_modules/
-./server/node_modules/
-
-# Log files
-logs/
+# Logs
+logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Environment variables
 
 .env
-./server/.env
-# OS-generated files
+
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# OS-specific files
 .DS_Store
-
-d41d8cd9.env
-
-# IDE settings
-.vscode/
-.idea/
-
-# Exclude package-lock.json
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+Thumbs.db
