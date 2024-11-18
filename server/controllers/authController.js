@@ -1,39 +1,37 @@
-import User from "../models/User.js";
+import { OAuth2Client } from "google-auth-library";
+import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import BlacklistedToken from "../models/blacklistedToken.js";
+import axios from "axios";
 
-export const handleGoogleLogin = async (req, res) => {
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleLogin = async (req, res) => {
   try {
-    console.log("Received user data:", req.body);
-    const { email, name, picture, given_name, family_name, googleId } =
-      req.body;
+    const { token } = req.body;
+
+    // Verify Google token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
 
     // Find or create user
-    let user = await User.findOne({ email });
-
+    let user = await User.findOne({ email: payload.email });
     if (!user) {
-      // Create new user
-      user = new User({
-        email,
-        name,
-        picture,
-        given_name,
-        family_name,
-        googleId,
-        role: "user", // default role
+      user = await User.create({
+        email: payload.email,
+        googleId: payload.sub,
+        name: payload.name,
+        picture: payload.picture,
+        role: "user", // Default role
       });
-      await user.save();
-    } else {
-      // Update existing user's info
-      user.lastLogin = new Date();
-      user.picture = picture;
-      user.name = name;
-      await user.save();
     }
 
-    console.log("User saved:", user);
-
-    // Generate JWT token
-    const token = jwt.sign(
+    // Generate JWT
+    const sessionToken = jwt.sign(
       {
         userId: user._id,
         email: user.email,
@@ -43,47 +41,98 @@ export const handleGoogleLogin = async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    // Send response
-    res.status(200).json({
+    res.json({
       success: true,
-      data: {
-        token,
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          picture: user.picture,
-          role: user.role,
-        },
+      token: sessionToken,
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
       },
     });
   } catch (error) {
-    console.error("Detailed error:", error);
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
-      error: "Internal server error",
+      message: error.message,
     });
   }
 };
 
 export const logout = async (req, res) => {
   try {
-    // If you're using a token blacklist or session store
     const token = req.headers.authorization?.split(" ")[1];
-    if (token) {
-      // Add token to blacklist or remove session
-      // await BlacklistedToken.create({ token });
-    }
 
-    res.status(200).json({
-      success: true,
-      message: "Logged out successfully",
-    });
+    if (token) {
+      // Add token to blacklist
+      await BlacklistedToken.create({ token });
+
+      res.json({
+        success: true,
+        message: "Logged out successfully",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "No token provided",
+      });
+    }
   } catch (error) {
     console.error("Logout error:", error);
     res.status(500).json({
       success: false,
-      message: "Error during logout",
+      message: "Logout failed",
+      error: error.message,
+    });
+  }
+};
+
+// Optional: Add a token validation function
+export const isTokenBlacklisted = async (token) => {
+  const blacklistedToken = await BlacklistedToken.findOne({ token });
+  return !!blacklistedToken;
+};
+
+export const verifyRecaptcha = async (req, res) => {
+  try {
+    const { recaptchaToken } = req.body;
+
+    if (!recaptchaToken) {
+      return res.status(400).json({
+        success: false,
+        message: "ReCAPTCHA token is required",
+      });
+    }
+
+    // Verify with Google
+    const response = await axios.post(
+      "https://www.google.com/recaptcha/api/siteverify",
+      null,
+      {
+        params: {
+          secret: process.env.RECAPTCHA_SECRET_KEY,
+          response: recaptchaToken,
+        },
+      }
+    );
+
+    if (response.data.success) {
+      res.json({
+        success: true,
+        message: "ReCAPTCHA verification successful",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "ReCAPTCHA verification failed",
+      });
+    }
+  } catch (error) {
+    console.error("ReCAPTCHA verification error:", error);
+    res.status(500).json({
+      success: false,
+      message: "ReCAPTCHA verification failed",
     });
   }
 };
