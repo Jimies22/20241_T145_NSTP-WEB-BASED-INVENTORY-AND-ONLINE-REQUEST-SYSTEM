@@ -27,4 +27,11 @@ router.put("/:id", [validateObjectId, validateItemFields], updateItem);
 router.patch("/:id/archive", validateObjectId, archiveItem);
 router.patch("/:id/restore", validateObjectId, restoreItem);
 
+// router.post("/", createItem);
+// router.get("/", getAllItems);
+// router.get("/:id", getItemById);
+// router.put("/:id", updateItem);
+// router.patch("/:id/archive", archiveItem);
+// router.patch("/:id/restore", restoreItem);
+
 export default router;

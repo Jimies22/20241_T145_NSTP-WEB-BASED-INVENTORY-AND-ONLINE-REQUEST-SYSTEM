@@ -1,35 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+//src/App.jsx
+import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./components/Login";
+import UserDashboard from "./components/user/UserDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminDashboard from "./components/admin/AdminDashboard";
+// import Sidebar from './components/Sidebar';
+// import AdminDashboard from './components/UserDashboard';
+// import RequestPage from './components/RequestPage';
+// import EditPage from './components/EditPage';
+// import NotificationPage from './components/NotificationPage';
+// import ReportsPage from './components/ReportsPage';
+// import RequestPage from './components/RequestPage';
+import RequestPage from "./components/admin/RequestPage";
+import Editpage from "./components/admin/EditPage";
+import ReportsPage from "./components/admin/ReportsPage";
+import ArchivedPage from "./components/admin/ArchivedPage";
+import AdminActivityPage from "./components/admin/AdminActivityPage";
+import NotificationPage from "./components/NotificationPage";
+import UserRequestPage from "./components/user/UserRequestPage";
+import UserBorrowPage from "./components/user/UserBorrowPage";
+import UserReportPage from "./components/user/UserReportPage";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute role="user">
+              <UserDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/request" element={<RequestPage />} />
+        <Route path="/user-request" element={<UserRequestPage />} />
+        <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route path="/user-borrowed" element={<UserBorrowPage />} />
+        <Route path="/user-report" element={<UserReportPage />} />
+        <Route path="/edit" element={<Editpage />} />
+        <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/archive" element={<ArchivedPage />} />
+        <Route path="/activity" element={<AdminActivityPage />} />
+        <Route path="/notification" element={<NotificationPage />} />
+        {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}
+        {/* <Route path="/request" element={<ProtectedRoute role="user"><Sidebar /></ProtectedRoute>} /> */}
+      </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
