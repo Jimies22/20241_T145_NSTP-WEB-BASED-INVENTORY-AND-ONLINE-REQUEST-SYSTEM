@@ -141,9 +141,7 @@ function Login() {
                 <button type="submit" className="btn btn-primary mt-3">
                   Login
                 </button>
-                <p className="line">
-                  _____________________________________________________________
-                </p>
+                <hr className="line" />
 
                 <div className="google-login-container">
                   <GoogleLogin

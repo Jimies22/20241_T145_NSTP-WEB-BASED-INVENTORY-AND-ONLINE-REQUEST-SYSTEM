@@ -223,3 +223,12 @@ main {
   justify-content: center; /* Center horizontally */
   margin-top: 20px; /* Add some space above */
 }
+
+/* Add this to your Login.css */
+.line {
+
+  border: none; /* Remove default border */
+  height: 3px; /* Increase height for a bolder line */
+  background-color: rgb(255, 255, 255); /* Set color to black for a bold appearance */
+  margin: 20px 0; /* Add margin for spacing */
+}
