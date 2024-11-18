@@ -7,6 +7,7 @@ import axios from "axios";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const googleLogin = async (req, res) => {
+  console.log("Received data:", req.body);
   try {
     const { token } = req.body;
 
@@ -18,7 +19,7 @@ export const googleLogin = async (req, res) => {
 
     const payload = ticket.getPayload();
 
-    // Find or create user
+    // Find or create user with additional fields
     let user = await User.findOne({ email: payload.email });
     if (!user) {
       user = await User.create({
@@ -26,8 +27,25 @@ export const googleLogin = async (req, res) => {
         googleId: payload.sub,
         name: payload.name,
         picture: payload.picture,
-        role: "user", // Default role
+        given_name: payload.given_name,
+        family_name: payload.family_name,
+        role: "user",
+        lastLogin: new Date(),
+        createdAt: new Date(),
       });
+    } else {
+      // Update existing user's last login time and other fields that might have changed
+      user = await User.findOneAndUpdate(
+        { email: payload.email },
+        {
+          lastLogin: new Date(),
+          picture: payload.picture,
+          name: payload.name,
+          given_name: payload.given_name,
+          family_name: payload.family_name,
+        },
+        { new: true }
+      );
     }
 
     // Generate JWT
@@ -49,6 +67,11 @@ export const googleLogin = async (req, res) => {
         email: user.email,
         name: user.name,
         role: user.role,
+        picture: user.picture,
+        given_name: user.given_name,
+        family_name: user.family_name,
+        lastLogin: user.lastLogin,
+        createdAt: user.createdAt,
       },
     });
   } catch (error) {
@@ -95,6 +118,7 @@ export const isTokenBlacklisted = async (token) => {
 };
 
 export const verifyRecaptcha = async (req, res) => {
+  console.log("Received recaptcha data:", req.body);
   try {
     const { recaptchaToken } = req.body;
 

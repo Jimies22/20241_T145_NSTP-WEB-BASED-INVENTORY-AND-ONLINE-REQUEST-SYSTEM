@@ -10,8 +10,8 @@ import nstpLogo from "../assets/NSTP_LOGO.png";
 import { apiRequest } from "../js/api.js";
 
 const clientId =
-  "96467309918-sjb49jofskdnaffpravkqgu1o6p0a8eh.apps.googleusercontent.com";
-const recaptchaKey = "6Lfty3MqAAAAACp-CJm8DFxDW1GfjdR1aXqHbqpg";
+  "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com";
+const recaptchaKey = "6Ldh0IIqAAAAAKNbiA9p0vbrqz__M2ccUdLjTd6f";
 
 function Login() {
   const navigate = useNavigate();
@@ -43,8 +43,9 @@ function Login() {
       }
 
       setIsLoading(true);
+
       // First verify ReCAPTCHA
-      const recaptchaResponse = await apiRequest("/auth/verify-recaptcha", {
+      const recaptchaResponse = await apiRequest("/api/auth/verify-recaptcha", {
         method: "POST",
         body: JSON.stringify({ recaptchaToken: recaptchaValue }),
       });
@@ -54,8 +55,8 @@ function Login() {
         return;
       }
 
-      // Then proceed with Google login
-      const response = await apiRequest("/auth/google", {
+      // Then proceed with Google login/signup
+      const response = await apiRequest("/api/auth/google", {
         method: "POST",
         body: JSON.stringify({
           token: credentialResponse.credential,
@@ -64,8 +65,29 @@ function Login() {
       });
 
       if (response.success) {
+        // Store user data and token
         localStorage.setItem("token", response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: response.user.id,
+            email: response.user.email,
+            name: response.user.name,
+            role: response.user.role,
+            picture: response.user.picture,
+            given_name: response.user.given_name,
+            family_name: response.user.family_name,
+            lastLogin: response.user.lastLogin,
+            createdAt: response.user.createdAt,
+          })
+        );
+
+        // Show success message if new user
+        if (response.isNewUser) {
+          console.log("New user account created successfully");
+        }
+
+        // Redirect based on role
         navigate(response.user.role === "admin" ? "/admin" : "/user");
       } else {
         setError(response.message || "Login failed");
@@ -144,12 +166,16 @@ function Login() {
                 <hr className="line" />
 
                 <div className="google-login-container">
-                  <GoogleLogin
-                    onSuccess={handleGoogleSuccess}
-                    onError={onError}
-                    width={305}
-                    disabled={!isRecaptchaValid || isLoading}
-                  />
+                  {isLoading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={onError}
+                      width={305}
+                      disabled={!isRecaptchaValid || isLoading}
+                    />
+                  )}
                 </div>
                 <div className="recaptcha-container mt-3 mb-3">
                   <ReCAPTCHA
@@ -159,6 +185,11 @@ function Login() {
                     className="g-recaptcha"
                   />
                 </div>
+                {error && (
+                  <div className="alert alert-danger" role="alert">
+                    {error}
+                  </div>
+                )}
               </div>
             </div>
             <div className="nstp_bg" />
