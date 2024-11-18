@@ -216,3 +216,10 @@ main {
     transform: scale(0.8);
   }
 }
+
+/* Add this to center the Google login button */
+.google-login-container {
+  display: flex; /* Use flexbox */
+  justify-content: center; /* Center horizontally */
+  margin-top: 20px; /* Add some space above */
+}
