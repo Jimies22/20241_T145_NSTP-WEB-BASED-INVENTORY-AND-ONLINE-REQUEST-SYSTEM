@@ -172,3 +172,54 @@
     max-height: 200px;
   }
 }
+
+.date-input,
+.time-input {
+  width: 100%;
+  padding: 12px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  color: #000000;
+}
+
+/* Calendar icon color */
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert();
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+/* Clock icon color */
+.time-input::-webkit-calendar-picker-indicator {
+  filter: invert();
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+/* For Firefox */
+.date-input::-moz-calendar-picker-indicator,
+.time-input::-moz-calendar-picker-indicator {
+  filter: invert(0.3);
+  opacity: 0.8;
+}
+
+/* Add placeholder styling */
+.date-input::placeholder,
+.time-input::placeholder {
+  color: #000000;
+}
+
+/* For the time input's placeholder text (--:-- --) */
+.time-input {
+  color: #000000;
+}
+
+/* When user starts typing or selects a value */
+.time-input:focus,
+.date-input:focus,
+.time-input:valid,
+.date-input:valid {
+  color: #000000;
+}

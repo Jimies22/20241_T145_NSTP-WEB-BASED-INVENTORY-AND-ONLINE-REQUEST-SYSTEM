@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../css/Login.css"; // Ensure this path is correct
 import nstpLogo from "../assets/NSTP_LOGO.png";
+import { apiRequest } from "../js/api.js";
 
 const clientId =
   "96467309918-sjb49jofskdnaffpravkqgu1o6p0a8eh.apps.googleusercontent.com";
@@ -16,35 +17,26 @@ function Login() {
   const navigate = useNavigate();
   const [recaptchaValue, setRecaptchaValue] = useState(null);
   const [isRecaptchaValid, setIsRecaptchaValid] = useState(false);
+  const [error, setError] = useState(null);
 
-  const onSuccess = (credentialResponse) => {
-    console.log("Login Success:", credentialResponse);
-    const { credential } = credentialResponse;
-
-    fetch("http://localhost:3000/login/google", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token: credential }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message === "Login successful") {
-          sessionStorage.setItem("sessionToken", data.token);
-          if (data.user.role === "admin") {
-            navigate("/admin");
-          } else {
-            navigate("/user");
-          }
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch((error) => {
-        console.error("Error during login:", error);
-        alert("Login failed: An error occurred while logging in.");
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await apiRequest("/auth/google", {
+        method: "POST",
+        body: JSON.stringify({ token: credentialResponse.credential }),
       });
+
+      if (response.success) {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+
+        navigate(response.user.role === "admin" ? "/admin" : "/user");
+      } else {
+        setError(response.message);
+      }
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   const onError = () => {
@@ -118,7 +110,7 @@ function Login() {
                   }}
                 >
                   <GoogleLogin
-                    onSuccess={onSuccess}
+                    onSuccess={handleGoogleSuccess}
                     onError={onError}
                     width={305}
                     disabled={!isRecaptchaValid}

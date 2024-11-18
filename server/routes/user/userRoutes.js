@@ -7,6 +7,7 @@ import {
   errorHandler,
   notFound,
 } from "../../middleware/ervalMiddleware.js";
+import { authenticateToken } from "../../middleware/erval2Middleware.js";
 
 const router = express.Router();
 

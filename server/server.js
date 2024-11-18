@@ -1,10 +1,24 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import itemRoutes from "./routes/admin/itemRoute.js";
-import userRoutes from "./routes/user/userRoutes.js";
-import { errorHandler, notFound } from "./middleware/ervalMiddleware.js";
+import cors from "cors";
+import helmet from "helmet";
 
+// Import middleware
+import { errorHandler, notFound } from "./middleware/ervalMiddleware.js";
+import {
+  limiter,
+  authenticateToken,
+  authorizeAdmin,
+} from "./middleware/erval2Middleware.js";
+
+// Import routes
+import authRoutes from "./routes/loginRoute.js";
+import userRoutes from "./routes/user/userRoutes.js";
+import itemRoutes from "./routes/admin/itemRoute.js";
+import protectedRoutes from "./routes/protectedRoutes.js";
+
+// Initialize dotenv
 dotenv.config();
 
 const app = express();
@@ -15,6 +29,35 @@ console.log("Starting server...");
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// CORS configuration
+const corsOptions = {
+  origin: ["http://localhost:5173", "http://localhost:3000"], // Add your frontend URLs
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  maxAge: 600,
+};
+
+app.use(cors(corsOptions));
+
+// Security middleware
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "accounts.google.com"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://accounts.google.com"],
+        frameSrc: ["'self'", "https://accounts.google.com"],
+      },
+    },
+  })
+);
+
+app.use(limiter);
 
 // Updated MongoDB connection options
 const connectWithRetry = async () => {
@@ -51,8 +94,10 @@ mongoose.connection.on("disconnected", () => {
 connectWithRetry();
 
 // Routes
-app.use("/api/items", itemRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", authenticateToken, userRoutes);
+app.use("/api/items", authenticateToken, authorizeAdmin, itemRoutes);
+app.use("/api/protected", authenticateToken, protectedRoutes);
 
 // Health check route
 app.get("/api/health", (req, res) => {
@@ -76,5 +121,14 @@ process.on("unhandledRejection", (err) => {
 // Add error handling last
 app.use(notFound);
 app.use(errorHandler);
+
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    message: "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err.message : {},
+  });
+});
 
 export default app;
