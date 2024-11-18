@@ -198,3 +198,21 @@ p {
 main {
   padding: 0; /* Remove padding */
 }
+
+.recaptcha-container {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.g-recaptcha {
+  transform: scale(0.9);
+  transform-origin: center;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .g-recaptcha {
+    transform: scale(0.8);
+  }
+}

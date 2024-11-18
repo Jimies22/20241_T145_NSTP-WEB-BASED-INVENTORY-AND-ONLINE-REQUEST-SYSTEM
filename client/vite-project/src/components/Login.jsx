@@ -1,5 +1,5 @@
 // src/components/Login.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -18,24 +18,63 @@ function Login() {
   const [recaptchaValue, setRecaptchaValue] = useState(null);
   const [isRecaptchaValid, setIsRecaptchaValid] = useState(false);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Test backend connection on component mount
+    const testConnection = async () => {
+      try {
+        await apiRequest("/health");
+        console.log("Backend connection successful");
+      } catch (error) {
+        console.error("Backend connection failed:", error);
+        setError("Unable to connect to server");
+      }
+    };
+
+    testConnection();
+  }, []);
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
+      if (!recaptchaValue) {
+        setError("Please complete the ReCAPTCHA verification");
+        return;
+      }
+
+      setIsLoading(true);
+      // First verify ReCAPTCHA
+      const recaptchaResponse = await apiRequest("/auth/verify-recaptcha", {
+        method: "POST",
+        body: JSON.stringify({ recaptchaToken: recaptchaValue }),
+      });
+
+      if (!recaptchaResponse.success) {
+        setError("ReCAPTCHA verification failed");
+        return;
+      }
+
+      // Then proceed with Google login
       const response = await apiRequest("/auth/google", {
         method: "POST",
-        body: JSON.stringify({ token: credentialResponse.credential }),
+        body: JSON.stringify({
+          token: credentialResponse.credential,
+          recaptchaToken: recaptchaValue,
+        }),
       });
 
       if (response.success) {
         localStorage.setItem("token", response.token);
         localStorage.setItem("user", JSON.stringify(response.user));
-
         navigate(response.user.role === "admin" ? "/admin" : "/user");
       } else {
-        setError(response.message);
+        setError(response.message || "Login failed");
       }
     } catch (error) {
-      setError(error.message);
+      setError(error.message || "An error occurred during login");
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -46,7 +85,12 @@ function Login() {
 
   const onRecaptchaChange = (value) => {
     setRecaptchaValue(value);
-    setIsRecaptchaValid(true);
+    setIsRecaptchaValid(!!value);
+  };
+
+  const onRecaptchaExpired = () => {
+    setRecaptchaValue(null);
+    setIsRecaptchaValid(false);
   };
 
   return (
@@ -100,27 +144,22 @@ function Login() {
                 <p className="line">
                   _____________________________________________________________
                 </p>
-                <div
-                  id="google-signin-btn"
-                  className="d-flex justify-content-center mt-3 mb-5"
-                  style={{
-                    width: "80%",
-                    margin: "0 auto",
-                    transform: "scale(1.2)",
-                  }}
-                >
+                <div className="recaptcha-container mt-3 mb-3">
+                  <ReCAPTCHA
+                    sitekey={recaptchaKey}
+                    onChange={onRecaptchaChange}
+                    onExpired={onRecaptchaExpired}
+                    className="g-recaptcha"
+                  />
+                </div>
+                <div className="google-login-container">
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
                     onError={onError}
                     width={305}
-                    disabled={!isRecaptchaValid}
+                    disabled={!isRecaptchaValid || isLoading}
                   />
                 </div>
-                <ReCAPTCHA
-                  sitekey={recaptchaKey}
-                  onChange={onRecaptchaChange}
-                  className="g-recaptcha mt-3"
-                />
               </div>
             </div>
             <div className="nstp_bg" />

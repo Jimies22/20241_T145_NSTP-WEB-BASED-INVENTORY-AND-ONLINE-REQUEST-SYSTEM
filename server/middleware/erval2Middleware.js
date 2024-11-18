@@ -2,6 +2,7 @@ import { body, validationResult } from "express-validator";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
+import BlacklistedToken from "../models/blacklistedToken.js";
 
 // Enhanced user validation
 export const validateUser = [
@@ -39,7 +40,7 @@ export const limiter = rateLimit({
 });
 
 // Enhanced authentication middleware
-export const authenticateToken = (req, res, next) => {
+export const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
@@ -48,6 +49,15 @@ export const authenticateToken = (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: "Authentication required",
+      });
+    }
+
+    // Check if token is blacklisted
+    const isBlacklisted = await BlacklistedToken.findOne({ token });
+    if (isBlacklisted) {
+      return res.status(401).json({
+        success: false,
+        message: "Token has been revoked",
       });
     }
 

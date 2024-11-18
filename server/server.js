@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 import helmet from "helmet";
+import punycode from "punycode2";
 
 // Import middleware
 import { errorHandler, notFound } from "./middleware/ervalMiddleware.js";
@@ -32,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS configuration
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:3000"], // Add your frontend URLs
+  origin: ["http://localhost:3002", "http://localhost:3000"], // Add your frontend URLs
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
