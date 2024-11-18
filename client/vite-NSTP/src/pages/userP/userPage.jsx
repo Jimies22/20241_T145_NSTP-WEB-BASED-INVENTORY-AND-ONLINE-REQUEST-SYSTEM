@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
-import ProjectorGrid from "../../components/ProjectorGrid";
-import BookingOverlay from "../../components/BookingOverlay";
+import Sidebar from "../../components/userComponent/Sidebar";
+import Navbar from "../../components/userComponent/Navbar";
+import ProjectorGrid from "../../components/userComponent/ProjectorGrid";
+import BookingOverlay from "../../components/userComponent/BookingOverlay";
 import Dashboard from "../../components/Dashboard";
 
 function UserPage() {

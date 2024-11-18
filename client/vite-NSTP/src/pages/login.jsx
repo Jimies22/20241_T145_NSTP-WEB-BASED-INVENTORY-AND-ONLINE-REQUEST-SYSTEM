@@ -6,7 +6,7 @@ import logo from "../assets/nstp_logo.png";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { ErrorBoundary } from "react-error-boundary";
+// import { ErrorBoundary } from "react-error-boundary";
 
 function ErrorFallback({ error }) {
   return (
