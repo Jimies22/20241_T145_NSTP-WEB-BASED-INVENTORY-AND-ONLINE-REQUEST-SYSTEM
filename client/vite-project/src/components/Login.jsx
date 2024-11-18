@@ -144,20 +144,21 @@ function Login() {
                 <p className="line">
                   _____________________________________________________________
                 </p>
-                <div className="recaptcha-container mt-3 mb-3">
-                  <ReCAPTCHA
-                    sitekey={recaptchaKey}
-                    onChange={onRecaptchaChange}
-                    onExpired={onRecaptchaExpired}
-                    className="g-recaptcha"
-                  />
-                </div>
+
                 <div className="google-login-container">
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
                     onError={onError}
                     width={305}
                     disabled={!isRecaptchaValid || isLoading}
+                  />
+                </div>
+                <div className="recaptcha-container mt-3 mb-3">
+                  <ReCAPTCHA
+                    sitekey={recaptchaKey}
+                    onChange={onRecaptchaChange}
+                    onExpired={onRecaptchaExpired}
+                    className="g-recaptcha"
                   />
                 </div>
               </div>

@@ -11,6 +11,7 @@ export const apiRequest = async (endpoint, options = {}) => {
   try {
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
+      credentials: "include",
       headers: {
         ...defaultHeaders,
         ...options.headers,

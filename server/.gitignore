@@ -10,7 +10,7 @@ yarn-error.log*
 
 # Node modules
 node_modules/
-/node_modules
+
 
 # Build output
 dist/
