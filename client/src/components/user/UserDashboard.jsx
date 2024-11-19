@@ -10,6 +10,8 @@ const UserDashboard = () => {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const token = sessionStorage.getItem('sessionToken');
@@ -50,6 +52,22 @@ const UserDashboard = () => {
         );
     };
 
+    const handleCardClick = async (item) => {
+        try {
+            const response = await axios.get(`http://localhost:3000/items/${item.item_id}`);
+            setSelectedItem(response.data);
+            setShowModal(true);
+        } catch (error) {
+            console.error('Error fetching item details:', error);
+            setError('Failed to fetch item details');
+        }
+    };
+
+    const handleCloseModal = () => {
+        setShowModal(false);
+        setSelectedItem(null);
+    };
+
     return (
         <div className="user-dashboard">
             <UserSidebar />
@@ -69,7 +87,7 @@ const UserDashboard = () => {
                             <p>{error}</p>
                         ) : (
                             items.map(item => (
-                                <div className="card" key={item.item_id}>
+                                <div className="card" key={item.item_id} onClick={() => handleCardClick(item)}>
                                     <div className="card-image">
                                         <img src={item.image || '/path/to/default/image.jpg'} alt={item.name} />
                                     </div>
@@ -81,6 +99,20 @@ const UserDashboard = () => {
                             ))
                         )}
                     </div>
+
+                    {showModal && selectedItem && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <h1>{selectedItem.name}</h1>
+                                <img src={selectedItem.image || '/path/to/default/image.jpg'} alt={selectedItem.name} />
+                                <p><strong>Item ID:</strong> {selectedItem.item_id}</p>
+                                <p><strong>Description:</strong> {selectedItem.description}</p>
+                                <p><strong>Category:</strong> {selectedItem.category}</p>
+                                <p><strong>Availability:</strong> {selectedItem.availability ? 'AVAILABLE' : 'UNAVAILABLE'}</p>
+                                <button onClick={handleCloseModal}>Close</button>
+                            </div>
+                        </div>
+                    )}
                 </main>
             </section>
         </div>

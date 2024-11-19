@@ -9,6 +9,7 @@ const User = require('./models/User');
 const userRoutes = require('./routes/userRoutes');
 const documentRoutes = require('./routes/documentRoutes');
 const itemRoutes = require('./routes/itemRoutes');
+const Item = require('./models/Item');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -126,6 +127,15 @@ app.use('/users', userRoutes);
 app.use('/documents', documentRoutes);
 app.use('/items', itemRoutes);
 
+// Example Express.js route to fetch items
+app.get('/items', async (req, res) => {
+    try {
+        const items = await Item.find(); // Assuming you are using Mongoose
+        res.json(items);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching items' });
+    }
+});
 
 // Logout route to clear the session
 app.post('/logout', (req, res) => {
