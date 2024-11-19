@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Poppins', sans-serif;
+	background-color: var(--light);
+	color: var(--dark);
+}
+
+/* Ensure the content area is styled correctly */
+.reports-page {
+	display: flex;
+	width: 100%;
+	height: 100vh;
+}
+
+#content {
+	position: absolute; /* Ensure it is positioned correctly */
+	width: calc(100% - 280px); /* Adjust according to your layout */
+	left: 280px; /* Align with the sidebar */
+	top: 0; /* Align with the top */
+	transition: .3s ease;
+	margin: 0;
+	padding: 0;
+	height: calc(100vh - 56px); /* Set height to fill the remaining viewport */
+	overflow: hidden; /* Prevent scrolling */
+}
+
+main {
+	padding: 10px; /* Remove padding */
+	font-family: var(--poppins);
+	min-height: calc(100vh - 56px); /* Ensure it fills the height */
+	overflow-y: auto; /* Allow scrolling if needed */
+	background-color: #eee; /* Background color for visibility */
+}
+
+/* Add any additional styles specific to the ReportsPage here */
+.table-data {
+	display: flex;
+	flex-wrap: wrap;
+	grid-gap: 24px;
+	margin-top: 24px;
+	width: 100%;
+	color: var(--dark);
+}
+
+.table-data .pending-requests {
+	flex-grow: 1;
+	flex-basis: 300px;
+	max-height: 700px; /* Adjust the height as needed */
+	overflow-y: auto; /* Enables vertical scrolling */
+	border-radius: 20px; /* Retain existing styles */
+	background: var(--light);
+	padding: 24px;
+}
+
+.table-data .pending-requests .head {
+	display: flex;
+	align-items: center;
+	grid-gap: 16px;
+	margin-bottom: 24px;
+}
+
+.table-data .pending-requests .head h3 {
+	margin-right: auto;
+	font-size: 24px;
+	font-weight: 600;
+}
+
+.table-data .pending-requests .order table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.table-data .pending-requests .order table th {
+	padding-bottom: 12px;
+	font-size: 13px;
+	text-align: left;
+	border-bottom: 1px solid var(--grey);
+}
+
+.table-data .pending-requests .order table td {
+	padding: 16px 0;
+}
+
+.table-data .pending-requests .order table tbody tr:hover {
+	background: var(--grey);
+}
+
+/* Overlay styles */
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.overlay-content {
+	background: white;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+

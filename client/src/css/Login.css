@@ -1,0 +1,198 @@
+/* Center the card on the page */
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevents horizontal scrollbar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    color: white;
+    width: 100%;
+    display: flex;
+    align-items:end;
+    justify-content: flex-start; /* Align items to the left */
+    margin: 10px;
+    position: fixed; /* Make the logo fixed at the left edge */
+    top: 10px; /* Align to the top */
+    left: 10px; /* Align to the very left edge */
+    z-index: 10; 
+}
+
+.nstp_logo{
+    max-height: 80px; /* Adjust the height as needed */
+    margin-right: 10px; /* Add space between the logo and the text */
+}
+
+/* Circle container with pseudo-element */
+.circle {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vh;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.circle::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 200vh;
+    height: 200vh;
+    background-color: #3f4699;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Card styling */
+.card {
+    width: 80%;
+    max-width: 30rem;
+    margin: auto;
+    padding: 20px;
+    background-color: rgba(63, 71, 153, 0.9);
+    position: relative;
+    text-align: center;
+    border: none;
+}
+    
+
+.form-container {
+    margin-top: 20px;
+}
+
+.form-floating {
+    margin-left: 20px;
+    width: 90%;
+    opacity: .9;
+    position: relative; /* Ensure form-floating is above the background image */
+}
+.btn {
+    width: 90%;
+    margin-top: 10px; /* Add space between buttons */
+    display: block;
+    text-align: center; /* Align text to center */
+}
+
+.btn-primary {
+    height: 50px;
+    background-color:#7b96d4    ;
+    border:none;
+    display: flex; /* Center text */
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+    text-align: center; /* Center-align text inside */
+    margin: auto; /* Center the button */
+}
+
+a.btn-outline-dark {
+    height: 50px;
+    color: #fffefe;
+    background-color:#7b96d4;
+    border:none;
+    border-color: #fffefe;
+    display: flex; /* Center text */
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+    text-align: center; /* Center-align text inside */
+    margin: auto; /* Center the button */
+}
+.google_logo{
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+}
+.bi-person,.bi-key{
+    margin-right: 10px;
+}
+
+/* Typography styling */
+h1 {
+    color: rgb(255, 255, 255);
+    margin-bottom: 20px;
+    margin-top: 50px;
+
+}
+.checkbox{
+    color: white;
+    margin-bottom: 20px;
+    margin-right: 30vh;
+}
+p {
+    color: rgb(255, 255, 255);
+}
+.nstp_bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Cover the full height */
+    background: radial-gradient(circle at top right, rgba(15, 28, 166, 0.919), transparent 35%),
+                radial-gradient(circle at bottom center, rgba(164, 16, 23, 0.775), transparent 45%),
+    url('../assets/Buksu_Background.jpg') no-repeat center center;
+    background-size:cover; /* Show the image in its original size, contain it within the viewport */
+    background-attachment: fixed; /* Keep the image fixed on scroll */
+    background-position: center; /* Keep it centered */
+    z-index: -2;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .circle::before {
+        width: 150vh;
+        height: 150vh;
+    }
+    h1 {
+        font-size: 1.5rem;
+    }
+    .logo {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+    }
+    .card {
+        padding: 15px;
+    }
+}
+
+/* Add reCAPTCHA styling */
+.g-recaptcha {
+    width: 90%;
+    height: 50px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.g-recaptcha > div {
+    transform: scale(.80); /* Adjust scale to match button size */
+    transform-origin: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    width: 100%; /* Ensure full width */
+    background-color: transparent; /* Ensure no background color */
+}
+
+main {
+    padding: 0; /* Remove padding */
+}
+hr{
+    width: auto;
+    color: white;
+    margin-left: 20px;
+    margin-right: 20px;
+}

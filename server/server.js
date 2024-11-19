@@ -1,144 +1,111 @@
-import express from "express";
-import dotenv from "dotenv";
-import mongoose from "mongoose";
-import cors from "cors";
-import helmet from "helmet";
-import punycode from "punycode2";
-
-// Import middleware
-import { errorHandler, notFound } from "./middleware/ervalMiddleware.js";
-import {
-  limiter,
-  authenticateToken,
-  authorizeAdmin,
-} from "./middleware/erval2Middleware.js";
-
-// Import routes
-import authRoutes from "./routes/loginRoute.js";
-import userRoutes from "./routes/user/userRoutes.js";
-import itemRoutes from "./routes/admin/itemRoute.js";
-import protectedRoutes from "./routes/protectedRoutes.js";
-
-// Initialize dotenv
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const session = require("express-session");
+const passport = require("passport");
+const connectDB = require("./config/db");
+const { OAuth2Client } = require("google-auth-library");
+const jwt = require("jsonwebtoken");
+const User = require("./models/User");
+const userRoutes = require("./routes/userRoutes");
+const documentRoutes = require("./routes/documentRoutes");
+const itemRoutes = require("./routes/itemRoutes");
+const loginRoutes = require("./routes/loginRoutes");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-console.log("Starting server...");
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// CORS configuration
-const corsOptions = {
-  origin: "http://localhost:3001", // Your frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-  maxAge: 600,
-};
-
-app.use(cors(corsOptions));
-
-// Security middleware
+require("dotenv").config();
+require("./config/passport");
 app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "accounts.google.com"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "https://accounts.google.com"],
-        frameSrc: ["'self'", "https://accounts.google.com"],
-      },
-    },
+  cors({
+    origin: ["http://localhost:3001", "http://localhost:3000"],
+    credentials: true,
   })
 );
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+app.use(express.json());
 
-app.use(limiter);
+// Initialize session and passport
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
-// Add before other middleware
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`, {
-    body: req.body,
-    headers: req.headers,
-  });
-  next();
-});
+// Connect to MongoDB
+connectDB();
 
-// Updated MongoDB connection options
-const connectWithRetry = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
-
-    console.log("MongoDB Connected Successfully");
-    console.log("Connection State:", mongoose.connection.readyState);
-    console.log("Database Name:", mongoose.connection.name);
-  } catch (error) {
-    console.error("MongoDB connection error:", error.message);
-    console.log("Retrying connection in 5 seconds...");
-    setTimeout(connectWithRetry, 5000);
+// Middleware to verify JWT
+const jwtVerifyMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
   }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: Invalid or expired token" });
+    }
+    req.user = decoded; // Attach decoded user info to request
+    next();
+  });
 };
 
-// Monitor MongoDB connection
-mongoose.connection.on("connected", () => {
-  console.log("Mongoose connected to MongoDB");
+// Google authentication routes
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    // Successful authentication, redirect based on role
+    if (req.user.role === "admin") {
+      res.redirect("/admin");
+    } else if (req.user.role === "user") {
+      res.redirect("/user");
+    } else {
+      res.redirect("/login"); // Or handle unknown roles
+    }
+  }
+);
+
+// Route to check the logged-in user's role
+app.get("/user", jwtVerifyMiddleware, (req, res) => {
+  res.json({ user: req.user });
 });
 
-mongoose.connection.on("error", (err) => {
-  console.error("Mongoose connection error:", err);
+app.get("/admin", jwtVerifyMiddleware, (req, res) => {
+  if (req.user.role === "admin") {
+    res.json({ message: "Welcome to the Admin Dashboard" });
+  } else {
+    res.status(403).json({ message: "Access denied: Admins only" });
+  }
 });
 
-mongoose.connection.on("disconnected", () => {
-  console.log("Mongoose disconnected from MongoDB");
-});
+// Use the user routes
+app.use("/users", userRoutes);
+app.use("/documents", documentRoutes);
+app.use("/items", itemRoutes);
+app.use("/login", loginRoutes);
+// app.use("/admin", adminRoutes);
 
-// Initial connection
-connectWithRetry();
-
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", authenticateToken, userRoutes);
-app.use("/api/items", authenticateToken, authorizeAdmin, itemRoutes);
-app.use("/api/protected", authenticateToken, protectedRoutes);
-
-// Health check route
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "ok",
-    dbState: mongoose.connection.readyState,
-    dbName: mongoose.connection.name,
-    timestamp: new Date().toISOString(),
+// Logout route to clear the session
+app.post("/logout", (req, res) => {
+  req.logout(() => {
+    res.status(200).json({ message: "Logged out successfully" });
   });
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
-// Handle errors
-process.on("unhandledRejection", (err) => {
-  console.error("Unhandled Rejection:", err);
-});
-
-// Add error handling last
-app.use(notFound);
-app.use(errorHandler);
-
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: "Internal Server Error",
-    error: process.env.NODE_ENV === "development" ? err.message : {},
-  });
-});
-
-export default app;
