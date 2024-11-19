@@ -45,7 +45,7 @@ function Login() {
       })
       .catch((error) => {
         console.error("Error during login:", error);
-        alert("Login failed: An error occurred while logging in.");
+        alert("Login failed: An error occurred while logging in 1.");
         //alert("Login failed: An error occurred in /login/google.");
       });
   };
@@ -77,7 +77,7 @@ function Login() {
       }
     } catch (error) {
       console.error("Admin login error:", error);
-      alert("Login failed: An error occurred while logging in.");
+      alert("Login failed: An error occurred while logging in 2.");
       //alert("Login failed: An error occurred in login/admin.");
     }
   };
@@ -132,7 +132,7 @@ function Login() {
       }
     } catch (error) {
       console.error("Error during login:", error);
-      alert("Login failed: An error occurred while logging in.");
+      alert("Login failed: An error occurred while logging in 3.");
     }
   };
 
