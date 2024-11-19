@@ -1,44 +1,43 @@
-import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
-export const protect = async (req, res, next) => {
-  try {
-    // Check for token first
-    if (
-      !req.headers.authorization ||
-      !req.headers.authorization.startsWith("Bearer")
-    ) {
-      return res.status(401).json({ message: "Not authorized, no token" });
-    }
+// Middleware to authenticate with Google token and issue JWT
+const authMiddleware = (req, res, next) => {
+    passport.authenticate('google-token', { session: false }, (err, user) => {
+        if (err || !user) {
+            return res.status(401).json({ message: 'Unauthorized: Invalid Google token' });
+        }
 
-    // Get token from header
-    const token = req.headers.authorization.split(" ")[1];
+        // Generate a JWT with user ID and role
+        const token = jwt.sign(
+            { userId: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' } // Token expires in 1 hour
+        );
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Get user from token
-    const user = await User.findOne({ userID: decoded.userID }).select(
-      "-password"
-    );
-
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
-    }
-
-    req.user = user;
-    next();
-  } catch (error) {
-    console.error(error);
-    return res.status(401).json({ message: "Not authorized, token failed" });
-  }
+        // Attach token to response and proceed
+        req.user = user;
+        req.token = token;
+        next();
+    })(req, res, next);
 };
 
-// Admin middleware
-export const admin = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
-    next();
-  } else {
-    res.status(401).json({ message: "Not authorized as an admin" });
-  }
+// Middleware to verify JWT on protected routes
+const jwtVerifyMiddleware = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1]; // Extract token from Authorization header
+
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ message: 'Unauthorized: Invalid or expired token' });
+        }
+
+        req.user = decoded; // Attach decoded user info to request
+        next();
+    });
 };
+
+module.exports = { authMiddleware, jwtVerifyMiddleware };

@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Poppins', sans-serif;
+	background-color: var(--light);
+	color: var(--dark);
+}
+
+/* CONTENT */
+#content {
+	position: absolute;
+	width: calc(100% - 280px);
+	left: 280px;
+	top: 0;
+	transition: .3s ease;
+	margin: 0;
+	padding: 0;
+	height: calc(100vh - 56px);
+	overflow: hidden;
+}
+
+/* MAIN */
+main {
+	font-family: var(--poppins);
+	min-height: calc(100vh - 56px);
+	overflow-y: auto;
+	background-color: #eee;
+	padding: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	#content {
+		padding: 20px;
+	}
+}
+
+/* Adjust the content margin to avoid overlap with the navbar */
+#content {
+    margin-top: 0; /* Remove margin to align with the navbar */
+    overflow: hidden; /* Prevent scrolling */
+    height: calc(100vh - 56px); /* Set height to fill the remaining viewport */
+}
