@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS configuration
 const corsOptions = {
-  origin: ["http://localhost:3001", "http://localhost:3000"], // Add your frontend URLs
+  origin: "http://localhost:3001", // Your frontend URL
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -59,6 +59,15 @@ app.use(
 );
 
 app.use(limiter);
+
+// Add before other middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`, {
+    body: req.body,
+    headers: req.headers,
+  });
+  next();
+});
 
 // Updated MongoDB connection options
 const connectWithRetry = async () => {

@@ -31,25 +31,25 @@ function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute role="admin">
-              <AdminDashboard />
-            </ProtectedRoute>
+            // <ProtectedRoute role="admin">
+            <AdminDashboard />
+            // </ProtectedRoute>
           }
         />
         <Route
           path="/user"
           element={
-            <ProtectedRoute role="user">
-              <UserDashboard />
-            </ProtectedRoute>
+            // <ProtectedRoute role="user">
+            <UserDashboard />
+            // </ProtectedRoute>
           }
         />
         <Route
           path="/admin"
           element={
-            <ProtectedRoute role="admin">
-              <AdminDashboard />
-            </ProtectedRoute>
+            // <ProtectedRoute role="admin">
+            <AdminDashboard />
+            // </ProtectedRoute>
           }
         />
         <Route path="/request" element={<RequestPage />} />

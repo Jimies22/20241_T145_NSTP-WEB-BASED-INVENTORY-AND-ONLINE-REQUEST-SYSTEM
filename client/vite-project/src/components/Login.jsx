@@ -19,12 +19,14 @@ function Login() {
   const [isRecaptchaValid, setIsRecaptchaValid] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     // Test backend connection on component mount
     const testConnection = async () => {
       try {
-        await apiRequest("/health");
+        await apiRequest("/api/health");
         console.log("Backend connection successful");
       } catch (error) {
         console.error("Backend connection failed:", error);
@@ -37,6 +39,9 @@ function Login() {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
+      console.log("Starting Google login process");
+      console.log("Credential Response:", credentialResponse);
+
       if (!recaptchaValue) {
         setError("Please complete the ReCAPTCHA verification");
         return;
@@ -45,10 +50,12 @@ function Login() {
       setIsLoading(true);
 
       // First verify ReCAPTCHA
+      console.log("Sending ReCAPTCHA verification request");
       const recaptchaResponse = await apiRequest("/api/auth/verify-recaptcha", {
         method: "POST",
         body: JSON.stringify({ recaptchaToken: recaptchaValue }),
       });
+      console.log("ReCAPTCHA Response:", recaptchaResponse);
 
       if (!recaptchaResponse.success) {
         setError("ReCAPTCHA verification failed");
@@ -56,6 +63,7 @@ function Login() {
       }
 
       // Then proceed with Google login/signup
+      console.log("Proceeding with Google login...");
       const response = await apiRequest("/api/auth/google", {
         method: "POST",
         body: JSON.stringify({
@@ -63,6 +71,7 @@ function Login() {
           recaptchaToken: recaptchaValue,
         }),
       });
+      console.log("Login response:", response);
 
       if (response.success) {
         // Store user data and token
@@ -93,8 +102,8 @@ function Login() {
         setError(response.message || "Login failed");
       }
     } catch (error) {
+      console.error("Login process failed:", error);
       setError(error.message || "An error occurred during login");
-      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -115,6 +124,44 @@ function Login() {
     setIsRecaptchaValid(false);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (!recaptchaValue) {
+        setError("Please complete the ReCAPTCHA verification");
+        return;
+      }
+
+      setIsLoading(true);
+
+      const response = await apiRequest("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          password,
+          recaptchaToken: recaptchaValue,
+        }),
+      });
+
+      if (response.success) {
+        // Store user data and token
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+
+        // Redirect based on role
+        navigate(response.user.role === "admin" ? "/admin" : "/user");
+      } else {
+        setError(response.message || "Login failed");
+      }
+    } catch (error) {
+      setError(error.message || "An error occurred during login");
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <GoogleOAuthProvider clientId={clientId}>
       <div className="logo">
@@ -124,7 +171,10 @@ function Login() {
           <h6>ONLINE REQUEST</h6>
         </div>
       </div>
-      <form className="d-flex align-items-center justify-content-center vh-100">
+      <form
+        onSubmit={handleSubmit}
+        className="d-flex align-items-center justify-content-center vh-100"
+      >
         <div className="circle">
           <div className="card text-center">
             <div className="card-body">
@@ -137,6 +187,8 @@ function Login() {
                     id="floatingInput"
                     placeholder="name@example.com"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                   <label htmlFor="floatingInput">
                     <i className="bi bi-person" />
@@ -150,6 +202,8 @@ function Login() {
                     id="floatingPassword"
                     placeholder="Password"
                     required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <label htmlFor="floatingPassword">
                     <i className="bi bi-key" />
@@ -160,8 +214,12 @@ function Login() {
                 <label className="checkbox" htmlFor="checkbox">
                   Keep me logged in
                 </label>
-                <button type="submit" className="btn btn-primary mt-3">
-                  Login
+                <button
+                  type="submit"
+                  className="btn btn-primary mt-3"
+                  disabled={!isRecaptchaValid || isLoading}
+                >
+                  {isLoading ? "Logging in..." : "Login"}
                 </button>
                 <hr className="line" />
 
