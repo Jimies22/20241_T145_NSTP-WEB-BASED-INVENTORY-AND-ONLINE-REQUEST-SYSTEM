@@ -2,43 +2,41 @@ const User = require('../models/User');
 
 // Create a new user
 const createUser = async (req, res) => {
-    const { email, role, name, picture, department, userID } = req.body;
-
+    const { email, role, name, department } = req.body;
+    
     try {
+        // Extract userID from email for student emails
+        let userID;
+        if (email.includes('@student.buksu.edu.ph')) {
+            userID = parseInt(email.split('@')[0]);
+        } else {
+            // For non-student emails, generate a random 10-digit number
+            userID = Math.floor(Math.random() * 9000000000) + 1000000000;
+        }
+
         // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ 
+            $or: [{ email }, { userID }] 
+        });
+        
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Create a new user object
         const newUser = new User({
             email,
             role,
             name,
-            picture,
             department,
-            // Use provided userID if it exists, otherwise generate one
-            userID: userID || await getNextUserID()
+            userID
         });
 
-        // Generate Google ID if needed
-        newUser.generateGoogleId();
-
-        // Save the user to the database
         await newUser.save();
-
         res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
-        console.error('Error creating user:', error.message);
-        res.status(500).json({ message: `Server error: ${error.message}` });
+        console.error('Error creating user:', error);
+        res.status(500).json({ message: 'Server error' });
     }
-};
-
-// Helper function to get next userID
-const getNextUserID = async () => {
-    const lastUser = await User.findOne().sort({ userID: -1 });
-    return lastUser ? lastUser.userID + 1 : 1;
 };
 
 // Fetch all users
@@ -77,25 +75,34 @@ const searchUsersByName = async (req, res) => {
     }
 };
 
-// Update user information by userID
+// Update user information
 const updateUser = async (req, res) => {
-    const { name, role, picture, email, department, userID } = req.body;
+    const { name, role, department, email } = req.body;
+    const { userID } = req.params;
 
     try {
-        // Find the user by userID and update the fields provided in the request
+        // Check if email is being changed and already exists
+        if (email) {
+            const existingUser = await User.findOne({ 
+                email, 
+                userID: { $ne: parseInt(userID) } 
+            });
+            if (existingUser) {
+                return res.status(400).json({ message: 'Email already in use' });
+            }
+        }
+
         const user = await User.findOneAndUpdate(
-            { userID: req.params.userID },
+            { userID: parseInt(userID) },
             {
                 $set: {
                     name: name || undefined,
                     role: role || undefined,
-                    picture: picture || undefined,
-                    email: email || undefined,   // This will update the email
-                    department: department || undefined,
-                    userID: userID || undefined  // This will allow updating the userID if needed
+                    email: email || undefined,
+                    department: department || undefined
                 }
             },
-            { new: true }  // This will return the updated user
+            { new: true }
         );
 
         if (!user) {

@@ -23,6 +23,7 @@ import AdminNotificationPage from './components/admin/AdminNotificationPage';
 import UserRequestPage from './components/user/UserRequestPage';
 import UserBorrowPage from './components/user/UserBorrowPage';
 import UserReportPage from './components/user/UserReportPage';
+import AddUser from './components/admin/AddUser';
 
 function App() {
     const [items, setItems] = useState([]);
@@ -64,6 +65,7 @@ function App() {
                 <Route path="/activity" element={<AdminActivityPage/>} />
                 <Route path="/notification" element={<AdminNotificationPage/>} />
                 <Route path="/usernotification" element={<UserNotificationPage/>} />
+                <Route path="/users" element={<AddUser />} />
                 {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}
                 {/* <Route path="/request" element={<ProtectedRoute role="user"><Sidebar /></ProtectedRoute>} /> */}
             </Routes>
