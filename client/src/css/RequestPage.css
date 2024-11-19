@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Poppins', sans-serif;
+	background-color: var(--light);
+	color: var(--dark);
+}
+
+/* CONTENT */
+#content {
+	position: absolute;
+	width: calc(100% - 280px);
+	left: 280px;
+	top: 0;
+	transition: .3s ease;
+	margin: 0;
+	padding: 0;
+	height: calc(100vh - 56px);
+	overflow: hidden;
+}
+
+/* MAIN */
+main {
+	font-family: var(--poppins);
+	min-height: calc(100vh - 56px);
+	overflow-y: auto;
+	background-color: #eee;
+	padding: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	#content {
+		padding: 20px;
+	}
+}
+
+/* Add this new style for the navbar */
+.navbar {
+    position: fixed; /* Make the navbar fixed */
+    top: 0; /* Align it to the top */
+    left: 280px; /* Adjust according to your layout */
+    width: calc(100% - 280px); /* Full width minus sidebar */
+    z-index: 1000; /* Ensure it stays above other content */
+    background-color: var(--light); /* Background color for visibility */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Remove any padding */
+}
+
+/* Adjust the content margin to avoid overlap with the navbar */
+#content {
+    margin-top: 0; /* Remove margin to align with the navbar */
+    overflow: hidden; /* Prevent scrolling */
+    height: calc(100vh - 56px); /* Set height to fill the remaining viewport */
+}
