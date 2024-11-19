@@ -1,5 +1,6 @@
 //src/App.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import UserDashboard from './components/user/UserDashboard';
@@ -24,30 +25,50 @@ import UserBorrowPage from './components/user/UserBorrowPage';
 import UserReportPage from './components/user/UserReportPage';
 
 function App() {
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/request" element={<RequestPage />} />
-        <Route path="/user-request" element={<UserRequestPage />} />
-        <Route path="/user-dashboard" element={<UserDashboard />} />
-        <Route path="/user-borrowed" element={<UserBorrowPage />} />
-        <Route path="/user-report" element={<UserReportPage />} />
-        <Route path="/add" element={<AddItems/>} />
-        <Route path="/reports" element={<ReportsPage/>} />
-        <Route path="/archive" element={<ArchivedPage/>} />
-        <Route path="/activity" element={<AdminActivityPage/>} />
-        <Route path="/adminnotification" element={<AdminNotificationPage/>} />
-        <Route path="/usernotification" element={<UserNotificationPage/>} />
-        {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}
-        {/* <Route path="/request" element={<ProtectedRoute role="user"><Sidebar /></ProtectedRoute>} /> */}
-      </Routes>
-    </>
-  );
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetchItems();
+    }, []);
+
+    const fetchItems = async () => {
+        try {
+            const response = await axios.get('http://localhost:3000/items');
+            setItems(response.data);
+            setError(null);
+        } catch (error) {
+            console.error('Error fetching items:', error);
+            setError('Failed to fetch items');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <>
+            <Routes>
+                <Route path="/" element={<Navigate to="/login" />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard items={items} fetchItems={fetchItems} loading={loading} error={error} /></ProtectedRoute>} />
+                <Route path="/add" element={<AddItems fetchItems={fetchItems} />} />
+                <Route path="/request" element={<RequestPage />} />
+                <Route path="/user-request" element={<UserRequestPage />} />
+                <Route path="/user-dashboard" element={<UserDashboard />} />
+                <Route path="/user-borrowed" element={<UserBorrowPage />} />
+                <Route path="/user-report" element={<UserReportPage />} />
+                <Route path="/reports" element={<ReportsPage/>} />
+                <Route path="/archive" element={<ArchivedPage/>} />
+                <Route path="/activity" element={<AdminActivityPage/>} />
+                <Route path="/notification" element={<AdminNotificationPage/>} />
+                <Route path="/usernotification" element={<UserNotificationPage/>} />
+                {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}
+                {/* <Route path="/request" element={<ProtectedRoute role="user"><Sidebar /></ProtectedRoute>} /> */}
+            </Routes>
+        </>
+    );
 }
 
 export default App;
