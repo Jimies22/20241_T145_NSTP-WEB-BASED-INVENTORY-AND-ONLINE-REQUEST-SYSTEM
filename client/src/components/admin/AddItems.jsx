@@ -7,7 +7,7 @@ import AdminNavbar from '../Navbar/AdminNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/EditPage.css';
 
-function AddItems() {
+function AddItems({ updateItem }) {
     const [items, setItems] = useState([]);
     const [formData, setFormData] = useState({
         item_id: '',
@@ -19,6 +19,7 @@ function AddItems() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const columns = [
         {
@@ -124,14 +125,20 @@ function AddItems() {
         e.preventDefault();
         try {
             if (isEditing) {
-                await axios.patch(`http://localhost:3000/items/${formData.item_id}`, formData);
+                const response = await axios.patch(`http://localhost:3000/items/${formData.item_id}`, formData);
+                updateItem(response.data);
+                setSuccessMessage('Item updated successfully');
             } else {
-                await axios.post('http://localhost:3000/items/additem', formData);
+                const response = await axios.post('http://localhost:3000/items/additem', formData);
+                setItems([...items, response.data]);
+                setSuccessMessage('Item added successfully');
             }
             handleCloseModal();
             fetchItems();
         } catch (error) {
             console.error('Error saving item:', error);
+            setError('Error saving item');
+            handleCloseModal();
         }
     };
 
@@ -139,9 +146,13 @@ function AddItems() {
         if (window.confirm('Are you sure you want to delete this item?')) {
             try {
                 await axios.delete(`http://localhost:3000/items/${item_id}`);
+                setSuccessMessage('Item deleted successfully');
+                handleCloseModal();
                 fetchItems();
             } catch (error) {
                 console.error('Error deleting item:', error);
+                setError('Error deleting item');
+                handleCloseModal();
             }
         }
     };
@@ -171,6 +182,7 @@ function AddItems() {
             category: ''
         });
         setIsEditing(false);
+        setSuccessMessage('');
     };
 
     return (
@@ -191,6 +203,8 @@ function AddItems() {
                             Add New Item
                         </button>
                     </div>
+
+                    {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
                     <div className="table-data">
                         <div className="order">
