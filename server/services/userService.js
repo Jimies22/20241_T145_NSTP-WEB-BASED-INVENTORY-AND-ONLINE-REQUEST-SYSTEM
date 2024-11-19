@@ -2,29 +2,27 @@ const User = require('../models/User');
 
 // Create a new user
 const createUser = async (req, res) => {
-    const { email, role, name, picture, department } = req.body; // No need to pass userID in request body
+    const { email, role, name, picture, department, userID } = req.body;
 
     try {
+        // Check if user already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Find the last inserted user and increment userID
-        const lastUser = await User.findOne().sort({ userID: -1 }); // Sort by userID in descending order
-        const nextUserID = lastUser ? lastUser.userID + 1 : 1; // If no user exists, start from 1
-
-        // Create a new user with auto-incremented userID
+        // Create a new user object
         const newUser = new User({
             email,
             role,
             name,
             picture,
             department,
-            userID: nextUserID, // Set the incremented userID
+            // Use provided userID if it exists, otherwise generate one
+            userID: userID || await getNextUserID()
         });
 
-        // Call the generateGoogleId method before saving if googleId is not provided
+        // Generate Google ID if needed
         newUser.generateGoogleId();
 
         // Save the user to the database
@@ -32,11 +30,16 @@ const createUser = async (req, res) => {
 
         res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error creating user:', error.message);
+        res.status(500).json({ message: `Server error: ${error.message}` });
     }
 };
 
+// Helper function to get next userID
+const getNextUserID = async () => {
+    const lastUser = await User.findOne().sort({ userID: -1 });
+    return lastUser ? lastUser.userID + 1 : 1;
+};
 
 // Fetch all users
 const getAllUsers = async (req, res) => {
