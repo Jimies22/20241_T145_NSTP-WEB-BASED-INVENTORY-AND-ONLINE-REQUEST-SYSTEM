@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../sidebar/UserSidebar'; // Ensure the correct path
-import Navbar from '../Navbar'; // Ensure the correct path
+import UserNavbar from '../Navbar/UserNavbar'; // Ensure the correct path
 import '../../css/Navbar.css';
 import '../../css/RequestPage.css';
 
@@ -39,7 +39,7 @@ function UserBorrowPage() {
         <div className="user-dashboard">
             <Sidebar />
             <section id="content">
-                <Navbar />
+                <UserNavbar />
                 <main>
       <div className="head-title">
         <div className="left">

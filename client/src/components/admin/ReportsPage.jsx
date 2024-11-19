@@ -1,7 +1,7 @@
 // src/components/ReportsPage.jsx
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../sidebar/AdminSidebar';
-import Navbar from '../Navbar';
+import AdminNavbar from '../Navbar/AdminNavbar';
 import '../../css/ReportsPage.css';
 
 function ReportsPage() {
@@ -39,7 +39,7 @@ function ReportsPage() {
         <div className="reports-page">
             <Sidebar />
             <section id="content">
-                <Navbar />
+                <AdminNavbar />
                 <main>
                     <div className="head-title">
                         <div className="left">

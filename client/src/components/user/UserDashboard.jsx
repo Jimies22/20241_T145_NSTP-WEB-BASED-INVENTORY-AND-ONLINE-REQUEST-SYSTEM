@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserSidebar from '../sidebar/UserSidebar';
-import Navbar from '../Navbar';
+import UserNavbar from '../Navbar/UserNavbar';
 import '../../css/UserDashboard.css';
 // Import or define these components
 import ProjectorGrid from './ProjectorGrid';
@@ -62,7 +62,7 @@ function UserDashboard() {
             <UserSidebar />
             
             <section id="content">
-                <Navbar onSearch={handleSearch} />
+                <UserNavbar onSearch={handleSearch} />
                 <main>
                     <div className="head-title">
                         <div className="left">

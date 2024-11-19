@@ -41,8 +41,8 @@ function App() {
         <Route path="/reports" element={<ReportsPage/>} />
         <Route path="/archive" element={<ArchivedPage/>} />
         <Route path="/activity" element={<AdminActivityPage/>} />
-        <Route path="/notification" element={<AdminNotificationPage/>} />
-        <Route path="/notification" element={<UserNotificationPage/>} />
+        <Route path="/adminnotification" element={<AdminNotificationPage/>} />
+        <Route path="/usernotification" element={<UserNotificationPage/>} />
         {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}
         {/* <Route path="/request" element={<ProtectedRoute role="user"><Sidebar /></ProtectedRoute>} /> */}
       </Routes>

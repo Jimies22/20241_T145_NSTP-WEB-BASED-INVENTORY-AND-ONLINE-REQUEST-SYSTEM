@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../sidebar/AdminSidebar';
-import Navbar from '../Navbar'; // Ensure the correct path
+import AdminNavbar from '../Navbar/AdminNavbar'; // Ensure the correct path
 import '../../css/Navbar.css';
 import '../../css/RequestPage.css';
 
@@ -39,7 +39,7 @@ function RequestPage() {
         <div className="user-dashboard">
             <Sidebar />
             <section id="content">
-                <Navbar />
+                <AdminNavbar />
                 <main>
       <div className="head-title">
         <div className="left">

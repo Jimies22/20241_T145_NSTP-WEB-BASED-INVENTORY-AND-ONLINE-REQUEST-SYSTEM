@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
 import Sidebar from '../sidebar/AdminSidebar';
-import Navbar from '../Navbar';
+import AdminNavbar from '../Navbar/AdminNavbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../css/EditPage.css';
 
@@ -177,7 +177,7 @@ function AddItems() {
         <div className="dashboard">
             <Sidebar />
             <section id="content">
-                <Navbar />
+                <AdminNavbar />
                 <main>
                     <div className="head-title">
                         <div className="left">

@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from '../sidebar/AdminSidebar';
-import Navbar from '../Navbar';
+import AdminNavbar from '../Navbar/AdminNavbar';
 import '../../css/ArchivePage.css';
 
 const ArchivePage = () => {
@@ -8,7 +8,7 @@ const ArchivePage = () => {
         <div className="user-dashboard">
             <Sidebar />
             <section id="content">
-                <Navbar />
+                <AdminNavbar />
                 <main>
                     <div className="head-title">
                         <div className="left">

@@ -1,7 +1,7 @@
 // src/components/NotificationPage.jsx
 import React, { useState, useEffect } from 'react';
 import AdminSidebar from '../sidebar/AdminSidebar';
-import Navbar from '../Navbar';
+import AdminNavbar from '../Navbar/AdminNavbar';
 import '../../css/NotificationPage.css';
 
 function NotificationPage() {
@@ -39,7 +39,7 @@ function NotificationPage() {
         <div className="admin-dashboard">
             <AdminSidebar/>
             <section id="content">
-                <Navbar className="navbar" />
+                <AdminNavbar className="navbar" />
                 <main>
                     <div className="head-title">
                         <div className="left">

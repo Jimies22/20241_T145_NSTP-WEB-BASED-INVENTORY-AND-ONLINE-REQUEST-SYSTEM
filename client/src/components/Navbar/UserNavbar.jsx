@@ -1,7 +1,7 @@
 import React from 'react';
-import '../css/Navbar.css';
+import '../../css/Navbar.css';
 
-function Navbar() {
+function UserNavbar() {
     const toggleSidebar = () => {
         setIsSidebarVisible(!isSidebarVisible);
     };
@@ -14,7 +14,7 @@ function Navbar() {
                     <button type="submit" className="search-btn"><i className='bx bx-search'></i></button>
                 </div>
             </form>
-            <a href="/notification" className="notification">
+            <a href="/usernotification" className="notification">
                 <i className='bx bxs-bell'></i>
                 <span className="num">8</span>
             </a>
@@ -25,4 +25,4 @@ function Navbar() {
     );
 }
 
-export default Navbar; 
+export default UserNavbar; 

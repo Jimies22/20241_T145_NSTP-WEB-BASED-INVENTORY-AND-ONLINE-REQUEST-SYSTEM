@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../sidebar/AdminSidebar';
-import Navbar from '../Navbar';
+import AdminNavbar from '../Navbar/AdminNavbar';
 import '../../css/AdminDashboard.css';
 
 function AdminDashboard() {
@@ -67,7 +67,7 @@ function AdminDashboard() {
             <Sidebar />
             <section id="content">
                 {/* Navbar Section */}
-                <Navbar className="navbar" />
+                <AdminNavbar className="navbar" />
                 {/* Main Content */}
                 <main>
                     <div className="head-title">

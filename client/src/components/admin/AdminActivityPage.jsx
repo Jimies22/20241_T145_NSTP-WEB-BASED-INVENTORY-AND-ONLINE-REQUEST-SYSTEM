@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../Navbar';
+import AdminNavbar from '../Navbar/AdminNavbar';
 import Sidebar from '../sidebar/AdminSidebar';
 import '../../css/ActivityPage.css';
 
@@ -8,7 +8,7 @@ const ActivityPage = () => {
         <div className="user-dashboard">
             <Sidebar />
             <section id="content">
-                <Navbar />
+                <AdminNavbar />
                 <main>
                     <div className="head-title">
                         <div className="left">
