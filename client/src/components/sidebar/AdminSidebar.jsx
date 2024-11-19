@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../css/AdminSidebar.css';
 
-function Sidebar() {
+function AdminSidebar() {
     const [isSidebarVisible, setIsSidebarVisible] = useState(true);
     const location = useLocation();
 
@@ -51,6 +51,6 @@ function Sidebar() {
     );
 }
 
-export default Sidebar;
+export default AdminSidebar;
 
 

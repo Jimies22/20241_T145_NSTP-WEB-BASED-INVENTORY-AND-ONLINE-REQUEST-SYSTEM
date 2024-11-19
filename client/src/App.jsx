@@ -17,7 +17,8 @@ import AddItems from './components/admin/AddItems';
 import ReportsPage from './components/admin/ReportsPage';
 import ArchivedPage from './components/admin/ArchivedPage';
 import AdminActivityPage from './components/admin/AdminActivityPage';
-import NotificationPage from './components/NotificationPage';
+import UserNotificationPage from './components/user/UserNotificationPage';
+import AdminNotificationPage from './components/admin/AdminNotificationPage';
 import UserRequestPage from './components/user/UserRequestPage';
 import UserBorrowPage from './components/user/UserBorrowPage';
 import UserReportPage from './components/user/UserReportPage';
@@ -40,7 +41,8 @@ function App() {
         <Route path="/reports" element={<ReportsPage/>} />
         <Route path="/archive" element={<ArchivedPage/>} />
         <Route path="/activity" element={<AdminActivityPage/>} />
-        <Route path="/notification" element={<NotificationPage/>} />
+        <Route path="/notification" element={<AdminNotificationPage/>} />
+        <Route path="/notification" element={<UserNotificationPage/>} />
         {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}
         {/* <Route path="/request" element={<ProtectedRoute role="user"><Sidebar /></ProtectedRoute>} /> */}
       </Routes>

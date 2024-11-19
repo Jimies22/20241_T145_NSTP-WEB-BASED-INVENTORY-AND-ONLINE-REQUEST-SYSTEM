@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../css/UserSidebar.css';
 
-const Sidebar = () => {
+const UserSidebar = () => {
     const [isSidebarVisible, setIsSidebarVisible] = useState(true);
     const location = useLocation();
 
@@ -62,4 +62,4 @@ const Sidebar = () => {
     );
 };
 
-export default Sidebar;
+export default UserSidebar;

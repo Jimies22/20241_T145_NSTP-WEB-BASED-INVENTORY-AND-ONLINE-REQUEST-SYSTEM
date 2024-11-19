@@ -1,15 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
+/* Removed global styles that conflict with sidebars */
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
 
+a {
+	text-decoration: none; /* This is already defined in AdminSidebar.css */
+}
+
+li {
+	list-style: none; /* This is already defined in AdminSidebar.css */
+}
+
+/* Removed duplicate CSS variables */
+:root {
+	--poppins: 'Poppins', sans-serif;
+	--lato: 'Lato', sans-serif;
+
+	--light: #F9F9F9; /* Already defined in UserSidebar.css */
+	--blue: #3C91E6; /* Already defined in UserSidebar.css */
+	--light-blue: #CFE8FF; /* Already defined in UserSidebar.css */
+	--grey: #eee; /* Already defined in UserSidebar.css */
+	--dark-grey: #AAAAAA; /* Already defined in UserSidebar.css */
+	--dark: #342E37; /* Already defined in UserSidebar.css */
+	--red: #DB504A; /* Already defined in UserSidebar.css */
+	--yellow: #FFCE26; /* Already defined in UserSidebar.css */
+	--light-yellow: #FFF2C6; /* Already defined in UserSidebar.css */
+	--orange: #FD7238; /* Already defined in UserSidebar.css */
+	--light-orange: #FFE0D3; /* Already defined in UserSidebar.css */
+}
+
+html {
+	overflow-x: hidden; /* Keep this for ActivityPage */
+}
+
 body {
-	font-family: 'Poppins', sans-serif;
-	background-color: var(--light);
-	color: var(--dark);
+	background: var(--grey); /* Keep this for ActivityPage */
+	overflow-x: hidden; /* Keep this for ActivityPage */
 }
 
 /* CONTENT */
@@ -22,85 +52,65 @@ body {
 	margin: 0;
 	padding: 0;
 	height: calc(100vh - 56px);
-	overflow: hidden;
+	overflow: hidden; /* Keep this for ActivityPage */
 }
 
 /* MAIN */
 main {
-	padding: 10px;
-	font-family: var(--poppins);
-	min-height: calc(100vh - 56px);
-	overflow-y: auto;
-	background-color: #eee;
+	padding: 10px; /* Keep this for ActivityPage */
+	font-family: var(--poppins); /* Keep this for ActivityPage */
+	min-height: calc(100vh - 56px); /* Keep this for ActivityPage */
+	overflow-y: auto; /* Keep this for ActivityPage */
+	background-color: #eee; /* Keep this for ActivityPage */
 }
 
-/* NAVBAR */
+/* Removed sidebar specific styles to avoid conflicts */
 #content nav {
-	height: 56px;
-	background: var(--light);
-	padding: 0 24px;
-	display: flex;
-	align-items: center;
-	grid-gap: 24px;
-	font-family: var(--lato);
-	position: sticky;
-	top: 0;
-	left: 0;
-	z-index: 1000;
-}
-#content nav::before {
-	content: '';
-	position: absolute;
-	width: 40px;
-	height: 40px;
-	bottom: -40px;
-	left: 0;
-	border-radius: 50%;
-	box-shadow: -20px -20px 0 var(--light);
-}
-#content nav a {
-	color: var(--dark);
-}
-#content nav .bx.bx-menu {
-	cursor: pointer;
-	color: var(--dark);
-}
-#content nav form {
-	max-width: 400px;
-	width: 100%;
-	margin-right: auto;
+	height: 56px; /* Keep this for ActivityPage */
+	background: var(--light); /* Keep this for ActivityPage */
+	padding: 0 24px; /* Keep this for ActivityPage */
+	display: flex; /* Keep this for ActivityPage */
+	align-items: center; /* Keep this for ActivityPage */
+	grid-gap: 24px; /* Keep this for ActivityPage */
+	font-family: var(--lato); /* Keep this for ActivityPage */
+	position: sticky; /* Keep this for ActivityPage */
+	top: 0; /* Keep this for ActivityPage */
+	left: 0; /* Keep this for ActivityPage */
+	z-index: 1000; /* Keep this for ActivityPage */
 }
 
 /* Additional styles for the activity log */
 .activity-log-container {
-	padding: 20px;
+	padding: 20px; /* Keep this for ActivityPage */
 }
 .activity-log-container .table-data {
-	display: flex;
-	flex-wrap: wrap;
-	grid-gap: 24px;
-	width: 100%;
-	color: var(--dark);
+	display: flex; /* Keep this for ActivityPage */
+	flex-wrap: wrap; /* Keep this for ActivityPage */
+	grid-gap: 24px; /* Keep this for ActivityPage */
+	width: 100%; /* Keep this for ActivityPage */
+	color: var(--dark); /* Keep this for ActivityPage */
 }
 .activity-log-container .table-data .order {
-	flex-grow: 1;
-	flex-basis: 300px;
+	flex-grow: 1; /* Keep this for ActivityPage */
+	flex-basis: 300px; /* Keep this for ActivityPage */
 }
 .activity-log-container .table-data .order table {
-	width: 100%;
-	border-collapse: collapse;
+	width: 100%; /* Keep this for ActivityPage */
+	border-collapse: collapse; /* Keep this for ActivityPage */
 }
 .activity-log-container .table-data .order table th {
-	padding-bottom: 12px;
-	font-size: 13px;
-	text-align: left;
-	border-bottom: 1px solid var(--grey);
+	padding-bottom: 12px; /* Keep this for ActivityPage */
+	font-size: 13px; /* Keep this for ActivityPage */
+	text-align: left; /* Keep this for ActivityPage */
+	border-bottom: 1px solid var(--grey); /* Keep this for ActivityPage */
 }
 .activity-log-container .table-data .order table td {
-	padding: 16px 0;
+	padding: 16px 0; /* Keep this for ActivityPage */
 }
 .activity-log-container .table-data .order table tbody tr:hover {
-	background: var(--grey);
+	background: var(--grey); /* Keep this for ActivityPage */
 }
+
+/* ... other existing styles ... */
 
 

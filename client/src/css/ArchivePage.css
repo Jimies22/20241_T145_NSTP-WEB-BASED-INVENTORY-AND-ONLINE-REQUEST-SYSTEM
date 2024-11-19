@@ -41,15 +41,4 @@ main {
 	}
 }
 
-/* Navbar Styles */
-.navbar {
-    position: fixed; /* Make the navbar fixed */
-    top: 0; /* Align it to the top */
-    left: 280px; /* Adjust according to your layout */
-    width: calc(100% - 280px); /* Full width minus sidebar */
-    z-index: 1000; /* Ensure it stays above other content */
-    background-color: var(--light); /* Background color for visibility */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
-    margin: 0; /* Remove any margin */
-    padding: 0; /* Remove any padding */
-}
+
