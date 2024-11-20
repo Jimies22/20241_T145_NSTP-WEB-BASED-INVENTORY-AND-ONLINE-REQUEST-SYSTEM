@@ -99,11 +99,25 @@ app.use("/items", itemRoutes);
 app.use("/login", loginRoutes);
 // app.use("/admin", adminRoutes);
 
-// Logout route to clear the session
-app.post("/logout", (req, res) => {
-  req.logout(() => {
-    res.status(200).json({ message: "Logged out successfully" });
-  });
+// Update the logout route
+app.post("/logout", jwtVerifyMiddleware, (req, res) => {
+  try {
+    // Clear the session
+    req.logout(() => {
+      // Clear any session data
+      req.session.destroy((err) => {
+        if (err) {
+          return res.status(500).json({ message: "Error during logout" });
+        }
+        // Send successful response
+        res.clearCookie("connect.sid"); // Clear session cookie
+        res.status(200).json({ message: "Logged out successfully" });
+      });
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ message: "Error during logout" });
+  }
 });
 
 app.listen(PORT, () => {
