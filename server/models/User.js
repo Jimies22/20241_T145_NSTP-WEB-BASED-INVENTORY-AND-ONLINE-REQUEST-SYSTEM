@@ -1,31 +1,47 @@
 // models/User.js
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcrypt");
+
 const userSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true },
-    role: { type: String, required: true },
     name: { type: String, required: true },
-    picture: String,
-    department: String,
-    userID: {
-      type: Number,
-      unique: true,
-      required: true,
-      validate: {
-        validator: Number.isInteger,
-        message: "{VALUE} is not an integer value",
+    password: {
+      type: String,
+      required: function () {
+        return this.role === "admin";
       },
     },
-    googleId: String, // If you are using Google login, this might be needed
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    googleId: {
+      type: String,
+      required: function () {
+        return this.role === "user";
+      },
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
 
-userSchema.methods.generateGoogleId = function () {
-  if (!this.googleId) {
-    this.googleId = uuidv4();
+// Hash password before saving (only for admin users)
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password") && this.role === "admin") {
+    this.password = await bcrypt.hash(this.password, 10);
   }
+  next();
+});
+
+// Add this method to the schema
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 const User = mongoose.model("User", userSchema);
