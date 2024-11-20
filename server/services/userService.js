@@ -57,13 +57,7 @@ const getAllUsers = async (req, res) => {
 // Get a user by userID
 const getUserById = async (req, res) => {
   try {
-    // Convert userID to number since it comes as string from params
-    const userID = parseInt(req.params.userID);
-    if (isNaN(userID)) {
-      return res.status(400).json({ message: "Invalid userID format" });
-    }
-
-    const user = await User.findOne({ userID });
+    const user = await User.findOne({ userID: req.params.userID });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
