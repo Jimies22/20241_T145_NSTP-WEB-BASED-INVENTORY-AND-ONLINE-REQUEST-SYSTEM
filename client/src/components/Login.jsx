@@ -80,7 +80,7 @@ function Login() {
         if (data.user && data.user.role === "admin") {
           // Check if data.user exists
           sessionStorage.setItem("sessionToken", data.token);
-          navigate("/admin");
+          navigate("/adminDashboard");
         } else {
           alert(
             "This login is for administrators only. Users should use Google Sign-In."
