@@ -20,6 +20,11 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const onSuccess = (credentialResponse) => {
+    if (!isRecaptchaValid) {
+      alert("Please complete the reCAPTCHA");
+      return;
+    }
+
     console.log("Login Success:", credentialResponse);
     const { credential } = credentialResponse;
 
