@@ -55,38 +55,6 @@ function Login() {
       });
   };
 
-  const handleAdminLogin = async (e) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      alert("Please enter both email and password");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.message === "Login successful") {
-        sessionStorage.setItem("sessionToken", data.token);
-        navigate("/admin");
-      } else {
-        alert(data.message || "Invalid credentials");
-      }
-    } catch (error) {
-      console.error("Admin login error:", error);
-      alert("Login failed: An error occurred while logging in 2.");
-      //alert("Login failed: An error occurred in login/admin.");
-    }
-  };
-
   const onError = () => {
     console.log("Login Failed");
     alert("Login failed. Please try again.");
@@ -100,7 +68,6 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Check for empty inputs
     if (!email.trim() || !password.trim()) {
       alert("Please fill in all fields");
       return;
@@ -112,6 +79,8 @@ function Login() {
     }
 
     try {
+      console.log("Attempting login with:", { email }); // Log login attempt (don't log password)
+
       const response = await fetch("http://localhost:3000/login/admin", {
         method: "POST",
         headers: {
@@ -121,11 +90,11 @@ function Login() {
       });
 
       const data = await response.json();
-      console.log("Login response:", data);
+      console.log("Server response:", data); // Log the server response
 
       if (response.ok && data.message === "Login successful") {
         sessionStorage.setItem("sessionToken", data.token);
-        console.log("User role:", data.user.role);
+        console.log("Login successful, role:", data.user.role); // Log the role
 
         if (data.user.role === "admin") {
           navigate("/admin");
@@ -133,11 +102,12 @@ function Login() {
           navigate("/user");
         }
       } else {
-        alert(data.message || "Login failed");
+        console.log("Login failed:", response.status, data.message); // Log failure details
+        alert(data.message || "Invalid credentials");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      alert("Login failed: An error occurred while logging in 3.");
+      alert("An error occurred during login. Please try again.");
     }
   };
 
