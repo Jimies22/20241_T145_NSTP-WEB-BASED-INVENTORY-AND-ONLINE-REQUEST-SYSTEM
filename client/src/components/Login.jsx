@@ -9,7 +9,7 @@ import "../css/Login.css"; // Ensure this path is correct
 import nstpLogo from "../assets/NSTP_LOGO.png";
 
 const clientId =
-  "96467309918-sjb49jofskdnaffpravkqgu1o6p0a8eh.apps.googleusercontent.com";
+  "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com";
 const recaptchaKey = "6Lfty3MqAAAAACp-CJm8DFxDW1GfjdR1aXqHbqpg";
 
 function Login() {
@@ -20,6 +20,11 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const onSuccess = (credentialResponse) => {
+    if (!isRecaptchaValid) {
+      alert("Please complete the reCAPTCHA");
+      return;
+    }
+
     console.log("Login Success:", credentialResponse);
     const { credential } = credentialResponse;
 
