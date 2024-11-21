@@ -39,62 +39,15 @@ function Login() {
       .then((data) => {
         if (data.message === "Login successful") {
           sessionStorage.setItem("sessionToken", data.token);
-          if (data.user.role === "admin") {
-            navigate("/admin");
-          } else {
-            navigate("/user");
-          }
+          navigate("/user");
         } else {
           alert(data.message);
         }
       })
       .catch((error) => {
         console.error("Error during login:", error);
-        alert("Login failed: An error occurred while logging in 1.");
-        //alert("Login failed: An error occurred in /login/google.");
+        alert("Login failed: An error occurred while logging in. 1");
       });
-  };
-
-  const handleAdminLogin = async (e) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      alert("Please enter both email and password");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.message === "Login successful") {
-        sessionStorage.setItem("sessionToken", data.token);
-        navigate("/admin");
-      } else {
-        alert(data.message || "Invalid credentials");
-      }
-    } catch (error) {
-      console.error("Admin login error:", error);
-      alert("Login failed: An error occurred while logging in 2.");
-      //alert("Login failed: An error occurred in login/admin.");
-    }
-  };
-
-  const onError = () => {
-    console.log("Login Failed");
-    alert("Login failed. Please try again.");
-  };
-
-  const onRecaptchaChange = (value) => {
-    setRecaptchaValue(value);
-    setIsRecaptchaValid(true);
   };
 
   const handleLogin = async (e) => {
@@ -117,27 +70,62 @@ function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, recaptchaValue }), // Add recaptchaValue to request
       });
 
       const data = await response.json();
       console.log("Login response:", data);
 
       if (response.ok && data.message === "Login successful") {
-        sessionStorage.setItem("sessionToken", data.token);
-        console.log("User role:", data.user.role);
-
-        if (data.user.role === "admin") {
+        if (data.user && data.user.role === "admin") {
+          // Check if data.user exists
+          sessionStorage.setItem("sessionToken", data.token);
           navigate("/admin");
         } else {
-          navigate("/user");
+          alert(
+            "This login is for administrators only. Users should use Google Sign-In."
+          );
         }
       } else {
         alert(data.message || "Login failed");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      alert("Login failed: An error occurred while logging in 3.");
+      alert("Login failed: An error occurred while logging in. 2");
+    }
+  };
+
+  const onError = () => {
+    console.log("Login Failed");
+    alert("Login failed. Please try again.");
+  };
+
+  const onRecaptchaChange = (value) => {
+    setRecaptchaValue(value);
+    setIsRecaptchaValid(!!value); // Ensure boolean value
+  };
+
+  const handleLogout = async () => {
+    try {
+      // Call backend logout endpoint
+      const response = await fetch("http://localhost:3000/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("sessionToken")}`,
+        },
+      });
+
+      if (response.ok) {
+        // Clear session storage
+        sessionStorage.removeItem("sessionToken");
+        // Redirect to login page
+        navigate("/");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
     }
   };
 
@@ -159,6 +147,7 @@ function Login() {
             <div className="card-body">
               <h1>WELCOME</h1>
               <div>
+                <h5 className="mb-4">Administrator Login</h5>
                 <div className="form-floating mb-4">
                   <input
                     type="email"
@@ -194,9 +183,10 @@ function Login() {
                   Keep me logged in
                 </label>
                 <button type="submit" className="btn btn-primary mt-3">
-                  Login
+                  Admin Login
                 </button>
                 <hr className="line"></hr>
+                <h5 className="mb-3">Student/Faculty Login</h5>
                 <div
                   id="google-signin-btn"
                   className="d-flex justify-content-center mt-3 mb-5"
