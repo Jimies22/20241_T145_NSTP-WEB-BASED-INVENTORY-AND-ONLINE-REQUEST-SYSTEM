@@ -8,111 +8,114 @@ const bcrypt = require("bcryptjs");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-const loginUser = async (req, res) => {
-  const { token } = req.body;
+const loginService = {
+  // Google login for regular users only
+  loginUser: async (req, res) => {
+    try {
+      const { token } = req.body;
 
-  try {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    const email = payload.email;
+      // Verify Google token
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
 
-    // Check if user exists in the database
-    let user = await User.findOne({ email });
+      const { email, name } = ticket.getPayload();
 
-    if (!user) {
-      console.log(`User with email ${email} does not exist. No role assigned.`);
-      return res.status(404).json({ message: "User not found" });
-    }
+      // Find or create user
+      let user = await User.findOne({ email });
 
-    // Generate JWT token for Google login
-    const sessionToken = jwt.sign(
-      {
-        userId: user._id,
-        role: user.role,
-        email: user.email,
-        name: user.name,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+      if (!user) {
+        // Create new user with 'user' role
+        user = await User.create({
+          email,
+          name,
+          role: "user", // Enforce user role for Google login
+          googleId: ticket.getUserId(),
+        });
+      } else if (user.role === "admin") {
+        // Prevent admins from using Google login
+        return res.status(403).json({
+          message: "Administrators must use the admin login form",
+        });
+      }
 
-    // User exists, log their role
-    console.log(`User ${email} logged in. Role: ${user.role}`);
+      // Generate JWT token
+      const jwtToken = jwt.sign(
+        {
+          userId: user._id,
+          email: user.email,
+          role: user.role,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" }
+      );
 
-    res.json({
-      message: "Login successful",
-      user: {
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture,
-        role: user.role,
-      },
-      token: sessionToken,
-    });
-  } catch (error) {
-    console.error("Error verifying Google token:", error);
-    res.status(401).json({ message: "Invalid token" });
-  }
-};
-
-const loginAdmin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    console.log("Attempting admin login for:", email); // Debug log
-
-    // Find admin by email
-    const admin = await Admin.findOne({ email });
-
-    if (!admin) {
-      console.log("Admin not found with email:", email);
-      return res.status(401).json({
-        message: "Invalid credentials",
+      res.json({
+        message: "Login successful",
+        token: jwtToken,
+        user: {
+          email: user.email,
+          role: user.role,
+        },
+      });
+    } catch (error) {
+      console.error("Google login error:", error);
+      res.status(401).json({
+        message: "Authentication failed",
       });
     }
+  },
 
-    // Verify password using bcrypt
-    const isValidPassword = await admin.comparePassword(password);
+  // Regular login for administrators only
+  loginAdmin: async (req, res) => {
+    try {
+      const { email, password } = req.body;
 
-    if (!isValidPassword) {
-      console.log("Invalid password for admin:", email);
-      return res.status(401).json({
-        message: "Invalid credentials",
+      // Find user by email and verify they are an admin
+      const user = await User.findOne({ email, role: "admin" });
+
+      if (!user) {
+        return res.status(401).json({ message: "Invalid admin credentials" });
+      }
+
+      // Verify password using bcrypt
+      const isValidPassword = await user.comparePassword(password);
+
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid admin credentials" });
+      }
+
+      // Generate JWT token for admin
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          email: user.email,
+          role: user.role,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "24h" } // Extended token expiry for admins
+      );
+
+      console.log("Admin login successful:", email);
+
+      // Send success response
+      res.status(200).json({
+        message: "Admin login successful",
+        user: {
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+        token,
+      });
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({
+        message: "An error occurred during admin login",
       });
     }
-
-    // Generate JWT token for admin
-    const token = jwt.sign(
-      {
-        userId: admin._id,
-        email: admin.email,
-        role: admin.role,
-        name: admin.name,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    console.log("Admin login successful:", email);
-
-    // Send success response
-    res.status(200).json({
-      message: "Login successful",
-      user: {
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
-      },
-      token,
-    });
-  } catch (error) {
-    console.error("Admin login error:", error);
-    res.status(500).json({
-      message: "An error occurred during login",
-    });
-  }
+  },
 };
 
-module.exports = { loginUser, loginAdmin };
+module.exports = loginService;
