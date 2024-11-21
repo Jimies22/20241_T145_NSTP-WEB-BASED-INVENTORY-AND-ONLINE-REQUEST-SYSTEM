@@ -20,6 +20,11 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const onSuccess = (credentialResponse) => {
+    if (!isRecaptchaValid) {
+      alert("Please complete the reCAPTCHA");
+      return;
+    }
+
     console.log("Login Success:", credentialResponse);
     const { credential } = credentialResponse;
 
@@ -45,10 +50,19 @@ function Login() {
       });
   };
 
+  const onError = () => {
+    console.log("Login Failed");
+    alert("Login failed. Please try again.");
+  };
+
+  const onRecaptchaChange = (value) => {
+    setRecaptchaValue(value);
+    setIsRecaptchaValid(true);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Check for empty inputs
     if (!email.trim() || !password.trim()) {
       alert("Please fill in all fields");
       return;
@@ -60,6 +74,8 @@ function Login() {
     }
 
     try {
+      console.log("Attempting login with:", { email }); // Log login attempt (don't log password)
+
       const response = await fetch("http://localhost:3000/login/admin", {
         method: "POST",
         headers: {
@@ -69,12 +85,13 @@ function Login() {
       });
 
       const data = await response.json();
-      console.log("Login response:", data);
+      console.log("Server response:", data); // Log the server response
 
       if (response.ok && data.message === "Login successful") {
-        if (data.user && data.user.role === "admin") {
-          // Check if data.user exists
-          sessionStorage.setItem("sessionToken", data.token);
+        sessionStorage.setItem("sessionToken", data.token);
+        console.log("Login successful, role:", data.user.role); // Log the role
+
+        if (data.user.role === "admin") {
           navigate("/admin");
         } else {
           alert(
@@ -82,45 +99,12 @@ function Login() {
           );
         }
       } else {
-        alert(data.message || "Login failed");
+        console.log("Login failed:", response.status, data.message); // Log failure details
+        alert(data.message || "Invalid credentials");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      alert("Login failed: An error occurred while logging in. 2");
-    }
-  };
-
-  const onError = () => {
-    console.log("Login Failed");
-    alert("Login failed. Please try again.");
-  };
-
-  const onRecaptchaChange = (value) => {
-    setRecaptchaValue(value);
-    setIsRecaptchaValid(!!value); // Ensure boolean value
-  };
-
-  const handleLogout = async () => {
-    try {
-      // Call backend logout endpoint
-      const response = await fetch("http://localhost:3000/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("sessionToken")}`,
-        },
-      });
-
-      if (response.ok) {
-        // Clear session storage
-        sessionStorage.removeItem("sessionToken");
-        // Redirect to login page
-        navigate("/");
-      } else {
-        console.error("Logout failed");
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
+      alert("An error occurred during login. Please try again.");
     }
   };
 

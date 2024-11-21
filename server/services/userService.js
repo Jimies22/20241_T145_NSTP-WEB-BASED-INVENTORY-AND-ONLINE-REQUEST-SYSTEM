@@ -79,7 +79,7 @@ const searchUsersByName = async (req, res) => {
   }
 };
 
-// Update user information by userID
+// Update user information
 const updateUser = async (req, res) => {
   const { name, role, picture, email, department, userID } = req.body;
 
