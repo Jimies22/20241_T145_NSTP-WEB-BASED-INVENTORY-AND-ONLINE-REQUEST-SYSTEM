@@ -9,7 +9,7 @@ import "../css/Login.css"; // Ensure this path is correct
 import nstpLogo from "../assets/NSTP_LOGO.png";
 
 const clientId =
-  "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com";
+  "96467309918-sjb49jofskdnaffpravkqgu1o6p0a8eh.apps.googleusercontent.com";
 const recaptchaKey = "6Lfty3MqAAAAACp-CJm8DFxDW1GfjdR1aXqHbqpg";
 
 function Login() {
@@ -39,19 +39,14 @@ function Login() {
       .then((data) => {
         if (data.message === "Login successful") {
           sessionStorage.setItem("sessionToken", data.token);
-          if (data.user.role === "admin") {
-            navigate("/admin");
-          } else {
-            navigate("/user");
-          }
+          navigate("/user");
         } else {
           alert(data.message);
         }
       })
       .catch((error) => {
         console.error("Error during login:", error);
-        alert("Login failed: An error occurred while logging in 1.");
-        //alert("Login failed: An error occurred in /login/google.");
+        alert("Login failed: An error occurred while logging in. 1");
       });
   };
 
@@ -86,7 +81,7 @@ function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, recaptchaValue }), // Add recaptchaValue to request
       });
 
       const data = await response.json();
@@ -99,7 +94,9 @@ function Login() {
         if (data.user.role === "admin") {
           navigate("/admin");
         } else {
-          navigate("/user");
+          alert(
+            "This login is for administrators only. Users should use Google Sign-In."
+          );
         }
       } else {
         console.log("Login failed:", response.status, data.message); // Log failure details
@@ -129,6 +126,7 @@ function Login() {
             <div className="card-body">
               <h1>WELCOME</h1>
               <div>
+                <h5 className="mb-4">Administrator Login</h5>
                 <div className="form-floating mb-4">
                   <input
                     type="email"
@@ -164,9 +162,10 @@ function Login() {
                   Keep me logged in
                 </label>
                 <button type="submit" className="btn btn-primary mt-3">
-                  Login
+                  Admin Login
                 </button>
                 <hr className="line"></hr>
+                <h5 className="mb-3">Student/Faculty Login</h5>
                 <div
                   id="google-signin-btn"
                   className="d-flex justify-content-center mt-3 mb-5"

@@ -1,53 +1,50 @@
 // models/User.js
-const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
-const userSchema = new mongoose.Schema({
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-    email: { 
-        type: String, 
-        required: true, 
-        unique: true,
-        validate: {
-            validator: function(v) {
-                return /^[0-9]+@student\.buksu\.edu\.ph$/.test(v) || 
-                       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v);
-            },
-            message: props => `${props.value} is not a valid email!`
-        }
+const userSchema = new mongoose.Schema(
+  {
+    userID: { type: Number, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    password: {
+      type: String,
+      required: function () {
+        return this.role === "admin";
+      },
     },
-    role: { 
-        type: String, 
-        required: true,
-        enum: ['admin', 'user']
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
-    name: { 
-        type: String, 
-        required: true 
+    googleId: {
+      type: String,
+      required: function () {
+        return this.role === "user";
+      },
     },
-    department: { 
-        type: String, 
-        required: true 
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
-    userID: { 
-        type: Number, 
-        unique: true, 
-        required: true,
-        validate: {
-            validator: function(v) {
-                return Number.isInteger(v) && v.toString().length >= 7;
-            },
-            message: props => `${props.value} is not a valid user ID!`
-        }
-    },
-    googleId: String, // If you are using Google login, this might be needed
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);
 
-userSchema.methods.generateGoogleId = function () {
-    if (!this.googleId) {
-        this.googleId = uuidv4();
-    }
+// Hash password before saving (only for admin users)
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password") && this.role === "admin") {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
+// Add this method to the schema
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
