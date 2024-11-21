@@ -68,9 +68,8 @@
   
   /* Modal Cards Container */
   .modalCards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    display: flex;
+    gap: 20px;
     margin-top: 1rem;
   }
   
@@ -80,6 +79,7 @@
     padding: 1.5rem;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex: 1;
   }
   
   .cardTitle {

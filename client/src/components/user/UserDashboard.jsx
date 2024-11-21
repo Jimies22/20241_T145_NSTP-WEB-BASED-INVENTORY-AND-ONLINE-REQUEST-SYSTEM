@@ -4,6 +4,7 @@ import UserSidebar from '../sidebar/UserSidebar';
 import UserNavbar from '../Navbar/UserNavbar';
 import '../../css/UserDashboard.css';
 import axios from 'axios';
+import BorrowOverlay from './BorrowOverlay';
 
 const UserDashboard = () => {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ const UserDashboard = () => {
     const [error, setError] = useState(null);
     const [selectedItem, setSelectedItem] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [showBorrowOverlay, setShowBorrowOverlay] = useState(false);
 
     useEffect(() => {
         const token = sessionStorage.getItem('sessionToken');
@@ -68,6 +70,16 @@ const UserDashboard = () => {
         setSelectedItem(null);
     };
 
+    const handleBorrowItem = (item) => {
+        setSelectedItem(item);
+        setShowBorrowOverlay(true);
+    };
+
+    const handleCloseBorrowOverlay = () => {
+        setShowBorrowOverlay(false);
+        setSelectedItem(null);
+    };
+
     return (
         <div className="user-dashboard">
             <UserSidebar />
@@ -103,15 +115,25 @@ const UserDashboard = () => {
                     {showModal && selectedItem && (
                         <div className="modal-overlay">
                             <div className="modal-content">
-                                <h1>{selectedItem.name}</h1>
-                                <img src={selectedItem.image || '/path/to/default/image.jpg'} alt={selectedItem.name} />
-                                <p><strong>Item ID:</strong> {selectedItem.item_id}</p>
-                                <p><strong>Description:</strong> {selectedItem.description}</p>
-                                <p><strong>Category:</strong> {selectedItem.category}</p>
-                                <p><strong>Availability:</strong> {selectedItem.availability ? 'AVAILABLE' : 'UNAVAILABLE'}</p>
-                                <button onClick={handleCloseModal}>Close</button>
+                                <div className="item-info-card">
+                                    <h1>{selectedItem.name}</h1>
+                                    <img src={selectedItem.image || '/path/to/default/image.jpg'} alt={selectedItem.name} />
+                                    <p><strong>Item ID:</strong> {selectedItem.item_id}</p>
+                                    <p><strong>Description:</strong> {selectedItem.description}</p>
+                                    <p><strong>Category:</strong> {selectedItem.category}</p>
+                                    <p><strong>Availability:</strong> {selectedItem.availability ? 'AVAILABLE' : 'UNAVAILABLE'}</p>
+                                    <button onClick={handleCloseModal}>Close</button>
+                                </div>
+                                <div className="borrow-card">
+                                    <button onClick={() => handleBorrowItem(selectedItem)} disabled={!selectedItem.availability}>
+                                        Borrow
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    )}
+                    {showBorrowOverlay && (
+                        <BorrowOverlay item={selectedItem} onClose={handleCloseBorrowOverlay} />
                     )}
                 </main>
             </section>
