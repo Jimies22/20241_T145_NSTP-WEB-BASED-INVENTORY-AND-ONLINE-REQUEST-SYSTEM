@@ -9,7 +9,7 @@ import "../css/Login.css"; // Ensure this path is correct
 import nstpLogo from "../assets/NSTP_LOGO.png";
 
 const clientId =
-  "96467309918-sjb49jofskdnaffpravkqgu1o6p0a8eh.apps.googleusercontent.com";
+  "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com";
 const recaptchaKey = "6Lfty3MqAAAAACp-CJm8DFxDW1GfjdR1aXqHbqpg";
 
 function Login() {
@@ -74,37 +74,55 @@ function Login() {
     }
 
     try {
-      console.log("Attempting login with:", { email }); // Log login attempt (don't log password)
+      console.log("Sending login request with:", {
+        email,
+        recaptchaValue,
+        passwordLength: password.length,
+      });
 
       const response = await fetch("http://localhost:3000/login/admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, recaptchaValue }), // Add recaptchaValue to request
+        body: JSON.stringify({ email, password, recaptchaValue }),
       });
 
       const data = await response.json();
-      console.log("Server response:", data); // Log the server response
+      console.log("Login response:", data);
 
-      if (response.ok && data.message === "Login successful") {
-        sessionStorage.setItem("sessionToken", data.token);
-        console.log("Login successful, role:", data.user.role); // Log the role
+      if (response.ok) {
+        // Store the token
+        if (data.token) {
+          sessionStorage.setItem("sessionToken", data.token);
 
-        if (data.user.role === "admin") {
-          navigate("/admin");
+          // Check role and navigate
+          if (data.user && data.user.role === "admin") {
+            console.log("Navigating to admin dashboard...");
+            navigate("/admin");
+          } else {
+            console.log("User role not admin:", data.user?.role);
+            alert(
+              "This login is for administrators only. Users should use Google Sign-In."
+            );
+          }
         } else {
-          alert(
-            "This login is for administrators only. Users should use Google Sign-In."
-          );
+          console.error("No token received in response");
+          alert("Login error: No authentication token received");
         }
       } else {
-        console.log("Login failed:", response.status, data.message); // Log failure details
+        console.error("Login failed:", data);
         alert(data.message || "Invalid credentials");
       }
     } catch (error) {
-      console.error("Error during login:", error);
-      alert("An error occurred during login. Please try again.");
+      console.error("Login error details:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      });
+      alert(
+        "An error occurred during login. Please check console for details."
+      );
     }
   };
 
@@ -126,7 +144,6 @@ function Login() {
             <div className="card-body">
               <h1>WELCOME</h1>
               <div>
-                <h5 className="mb-4">Administrator Login</h5>
                 <div className="form-floating mb-4">
                   <input
                     type="email"
@@ -162,10 +179,10 @@ function Login() {
                   Keep me logged in
                 </label>
                 <button type="submit" className="btn btn-primary mt-3">
-                  Admin Login
+                  Login
                 </button>
                 <hr className="line"></hr>
-                <h5 className="mb-3">Student/Faculty Login</h5>
+
                 <div
                   id="google-signin-btn"
                   className="d-flex justify-content-center mt-3 mb-5"

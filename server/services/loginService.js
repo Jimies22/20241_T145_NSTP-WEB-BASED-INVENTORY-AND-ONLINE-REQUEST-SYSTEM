@@ -94,20 +94,18 @@ const loginService = {
           role: user.role,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "24h" } // Extended token expiry for admins
+        { expiresIn: "24h" }
       );
 
-      console.log("Admin login successful:", email);
-
-      // Send success response
+      // Send success response - Changed to match client expectation
       res.status(200).json({
-        message: "Admin login successful",
+        message: "Login successful", // Changed from "Admin login successful"
         user: {
           name: user.name,
           email: user.email,
           role: user.role,
         },
-        token,
+        token, // Make sure token is included
       });
     } catch (error) {
       console.error("Admin login error:", error);
