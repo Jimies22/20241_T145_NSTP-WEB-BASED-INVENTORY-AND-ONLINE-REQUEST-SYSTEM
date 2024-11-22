@@ -44,6 +44,7 @@ router.patch('/:item_id', async (req, res) => {
         }
         res.json(updatedItem);
     } catch (error) {
+        console.error('Error updating item:', error);
         res.status(400).json({ message: error.message });
     }
 });

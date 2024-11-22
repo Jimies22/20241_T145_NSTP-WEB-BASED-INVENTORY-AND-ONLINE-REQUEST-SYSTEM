@@ -20,6 +20,7 @@ function AddItems({ updateItem }) {
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState("");
 
     const columns = [
         {
@@ -125,20 +126,19 @@ function AddItems({ updateItem }) {
         e.preventDefault();
         try {
             if (isEditing) {
-                const response = await axios.patch(`http://localhost:3000/items/${formData.item_id}`, formData);
-                updateItem(response.data);
+                await axios.patch(`http://localhost:3000/items/${formData.item_id}`, formData);
+                await fetchItems();
                 setSuccessMessage('Item updated successfully');
             } else {
                 const response = await axios.post('http://localhost:3000/items/additem', formData);
                 setItems([...items, response.data]);
                 setSuccessMessage('Item added successfully');
+                await fetchItems();
             }
             handleCloseModal();
-            fetchItems();
         } catch (error) {
             console.error('Error saving item:', error);
             setError('Error saving item');
-            handleCloseModal();
         }
     };
 
@@ -159,7 +159,12 @@ function AddItems({ updateItem }) {
 
     const handleShowModal = (item = null) => {
         if (item) {
-            setFormData(item);
+            setFormData({
+                item_id: item.item_id,
+                name: item.name,
+                description: item.description,
+                category: item.category
+            });
             setIsEditing(true);
         } else {
             setFormData({
@@ -185,6 +190,13 @@ function AddItems({ updateItem }) {
         setSuccessMessage('');
     };
 
+    const filteredItems = items.filter((item) =>
+        Object.values(item)
+            .join(" ")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="dashboard">
             <Sidebar />
@@ -194,6 +206,16 @@ function AddItems({ updateItem }) {
                     <div className="head-title">
                         <div className="left">
                             <h1>Items Management</h1>
+                        </div>
+                        <div className="search-container" style={{ marginRight: '10px' }}>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search items..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                style={{ width: '250px' }}
+                            />
                         </div>
                         <button 
                             className="btn btn-primary add-button" 
@@ -211,7 +233,7 @@ function AddItems({ updateItem }) {
                             <DataTable
                                 title="Items List"
                                 columns={columns}
-                                data={items}
+                                data={filteredItems}
                                 pagination
                                 responsive
                                 highlightOnHover

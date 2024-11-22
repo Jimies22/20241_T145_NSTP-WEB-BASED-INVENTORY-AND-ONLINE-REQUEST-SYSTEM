@@ -14,28 +14,30 @@ body {
 
 /* Ensure the content area is styled correctly */
 #content {
-	position: absolute; /* Ensure it is positioned correctly */
-	width: calc(100% - 280px); /* Adjust according to your layout */
-	left: 280px; /* Align with the sidebar */
-	top: 0; /* Align with the top */
+	position: relative;
+	width: calc(100% - 280px);
+	left: 280px;
 	transition: .3s ease;
-	margin: 0;
-	padding: 0;
-	height: calc(100vh - 56px); /* Set height to fill the remaining viewport */
-	overflow: hidden; /* Prevent scrolling */
+	height: 100vh;
+	overflow: hidden;
+	background-color: white;
 }
 
 main {
-	padding: 10px; /* Remove padding */
+	padding: 20px;
 	font-family: var(--poppins);
-	min-height: calc(100vh - 56px); /* Ensure it fills the height */
-	overflow-y: auto; /* Allow scrolling if needed */
-	background-color: #eee; /* Background color for visibility */
+	height: 100vh;
+	background-color: white;
+	overflow: hidden;
 }
 
 /* Add any additional styles specific to the EditPage here */
 
 .add-button {
+    margin-top: 10px;
+    font-size: 9px;
+    height: 40px;
+    width: 90px;
     background-color: #4CAF50;
     color: white;
     border: none;
@@ -140,8 +142,36 @@ th {
 }
 
 .table-data {
-    padding: 20px;
-    margin-top: 20px;
+    background: white;
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    height: calc(100vh - 180px);
+    overflow: hidden;
+}
+
+.order {
+    height: 100%;
+    overflow: auto;
+}
+
+/* DataTable specific styles */
+.rdt_Table {
+    background: white !important;
+    height: calc(100% - 20px) !important;
+}
+
+.rdt_TableBody {
+    height: calc(100% - 100px) !important; /* Adjust for header and pagination */
+}
+
+/* Make the table header sticky */
+.rdt_TableHead {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1 !important;
+    background: white !important;
 }
 
 .table-wrapper {
@@ -203,19 +233,6 @@ tr:hover {
 
 .delete-btn i {
     color: #f44336;
-}
-
-.add-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
 }
 
 .add-button:hover {
@@ -325,18 +342,6 @@ tr:hover {
     color: #666;
 }
 
-.add-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
 
 .add-button:hover {
     background-color: #45a049;
@@ -400,4 +405,38 @@ tr:hover {
 /* Add this if you want to prevent body scrolling when modal is open */
 body.modal-open {
     overflow: hidden;
+}
+
+:root {
+    --poppins: 'Poppins', sans-serif;
+    --lato: 'Lato', sans-serif;
+    --light: #FFFFFF;
+    --blue: #3C91E6;
+    --light-blue: #CFE8FF;
+    --grey: #FFFFFF;
+    --dark-grey: #AAAAAA;
+    --dark: #342E37;
+    --red: #DB504A;
+    --yellow: #FFCE26;
+    --light-yellow: #FFF2C6;
+    --orange: #FD7238;
+    --light-orange: #FFE0D3;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-container input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }

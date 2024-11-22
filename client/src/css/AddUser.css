@@ -91,7 +91,7 @@ th {
 
 .edit-btn {
   background-color: #ffffff;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .delete-btn {
@@ -144,4 +144,27 @@ th {
 
 .actions button i {
   font-size: 1.2rem;
+}
+/* .addButton {
+  color: white;
+  border-color: white;
+  background-color: white;
+} */
+
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-container input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-container input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }

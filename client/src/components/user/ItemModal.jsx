@@ -3,6 +3,7 @@ import "../../css/ItemModals.css";
 
 const ItemModal = ({ isActive, onClose, item }) => {
   const [bookingDate, setBookingDate] = useState("");
+  const [borrowed, setBorrowed] = useState(false);
 
   if (!item) return null;
 
@@ -10,6 +11,17 @@ const ItemModal = ({ isActive, onClose, item }) => {
     // Implement booking logic here
     alert(`Item booked for ${bookingDate}`);
     onClose(); // Close the modal after booking
+  };
+
+  const handleBorrow = () => {
+    // Implement borrowing logic here
+    if (item.availability) {
+      setBorrowed(true); // Update state to indicate the item is borrowed
+      alert(`You have borrowed the item: ${item.name}`);
+      onClose(); // Close the modal after borrowing
+    } else {
+      alert("This item is currently unavailable for borrowing.");
+    }
   };
 
   return (
@@ -23,8 +35,8 @@ const ItemModal = ({ isActive, onClose, item }) => {
         >
           Booking Item
         </h2>
-        <div className="modal-cards">
-          <div className="card">
+        <div className="modal-cards" style={{ display: "flex", gap: "20px" }}>
+          <div className="card" style={{ flex: "1" }}>
             <h3>Item Information</h3>
             <div className="image-container">
               <img
@@ -56,7 +68,7 @@ const ItemModal = ({ isActive, onClose, item }) => {
               Book Now
             </button>
           </div>
-          <div className="card">
+          <div className="card" style={{ flex: "0 0 150px" }}>
             <h3>Borrower Information</h3>
             <p>
               <strong>Borrower Name:</strong> <span>{item.borrowerName}</span>
@@ -64,6 +76,12 @@ const ItemModal = ({ isActive, onClose, item }) => {
             <p>
               <strong>Borrower ID:</strong> <span>{item.borrowerId}</span>
             </p>
+            <button
+              onClick={handleBorrow}
+              disabled={borrowed || !item.availability}
+            >
+              {borrowed ? "Borrowed" : "Borrow"}
+            </button>
           </div>
         </div>
       </div>
