@@ -10,7 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const itemRoutes = require("./routes/itemRoutes");
 const loginRoutes = require("./routes/loginRoutes");
-// const borrowRoutes = require("./routes/borrowRoutes");
+const borrowRoutes = require("./routes/borrowRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -98,7 +98,7 @@ app.use("/users", userRoutes);
 app.use("/documents", documentRoutes);
 app.use("/items", itemRoutes);
 app.use("/login", loginRoutes);
-//app.use("/borrow", borrowRoutes);
+app.use("/borrow", borrowRoutes);
 //app.use("/admin", adminRoutes);
 
 // Update the logout route
