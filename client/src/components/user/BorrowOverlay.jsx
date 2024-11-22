@@ -6,6 +6,7 @@ const BorrowOverlay = ({ item, onClose }) => {
     const [borrowDate, setBorrowDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
+    const [error, setError] = useState(null); // State for error handling
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,7 +21,7 @@ const BorrowOverlay = ({ item, onClose }) => {
             onClose(); // Close the overlay after successful borrowing
         } catch (error) {
             console.error('Error borrowing item:', error);
-            alert('Failed to borrow item');
+            setError('Failed to borrow item'); // Set error message
         }
     };
 
@@ -31,6 +32,8 @@ const BorrowOverlay = ({ item, onClose }) => {
                     <button className="close-btn" onClick={onClose}>×</button>
                     <h2 className="item-title">{item.name}</h2>
                 </div>
+
+                {error && <p className="error-message">{error}</p>} {/* Display error message */}
 
                 <div className="booking-layout">
                     <h3>Select Date and Time</h3>
