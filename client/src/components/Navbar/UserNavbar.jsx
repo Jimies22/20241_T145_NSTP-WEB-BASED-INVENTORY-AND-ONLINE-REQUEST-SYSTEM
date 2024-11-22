@@ -9,10 +9,10 @@ function UserNavbar() {
         <nav>
             <a href="#" className="nav-link">Categories</a>
             <form action="#">
-                <div className="form-input">
+                {/* <div className="form-input">
                     <input type="search" placeholder="Search..." />
                     <button type="submit" className="search-btn"><i className='bx bx-search'></i></button>
-                </div>
+                </div> */}
             </form>
             <a href="/usernotification" className="notification">
                 <i className='bx bxs-bell'></i>

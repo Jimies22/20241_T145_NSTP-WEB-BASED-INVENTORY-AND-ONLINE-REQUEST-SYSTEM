@@ -10,7 +10,6 @@ const userRoutes = require("./routes/userRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const itemRoutes = require("./routes/itemRoutes");
 const loginRoutes = require("./routes/loginRoutes");
-const borrowRoutes = require("./routes/borrowRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -98,28 +97,13 @@ app.use("/users", userRoutes);
 app.use("/documents", documentRoutes);
 app.use("/items", itemRoutes);
 app.use("/login", loginRoutes);
-//app.use("/borrow", borrowRoutes);
-//app.use("/admin", adminRoutes);
+// app.use("/admin", adminRoutes);
 
-// Update the logout route
-app.post("/logout", jwtVerifyMiddleware, (req, res) => {
-  try {
-    // Clear the session
-    req.logout(() => {
-      // Clear any session data
-      req.session.destroy((err) => {
-        if (err) {
-          return res.status(500).json({ message: "Error during logout" });
-        }
-        // Send successful response
-        res.clearCookie("connect.sid"); // Clear session cookie
-        res.status(200).json({ message: "Logged out successfully" });
-      });
-    });
-  } catch (error) {
-    console.error("Logout error:", error);
-    res.status(500).json({ message: "Error during logout" });
-  }
+// Logout route to clear the session
+app.post("/logout", (req, res) => {
+  req.logout(() => {
+    res.status(200).json({ message: "Logged out successfully" });
+  });
 });
 
 app.listen(PORT, () => {

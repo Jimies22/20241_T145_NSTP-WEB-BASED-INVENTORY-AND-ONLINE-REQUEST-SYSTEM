@@ -39,15 +39,52 @@ function Login() {
       .then((data) => {
         if (data.message === "Login successful") {
           sessionStorage.setItem("sessionToken", data.token);
-          navigate("/user");
+          if (data.user.role === "admin") {
+            navigate("/admin");
+          } else {
+            navigate("/user");
+          }
         } else {
           alert(data.message);
         }
       })
       .catch((error) => {
         console.error("Error during login:", error);
-        alert("Login failed: An error occurred while logging in. 1");
+        alert("Login failed: An error occurred while logging in 1.");
+        //alert("Login failed: An error occurred in /login/google.");
       });
+  };
+
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+
+    if (!email || !password) {
+      alert("Please enter both email and password");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.message === "Login successful") {
+        sessionStorage.setItem("sessionToken", data.token);
+        navigate("/admin");
+      } else {
+        alert(data.message || "Invalid credentials");
+      }
+    } catch (error) {
+      console.error("Admin login error:", error);
+      alert("Login failed: An error occurred while logging in 2.");
+      //alert("Login failed: An error occurred in login/admin.");
+    }
   };
 
   const onError = () => {
@@ -63,6 +100,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Check for empty inputs
     if (!email.trim() || !password.trim()) {
       alert("Please fill in all fields");
       return;
@@ -74,55 +112,32 @@ function Login() {
     }
 
     try {
-      console.log("Sending login request with:", {
-        email,
-        recaptchaValue,
-        passwordLength: password.length,
-      });
-
       const response = await fetch("http://localhost:3000/login/admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, recaptchaValue }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
       console.log("Login response:", data);
 
-      if (response.ok) {
-        // Store the token
-        if (data.token) {
-          sessionStorage.setItem("sessionToken", data.token);
+      if (response.ok && data.message === "Login successful") {
+        sessionStorage.setItem("sessionToken", data.token);
+        console.log("User role:", data.user.role);
 
-          // Check role and navigate
-          if (data.user && data.user.role === "admin") {
-            console.log("Navigating to admin dashboard...");
-            navigate("/admin");
-          } else {
-            console.log("User role not admin:", data.user?.role);
-            alert(
-              "This login is for administrators only. Users should use Google Sign-In."
-            );
-          }
+        if (data.user.role === "admin") {
+          navigate("/admin");
         } else {
-          console.error("No token received in response");
-          alert("Login error: No authentication token received");
+          navigate("/user");
         }
       } else {
-        console.error("Login failed:", data);
-        alert(data.message || "Invalid credentials");
+        alert(data.message || "Login failed");
       }
     } catch (error) {
-      console.error("Login error details:", {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      });
-      alert(
-        "An error occurred during login. Please check console for details."
-      );
+      console.error("Error during login:", error);
+      alert("Login failed: An error occurred while logging in 3.");
     }
   };
 
@@ -182,7 +197,6 @@ function Login() {
                   Login
                 </button>
                 <hr className="line"></hr>
-
                 <div
                   id="google-signin-btn"
                   className="d-flex justify-content-center mt-3 mb-5"
