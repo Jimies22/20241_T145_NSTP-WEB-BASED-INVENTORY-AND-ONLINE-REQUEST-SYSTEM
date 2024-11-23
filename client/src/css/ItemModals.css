@@ -1,201 +1,182 @@
 /* Modal Base Styles */
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Modal Header */
+.modalHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.modalTitle {
+  color: var(--color-dark, #342e37);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Modal Cards Container */
+.modalCards {
+  display: flex;
+  gap: 20px;
+  margin-top: 1rem;
+}
+
+/* Card Styles */
+.card {
+  background: var(--color-grey, #eee);
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+.cardTitle {
+  color: var(--color-dark, #342e37);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Image Container */
+.imageContainer {
+  width: 100%;
+  height: 200px;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.imageContainer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Information List */
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-light-grey, #ddd);
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: var(--color-dark, #342e37);
+  flex: 1;
+}
+
+.infoValue {
+  flex: 2;
+  color: var(--color-dark-grey, #aaaaaa);
+  text-align: right;
+}
+
+/* Status Badges */
+.status {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.statusReturned {
+  background: var(--color-blue, #3c91e6);
+  color: white;
+}
+
+.statusPending {
+  background: var(--color-orange, #fd7238);
+  color: white;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
     opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 3000;
+    transform: scale(0.9);
   }
-  
-  .modalActive {
+  to {
     opacity: 1;
-    visibility: visible;
-  }
-  
-  .modalContent {
-    background: var(--color-light, #F9F9F9);
-    padding: 2rem;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 900px;
-    transform: scale(0.7);
-    opacity: 0;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  
-  .modalActive .modalContent {
     transform: scale(1);
-    opacity: 1;
   }
-  
-  /* Close Button */
-  .closeButton {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 1.5rem;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: var(--color-dark, #342E37);
-    transition: color 0.3s ease;
-  }
-  
-  .closeButton:hover {
-    color: var(--color-red, #DB504A);
-  }
-  
-  /* Modal Header */
-  .modalHeader {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  .modalTitle {
-    color: var(--color-dark, #342E37);
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-  
-  /* Modal Cards Container */
-  .modalCards {
-    display: flex;
-    gap: 20px;
-    margin-top: 1rem;
-  }
-  
-  /* Card Styles */
-  .card {
-    background: var(--color-grey, #eee);
+}
+
+.fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .modal-content {
+    width: 95%;
     padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    flex: 1;
   }
-  
-  .cardTitle {
-    color: var(--color-dark, #342E37);
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    text-align: center;
+
+  .modalCards {
+    grid-template-columns: 1fr;
   }
-  
-  /* Image Container */
+
   .imageContainer {
-    width: 100%;
-    height: 200px;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-    overflow: hidden;
+    height: 150px;
   }
-  
-  .imageContainer img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+}
+
+@media screen and (max-width: 576px) {
+  .modal-content {
+    width: 98%;
+    padding: 1rem;
   }
-  
-  /* Information List */
-  .infoList {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-  
+
   .infoItem {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--color-light-grey, #ddd);
+    flex-direction: column;
+    gap: 0.3rem;
   }
-  
-  .infoLabel {
-    font-weight: 600;
-    color: var(--color-dark, #342E37);
-    flex: 1;
-  }
-  
+
   .infoValue {
-    flex: 2;
-    color: var(--color-dark-grey, #AAAAAA);
-    text-align: right;
+    text-align: left;
   }
-  
-  /* Status Badges */
-  .status {
-    display: inline-block;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-align: center;
-  }
-  
-  .statusReturned {
-    background: var(--color-blue, #3C91E6);
-    color: white;
-  }
-  
-  .statusPending {
-    background: var(--color-orange, #FD7238);
-    color: white;
-  }
-  
-  /* Animation */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  
-  .fadeIn {
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  /* Responsive Design */
-  @media screen and (max-width: 768px) {
-    .modalContent {
-      width: 95%;
-      padding: 1.5rem;
-    }
-  
-    .modalCards {
-      grid-template-columns: 1fr;
-    }
-  
-    .imageContainer {
-      height: 150px;
-    }
-  }
-  
-  @media screen and (max-width: 576px) {
-    .modalContent {
-      width: 98%;
-      padding: 1rem;
-    }
-  
-    .infoItem {
-      flex-direction: column;
-      gap: 0.3rem;
-    }
-  
-    .infoValue {
-      text-align: left;
-    }
-  }
+}

@@ -51,7 +51,7 @@ const jwtVerifyMiddleware = (req, res, next) => {
     if (err) {
       return res
         .status(401)
-        .json({ message: "Unauthorized: Invalid or expired token" });
+        .json({ message: "Unauthorized: Invalid or expired token 1" });
     }
     req.user = decoded; // Attach decoded user info to request
     next();

@@ -56,8 +56,10 @@ const BorrowOverlay = ({ item, onClose, updateItem }) => {
       alert("Borrow request submitted successfully!");
       onClose();
     } catch (error) {
+      console.error("Borrow request error:", error);
       setError(
-        error.response?.data?.message || "Failed to submit borrow request"
+        error.response?.data?.message ||
+          "Failed to submit borrow request. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -79,6 +81,7 @@ const BorrowOverlay = ({ item, onClose, updateItem }) => {
               min={today}
               value={borrowDate}
               onChange={(e) => setBorrowDate(e.target.value)}
+              required
             />
           </div>
 
@@ -90,6 +93,7 @@ const BorrowOverlay = ({ item, onClose, updateItem }) => {
               min={borrowDate || today}
               value={returnDate}
               onChange={(e) => setReturnDate(e.target.value)}
+              required
             />
           </div>
 
@@ -103,7 +107,12 @@ const BorrowOverlay = ({ item, onClose, updateItem }) => {
             >
               {isSubmitting ? "Submitting..." : "Submit Request"}
             </button>
-            <button type="button" className="cancel-btn" onClick={onClose}>
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               Cancel
             </button>
           </div>

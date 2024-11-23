@@ -48,8 +48,8 @@ const borrowController = {
   getAllRequests: async (req, res) => {
     try {
       const requests = await Request.find()
-        .populate("userId", "name email")
-        .populate("itemId", "name description")
+        .populate("userId", "name email department")
+        .populate("itemId", "name description image status")
         .sort({ dateCreated: -1 });
       res.status(200).json(requests);
     } catch (error) {

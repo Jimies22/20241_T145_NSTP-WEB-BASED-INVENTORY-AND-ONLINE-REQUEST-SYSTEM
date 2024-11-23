@@ -1,26 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const borrowController = require("../controllers/borrowController");
-const { jwtVerifyMiddleware } = require("../middleware/authMiddleware"); // Assuming you have this middleware
+const { jwtVerifyMiddleware } = require("../middleware/authMiddleware");
 
-// Middleware to check if user is admin
-const isAdmin = (req, res, next) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Access denied: Admin only" });
-  }
-  next();
-};
-
-// Create a new borrow request (user only)
-router.post("/", jwtVerifyMiddleware, borrowController.createRequest);
+// Create a new borrow request
+router.post("/create", jwtVerifyMiddleware, borrowController.createRequest);
 
 // Get all requests (admin only)
-router.get(
-  "/all",
-  jwtVerifyMiddleware,
-  isAdmin,
-  borrowController.getAllRequests
-);
+router.get("/all", jwtVerifyMiddleware, borrowController.getAllRequests);
 
 // Get user's requests
 router.get(
@@ -29,11 +16,10 @@ router.get(
   borrowController.getUserRequests
 );
 
-// Update request status (admin only)
+// Update request status
 router.patch(
   "/:requestId/status",
   jwtVerifyMiddleware,
-  isAdmin,
   borrowController.updateRequestStatus
 );
 
