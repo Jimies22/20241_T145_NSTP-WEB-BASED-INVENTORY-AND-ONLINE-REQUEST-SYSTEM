@@ -19,16 +19,9 @@ const itemSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    availability: {
+    isArchived: {
       type: Boolean,
-      required: true,
-      default: true,
-    },
-    status: {
-      type: String,
-      required: true,
-      enum: ["Available", "Borrowed", "Pending"],
-      default: "Available",
+      default: false,
     },
   },
   {
