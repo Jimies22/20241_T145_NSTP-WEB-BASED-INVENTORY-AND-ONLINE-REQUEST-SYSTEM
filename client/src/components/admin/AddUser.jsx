@@ -56,9 +56,16 @@ function AddUser() {
           >
             <i className="bx bx-trash addButton"></i>
           </button>
+          <button
+            onClick={() => handleArchive(row.userID)}
+            className="archive-btn"
+            title="Archive"
+          >
+            <i className="bx bx-archive-in addButton"></i>
+          </button>
         </div>
       ),
-      width: "120px",
+      width: "150px",
     },
   ];
 
@@ -103,7 +110,8 @@ function AddUser() {
       const response = await axios.get("http://localhost:3000/users");
       console.log("Fetched users:", response.data);
       if (Array.isArray(response.data)) {
-        setUsers(response.data);
+        const activeUsers = response.data.filter(user => !user.isArchived);
+        setUsers(activeUsers);
         setError(null);
       } else {
         setError("Invalid data format received");
@@ -176,6 +184,22 @@ function AddUser() {
     }
   };
 
+  const handleArchive = async (userID) => {
+    if (window.confirm("Are you sure you want to archive this user?")) {
+      try {
+        await axios.patch(`http://localhost:3000/users/${userID}/archive`, {
+          isArchived: true
+        });
+        setSuccessMessage("User archived successfully");
+        await fetchUsers(); // Refresh the user list
+        setTimeout(() => setSuccessMessage(""), 3000);
+      } catch (error) {
+        console.error("Error archiving user:", error);
+        setError("Error archiving user");
+      }
+    }
+  };
+
   const handleShowModal = (user = null) => {
     if (user) {
       setFormData({
@@ -233,6 +257,21 @@ function AddUser() {
   const LoadingComponent = () => (
     <div style={{ padding: "24px" }}>Loading users...</div>
   );
+
+  const fetchActiveUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("http://localhost:3000/users");
+      const activeUsers = response.data.filter(user => !user.isArchived);
+      setUsers(activeUsers);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setError(error.response?.data?.message || "Failed to fetch users");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="dashboard">

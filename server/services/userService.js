@@ -130,4 +130,48 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { createUser, getAllUsers, getUserById, searchUsersByName, updateUser, deleteUser };
+// Archive a user
+const archiveUser = async (req, res) => {
+    const { userID } = req.params;
+
+    try {
+        const user = await User.findOneAndUpdate(
+            { userID: parseInt(userID) },
+            { isArchived: true },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ message: 'User archived successfully', user });
+    } catch (error) {
+        console.error('Error archiving user:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Unarchive a user
+const unarchiveUser = async (req, res) => {
+    const { userID } = req.params;
+
+    try {
+        const user = await User.findOneAndUpdate(
+            { userID: parseInt(userID) },
+            { isArchived: false }, // Set isArchived to false
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ message: 'User unarchived successfully', user });
+    } catch (error) {
+        console.error('Error unarchiving user:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { createUser, getAllUsers, getUserById, searchUsersByName, updateUser, deleteUser, archiveUser, unarchiveUser };
