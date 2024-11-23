@@ -1,13 +1,32 @@
 const mongoose = require("mongoose");
 const requestSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Reference to User
-  item: String, // Item name or ID being requested
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  itemId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Item",
+    required: true,
+  },
+  dateCreated: {
+    type: Date,
+    default: Date.now,
+  },
+  dateBorrow: {
+    type: Date,
+    required: true,
+  },
+  dateReturn: {
+    type: Date,
+    required: true,
+  },
   status: {
     type: String,
-    enum: ["pending", "approved", "rejected"],
-    default: "pending",
+    enum: ["Pending", "Approved", "Rejected"],
+    default: "Pending",
   },
-  requestDate: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Request", requestSchema);
