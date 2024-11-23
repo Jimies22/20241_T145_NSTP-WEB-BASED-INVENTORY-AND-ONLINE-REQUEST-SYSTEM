@@ -1,44 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../../css/ItemModals.css";
 
-const ItemModal = ({
-  isActive,
-  onClose,
-  item,
-  onSave,
-  onDelete,
-  onArchive,
-}) => {
-  const [formData, setFormData] = useState({
-    item_id: "",
-    name: "",
-    description: "",
-    category: "",
-    availability: true,
-  });
+const ItemModal = ({ isActive, onClose, item }) => {
+  const [bookingDate, setBookingDate] = useState("");
+  const [borrowed, setBorrowed] = useState(false);
 
-  useEffect(() => {
-    if (item) {
-      setFormData({
-        item_id: item.item_id,
-        name: item.name,
-        description: item.description,
-        category: item.category,
-        availability: item.availability,
-      });
-    }
-  }, [item]);
+  if (!item) return null;
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+  const handleBooking = () => {
+    // Implement booking logic here
+    alert(`Item booked for ${bookingDate}`);
+    onClose(); // Close the modal after booking
   };
 
-  const handleSave = () => {
-    onSave(formData); // Call the save function passed as a prop
+  const handleBorrow = () => {
+    // Implement borrowing logic here
+    if (item.availability) {
+      setBorrowed(true); // Update state to indicate the item is borrowed
+      alert(`You have borrowed the item: ${item.name}`);
+      onClose(); // Close the modal after borrowing
+    } else {
+      alert("This item is currently unavailable for borrowing.");
+    }
   };
 
   return (
@@ -47,85 +30,59 @@ const ItemModal = ({
         <span className="close" onClick={onClose}>
           &times;
         </span>
-
-        <h2>{item ? "Edit Item" : "Add Item"}</h2>
-
-        <div className="modal-body">
-          <div className="form-group">
-            <label>Item ID:</label>
-            <input
-              type="text"
-              name="item_id"
-              value={formData.item_id}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Name:</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Description:</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Category:</label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>
-              Availability:
-              <input
-                type="checkbox"
-                name="availability"
-                checked={formData.availability}
-                onChange={handleInputChange}
+        <h2
+          style={{ textAlign: "center", color: "#333", marginBottom: "20px" }}
+        >
+          Booking Item
+        </h2>
+        <div className="modal-cards" style={{ display: "flex", gap: "20px" }}>
+          <div className="card" style={{ flex: "1" }}>
+            <h3>Item Information</h3>
+            <div className="image-container">
+              <img
+                src={item.image || "/path/to/default/image.jpg"}
+                alt={item.name}
               />
-            </label>
+            </div>
+            <p>
+              <strong>Item Name:</strong> <span>{item.name}</span>
+            </p>
+            <p>
+              <strong>Item ID:</strong> <span>{item.item_id}</span>
+            </p>
+            <p>
+              <strong>Description:</strong> <span>{item.description}</span>
+            </p>
+            <p>
+              <strong>Availability:</strong>{" "}
+              <span>{item.availability ? "Available" : "Unavailable"}</span>
+            </p>
+            <label htmlFor="bookingDate">Select Booking Date:</label>
+            <input
+              type="date"
+              id="bookingDate"
+              value={bookingDate}
+              onChange={(e) => setBookingDate(e.target.value)}
+            />
+            <button onClick={handleBooking} enabled={!bookingDate}>
+              Book Now
+            </button>
           </div>
-        </div>
-
-        <div className="modal-footer">
-          <button className="btn btn-primary" onClick={handleSave}>
-            {item ? "Update Item" : "Add Item"}
-          </button>
-          {item && (
-            <>
-              <button
-                className="btn btn-warning"
-                onClick={() => onArchive(item.item_id)}
-              >
-                Archive Item
-              </button>
-              <button
-                className="btn btn-danger"
-                onClick={() => onDelete(item.item_id)}
-              >
-                Delete Item
-              </button>
-            </>
-          )}
-          <button className="btn btn-secondary" onClick={onClose}>
-            Close
-          </button>
+          <div className="card" style={{ flex: "0 0 150px" }}>
+            <h3>Borrower Information</h3>
+            <p>
+              <strong>Borrower Name:</strong> <span>{item.borrowerName}</span>
+            </p>
+            <p>
+              <strong>Borrower ID:</strong> <span>{item.borrowerId}</span>
+            </p>
+            <button
+              onClick={handleBorrow}
+              disabled={borrowed || !item.availability}
+            >
+              {borrowed ? "Borrowed" : "Borrow"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

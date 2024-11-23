@@ -1,78 +1,90 @@
-import React, { useState, useEffect } from "react";
-import Sidebar from "../sidebar/UserSidebar";
-import UserNavbar from "../navbar/UserNavbar"; // Fixed casing in import path
-import BorrowOverlay from "./BorrowOverlay"; // Import the modal
-import "../../css/Navbar.css";
-import "../../css/RequestPage.css";
+import React, { useState, useEffect } from 'react';
+import Sidebar from '../sidebar/UserSidebar'; // Ensure the correct path
+import UserNavbar from '../Navbar/UserNavbar'; // Ensure the correct path
+import '../../css/Navbar.css';
+import '../../css/RequestPage.css';
 
 function UserBorrowPage() {
-  const [overlayVisible, setOverlayVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState({
-    title: "",
-    image: "",
-    status: "",
-  });
+    const [overlayVisible, setOverlayVisible] = useState(false);
+    const [selectedItem, setSelectedItem] = useState({ title: '', image: '', status: '' });
+    const [borrowTime, setBorrowTime] = useState('');
+    const [isBookButtonActive, setIsBookButtonActive] = useState(false);
 
-  const openOverlay = (item) => {
-    setSelectedItem(item);
-    setOverlayVisible(true);
-  };
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = "https://apis.google.com/js/api.js";
+        script.async = true;
+        document.body.appendChild(script);
 
-  const closeOverlay = () => {
-    setOverlayVisible(false);
-  };
+        return () => {
+            document.body.removeChild(script);
+        };
+    }, []);
 
-  return (
-    <div className="user-dashboard">
-      <Sidebar />
-      <section id="content">
-        <UserNavbar />
-        <main>
-          <div className="head-title">
-            <div className="left">
-              <h1>Borrowed</h1>
-              <ul className="breadcrumb">
-                <li>
-                  <a href="#">Borrowed</a>
-                </li>
-              </ul>
-            </div>
+    useEffect(() => {
+        setIsBookButtonActive(!!borrowTime);
+    }, [borrowTime]);
+
+    const openOverlay = (item) => {
+        setSelectedItem(item);
+        setOverlayVisible(true);
+        setBorrowTime('');
+    };
+
+    const closeOverlay = () => {
+        setOverlayVisible(false);
+    };
+
+    return (
+        <div className="user-dashboard">
+            <Sidebar />
+            <section id="content">
+                <UserNavbar />
+                <main>
+      <div className="head-title">
+        <div className="left">
+          <h1>Borrowed</h1>
+          <ul className="breadcrumb">
+            <li>
+              <a href="#">Borrowed</a>
+            </li>
+            {/* <li><i className="bx bx-chevron-right" /></li>
+            <li>
+              <a className="active" href="Canceled.html">Canceled</a>
+            </li> */}
+          </ul>
+        </div>
+        {/* <a href="#" class="btn-download">
+						<i class='bx bxs-cloud-download' ></i>
+						<span class="text">Download PDF</span>
+					</a> */}
+      </div>
+      <div className="table-data">
+        <div className="pending-requests">
+          <div className="head">
+            <h3>Borrowed Items</h3>
+            <i className="bx bx-filter" />
           </div>
-          <div className="table-data">
-            <div className="pending-requests">
-              <div className="head">
-                <h3>Borrowed Items</h3>
-                <i className="bx bx-filter" />
-              </div>
-              <div className="order">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Item Description</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="requested-items-list">
-                    {/* Dynamically render rows here */}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div className="order">
+            <table>
+              <thead>
+                <tr>
+                  <th>Item Description</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="requested-items-list">
+                {/* Items will be inserted here dynamically */}
+              </tbody>
+            </table>
           </div>
-        </main>
-        {overlayVisible && (
-          <BorrowOverlay
-            item={selectedItem}
-            onClose={closeOverlay}
-            updateItem={(updatedItem) => {
-              console.log("Updated Item:", updatedItem);
-            }}
-          />
-        )}
-      </section>
-    </div>
-  );
+        </div>			
+      </div>
+    </main>
+            </section>
+        </div>
+    );
 }
 
 export default UserBorrowPage;
