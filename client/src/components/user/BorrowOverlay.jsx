@@ -1,81 +1,116 @@
-import React, { useState } from 'react';
-import '../../css/BorrowOverlay.css';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import "../../css/BorrowOverlay.css";
 
-const BorrowOverlay = ({ item, onClose }) => {
-    const [borrowDate, setBorrowDate] = useState('');
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
+const BorrowOverlay = ({ item, onClose, updateItem }) => {
+  const [borrowDate, setBorrowDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post('http://localhost:3000/items/borrow', {
-                itemId: item.item_id,
-                borrowDate,
-                startTime,
-                endTime
-            });
-            alert(`You have successfully borrowed ${item.name}`);
-            onClose(); // Close the overlay after successful borrowing
-        } catch (error) {
-            console.error('Error borrowing item:', error);
-            alert('Failed to borrow item');
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split("T")[0];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // Validate dates
+    if (!borrowDate || !returnDate) {
+      setError("Please select both dates");
+      return;
+    }
+
+    if (new Date(returnDate) <= new Date(borrowDate)) {
+      setError("Return date must be after borrow date");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const token = sessionStorage.getItem("sessionToken");
+
+      const response = await axios.post(
+        "http://localhost:3000/borrow",
+        {
+          itemId: item.item_id,
+          dateBorrow: borrowDate,
+          dateReturn: returnDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-    };
+      );
 
-    return (
-        <div className="borrow-overlay" onClick={onClose}>
-            <div className="borrow-content" onClick={e => e.stopPropagation()}>
-                <div className="header-area">
-                    <button className="close-btn" onClick={onClose}>×</button>
-                    <h2 className="item-title">{item.name}</h2>
-                </div>
+      // Update item status locally
+      const updatedItem = {
+        ...item,
+        availability: false,
+        status: "Pending",
+      };
+      updateItem(updatedItem);
 
-                <div className="booking-layout">
-                    <h3>Select Date and Time</h3>
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label>Borrow Date:</label>
-                            <input
-                                type="date"
-                                value={borrowDate}
-                                onChange={(e) => setBorrowDate(e.target.value)}
-                                required
-                                className="date-input"
-                            />
-                        </div>
+      // Show success message and close
+      alert("Borrow request submitted successfully!");
+      onClose();
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Failed to submit borrow request"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-                        <div className="form-group">
-                            <label>Start Time:</label>
-                            <input
-                                type="time"
-                                value={startTime}
-                                onChange={(e) => setStartTime(e.target.value)}
-                                required
-                                className="time-input"
-                            />
-                        </div>
+  return (
+    <div className="borrow-overlay">
+      <div className="borrow-modal">
+        <h2>Borrow Request</h2>
+        <h3>{item.name}</h3>
 
-                        <div className="form-group">
-                            <label>End Time:</label>
-                            <input
-                                type="time"
-                                value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
-                                required
-                                className="time-input"
-                            />
-                        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="borrowDate">Borrow Date:</label>
+            <input
+              type="date"
+              id="borrowDate"
+              min={today}
+              value={borrowDate}
+              onChange={(e) => setBorrowDate(e.target.value)}
+            />
+          </div>
 
-                        <button type="submit" className="book-now-btn">
-                            Book Now
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    );
+          <div className="form-group">
+            <label htmlFor="returnDate">Return Date:</label>
+            <input
+              type="date"
+              id="returnDate"
+              min={borrowDate || today}
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
+            />
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          <div className="button-group">
+            <button
+              type="submit"
+              className="submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Submit Request"}
+            </button>
+            <button type="button" className="cancel-btn" onClick={onClose}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default BorrowOverlay;
