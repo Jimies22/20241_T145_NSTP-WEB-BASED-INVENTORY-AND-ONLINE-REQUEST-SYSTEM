@@ -61,12 +61,12 @@ function AddItems({ updateItem }) {
                     >
                         <i className='bx bx-archive-in'></i>
                     </button>
-                    <button 
+                    {/* <button 
                         onClick={() => handleDelete(row.item_id)}
                         className="delete-btn"
                     >
                         <i className='bx bx-trash'></i>
-                    </button>
+                    </button> */}
                 </div>
             ),
             width: '150px'

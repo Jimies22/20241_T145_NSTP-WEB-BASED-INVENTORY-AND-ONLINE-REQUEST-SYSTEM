@@ -192,26 +192,26 @@ const ArchivedPage = () => {
         }
     };
 
-    const handleUnarchiveUser = async (user) => {
-        if (window.confirm('Are you sure you want to unarchive this user?')) {
-            try {
-                const response = await axios.patch(`http://localhost:3000/users/${user.userID}/unarchive`, {
-                    isArchived: false
-                });
+  const handleUnarchiveUser = async (user) => {
+    if (window.confirm('Are you sure you want to unarchive this user?')) {
+        try {
+            const response = await axios.patch(`http://localhost:3000/users/${user.userID}/archive`, {
+                isArchived: false
+            });
+            
+            if (response.status === 200) {
+                setSuccessMessage('User unarchived successfully');
+                setArchivedUsers(prevUsers => prevUsers.filter(u => u.userID !== user.userID));
                 
-                if (response.status === 200) {
-                    setSuccessMessage('User unarchived successfully');
-                    setArchivedUsers(prevUsers => prevUsers.filter(u => u.userID !== user.userID));
-                    
-                    // Optionally, you can call fetchUsers here if you have access to it
-                    // fetchUsers(); // Uncomment if you have a fetchUsers function to refresh the user list
-                }
-            } catch (error) {
-                console.error('Error unarchiving user:', error);
-                setError('Error unarchiving user');
+                // Optionally, you can call fetchUsers here if you have access to it
+                // fetchUsers(); // Uncomment if you have a fetchUsers function to refresh the user list
             }
+        } catch (error) {
+            console.error('Error unarchiving user:', error);
+            setError('Error unarchiving user');
         }
-    };
+    }
+};
 
     const handleDeleteUser = async (userID) => {
         if (window.confirm('Are you sure you want to permanently delete this user?')) {
@@ -282,7 +282,6 @@ const ArchivedPage = () => {
                         <div className="alert alert-danger">{error}</div>
                     )}
 
-                    <h2>Archived Items</h2>
                     <div className="search-container">
                         <input
                             type="text"
@@ -294,10 +293,9 @@ const ArchivedPage = () => {
                     </div>
                     <div className="table-data">
                         <DataTable
-                            title="Archived Items"
                             columns={itemColumns}
                             data={filteredItems}
-                            pagination
+                            // pagination
                             responsive
                             highlightOnHover
                             pointerOnHover
@@ -320,10 +318,9 @@ const ArchivedPage = () => {
                     </div>
                     <div className="table-data">
                         <DataTable
-                            title="Archived Users"
                             columns={userColumns}
                             data={filteredUsers}
-                            pagination
+                            // pagination
                             responsive
                             highlightOnHover
                             pointerOnHover
