@@ -44,4 +44,15 @@ router.patch("/:id/availability", jwtVerifyMiddleware, async (req, res) => {
   }
 });
 
+// Create new item
+router.post("/additem", jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const newItem = new Item(req.body);
+    const savedItem = await newItem.save();
+    res.status(201).json(savedItem);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 module.exports = router;

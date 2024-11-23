@@ -1,8 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../../css/ItemModals.css";
 
-const ItemModal = ({ isActive, onClose, item, onBorrow }) => {
-  if (!item) return null;
+const ItemModal = ({
+  isActive,
+  onClose,
+  item,
+  onSave,
+  onDelete,
+  onArchive,
+}) => {
+  const [formData, setFormData] = useState({
+    item_id: "",
+    name: "",
+    description: "",
+    category: "",
+    availability: true,
+  });
+
+  useEffect(() => {
+    if (item) {
+      setFormData({
+        item_id: item.item_id,
+        name: item.name,
+        description: item.description,
+        category: item.category,
+        availability: item.availability,
+      });
+    }
+  }, [item]);
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleSave = () => {
+    onSave(formData); // Call the save function passed as a prop
+  };
 
   return (
     <div className={`modal ${isActive ? "active" : ""}`}>
@@ -11,44 +48,84 @@ const ItemModal = ({ isActive, onClose, item, onBorrow }) => {
           &times;
         </span>
 
-        <h2>Item Details</h2>
+        <h2>{item ? "Edit Item" : "Add Item"}</h2>
 
         <div className="modal-body">
-          <div className="item-image">
-            <img src={item.image || "/default-image.jpg"} alt={item.name} />
+          <div className="form-group">
+            <label>Item ID:</label>
+            <input
+              type="text"
+              name="item_id"
+              value={formData.item_id}
+              onChange={handleInputChange}
+              required
+            />
           </div>
+          <div className="form-group">
+            <label>Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Description:</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Category:</label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>
+              Availability:
+              <input
+                type="checkbox"
+                name="availability"
+                checked={formData.availability}
+                onChange={handleInputChange}
+              />
+            </label>
+          </div>
+        </div>
 
-          <div className="item-details">
-            <h3>{item.name}</h3>
-            <p>
-              <strong>Description:</strong> {item.description}
-            </p>
-            <p>
-              <strong>Status:</strong>
-              <span
-                className={`status ${
-                  item.availability ? "available" : "unavailable"
-                }`}
-              >
-                {item.availability ? "Available" : "Unavailable"}
-              </span>
-            </p>
-
-            <div className="button-group">
+        <div className="modal-footer">
+          <button className="btn btn-primary" onClick={handleSave}>
+            {item ? "Update Item" : "Add Item"}
+          </button>
+          {item && (
+            <>
               <button
-                className="borrow-button"
-                onClick={() => onBorrow(item)}
-                disabled={!item.availability}
+                className="btn btn-warning"
+                onClick={() => onArchive(item.item_id)}
               >
-                {item.availability
-                  ? "Borrow This Item"
-                  : "Currently Unavailable"}
+                Archive Item
               </button>
-              <button className="cancel-button" onClick={onClose}>
-                Close
+              <button
+                className="btn btn-danger"
+                onClick={() => onDelete(item.item_id)}
+              >
+                Delete Item
               </button>
-            </div>
-          </div>
+            </>
+          )}
+          <button className="btn btn-secondary" onClick={onClose}>
+            Close
+          </button>
         </div>
       </div>
     </div>
