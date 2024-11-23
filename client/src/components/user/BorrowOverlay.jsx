@@ -33,7 +33,8 @@ const BorrowOverlay = ({ item, onClose, updateItem }) => {
       const response = await axios.post(
         "http://localhost:3000/borrow",
         {
-          itemId: item.item_id,
+          //userId: sessionStorage.getItem("userId"),
+          itemId: item._id,
           dateBorrow: borrowDate,
           dateReturn: returnDate,
         },
@@ -43,7 +44,7 @@ const BorrowOverlay = ({ item, onClose, updateItem }) => {
           },
         }
       );
-
+      console.warn("Console test " + response + " " + token);
       // Update item status locally
       const updatedItem = {
         ...item,

@@ -8,7 +8,7 @@ const borrowController = {
       const userId = req.user.id;
 
       // Check if item exists and is available
-      const item = await Item.findOne({ item_id: itemId });
+      const item = await Item.findById(itemId);
       if (!item) {
         return res.status(404).json({ message: "Item not found" });
       }
@@ -19,9 +19,10 @@ const borrowController = {
       // Create new request
       const newRequest = new Request({
         userId,
-        itemId: item._id,
+        itemId,
         dateBorrow: new Date(dateBorrow),
         dateReturn: new Date(dateReturn),
+        status: "Pending",
       });
 
       // Update item availability
@@ -33,11 +34,12 @@ const borrowController = {
 
       // Populate user and item details
       const populatedRequest = await Request.findById(savedRequest._id)
-        .populate("userId", "name email")
-        .populate("itemId", "name description");
+        .populate("userId", "name email department")
+        .populate("itemId", "name description status");
 
       res.status(201).json(populatedRequest);
     } catch (error) {
+      console.error("Create request error:", error);
       res.status(500).json({
         message: "Error creating request",
         error: error.message,
@@ -49,10 +51,12 @@ const borrowController = {
     try {
       const requests = await Request.find()
         .populate("userId", "name email department")
-        .populate("itemId", "name description image status")
+        .populate("itemId", "name department status")
         .sort({ dateCreated: -1 });
+
       res.status(200).json(requests);
     } catch (error) {
+      console.error("Error fetching requests:", error);
       res.status(500).json({
         message: "Error fetching requests",
         error: error.message,
@@ -85,22 +89,31 @@ const borrowController = {
         return res.status(404).json({ message: "Request not found" });
       }
 
+      // Update request status
+      request.status = status;
+      await request.save();
+
       // Update item availability based on status
       const item = await Item.findById(request.itemId);
-      if (status === "Approved") {
-        item.availability = false;
-        item.status = "Unavailable";
-      } else if (status === "Rejected") {
-        item.availability = true;
-        item.status = "Available";
+      if (item) {
+        if (status === "Approved") {
+          item.availability = false;
+          item.status = "Borrowed";
+        } else if (status === "Rejected") {
+          item.availability = true;
+          item.status = "Available";
+        }
+        await item.save();
       }
-      await item.save();
 
-      request.status = status;
-      const updatedRequest = await request.save();
+      // Return updated request with populated fields
+      const updatedRequest = await Request.findById(requestId)
+        .populate("userId", "name email department")
+        .populate("itemId", "name department status");
 
       res.status(200).json(updatedRequest);
     } catch (error) {
+      console.error("Error updating request:", error);
       res.status(500).json({
         message: "Error updating request",
         error: error.message,

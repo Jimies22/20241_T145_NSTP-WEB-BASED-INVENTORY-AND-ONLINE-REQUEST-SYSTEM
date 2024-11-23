@@ -172,6 +172,7 @@ function RequestPage() {
                       </td>
                       <td>{request.userId.name}</td>
                       <td>{request.itemId.name}</td>
+                      <td>{request.itemId.department}</td>
                       <td>
                         {new Date(request.dateBorrow).toLocaleDateString()}
                       </td>

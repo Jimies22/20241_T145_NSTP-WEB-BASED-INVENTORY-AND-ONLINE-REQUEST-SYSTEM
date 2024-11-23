@@ -27,7 +27,7 @@ const itemSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["Available", "Unavailable"],
+      enum: ["Available", "Borrowed", "Pending"],
       default: "Available",
     },
   },
