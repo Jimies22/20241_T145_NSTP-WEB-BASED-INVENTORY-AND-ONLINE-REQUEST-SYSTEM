@@ -1,16 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const itemService = require('../services/itemService');
-const Item = require('../models/Item');
+const itemService = require("../services/itemService");
+const Item = require("../models/Item");
+const { jwtVerifyMiddleware } = require("../server");
 
 // Get all items
-router.get('/', async (req, res) => {
-    try {
-        const items = await Item.find();
-        res.json(items);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+router.get("/", async (req, res) => {
+  try {
+    const items = await Item.find();
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Get single item
@@ -33,26 +34,29 @@ router.patch("/:id/availability", jwtVerifyMiddleware, async (req, res) => {
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 });
 
 // Update item by item_id
-router.patch('/:item_id', async (req, res) => {
-    try {
-        const updatedItem = await Item.findOneAndUpdate(
-            { item_id: req.params.item_id },
-            { $set: req.body },
-            { new: true }
-        );
-        
-        if (!updatedItem) {
-            return res.status(404).json({ message: 'Item not found' });
-        }
-        
-        res.json(updatedItem);
-    } catch (error) {
-        console.error('Error updating item:', error);
-        res.status(400).json({ message: error.message });
+router.patch("/:item_id", async (req, res) => {
+  try {
+    const updatedItem = await Item.findOneAndUpdate(
+      { item_id: req.params.item_id },
+      { $set: req.body },
+      { new: true }
+    );
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Item not found" });
     }
+
+    res.json(updatedItem);
+  } catch (error) {
+    console.error("Error updating item:", error);
+    res.status(400).json({ message: error.message });
+  }
 });
 
 // Create new item
