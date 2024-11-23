@@ -17,6 +17,10 @@ const itemSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true
+    },
+    isArchived: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true

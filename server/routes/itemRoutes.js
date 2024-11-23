@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const itemService = require('../services/itemService');
+const Item = require('../models/Item');
 
 // Get all items
 router.get('/', async (req, res) => {
     try {
-        const items = await itemService.getAllItems();
+        const items = await Item.find();
         res.json(items);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -38,10 +39,16 @@ router.post('/additem', async (req, res) => {
 // Update item by item_id
 router.patch('/:item_id', async (req, res) => {
     try {
-        const updatedItem = await itemService.updateItem(req.params.item_id, req.body);
+        const updatedItem = await Item.findOneAndUpdate(
+            { item_id: req.params.item_id },
+            { $set: req.body },
+            { new: true }
+        );
+        
         if (!updatedItem) {
             return res.status(404).json({ message: 'Item not found' });
         }
+        
         res.json(updatedItem);
     } catch (error) {
         console.error('Error updating item:', error);

@@ -55,6 +55,13 @@ function AddItems({ updateItem }) {
                         <i className='bx bx-edit'></i>
                     </button>
                     <button 
+                        onClick={() => handleArchive(row)}
+                        className="archive-btn"
+                        title="Archive"
+                    >
+                        <i className='bx bx-archive-in'></i>
+                    </button>
+                    <button 
                         onClick={() => handleDelete(row.item_id)}
                         className="delete-btn"
                     >
@@ -62,7 +69,7 @@ function AddItems({ updateItem }) {
                     </button>
                 </div>
             ),
-            width: '120px'
+            width: '150px'
         }
     ];
 
@@ -105,7 +112,8 @@ function AddItems({ updateItem }) {
         try {
             setLoading(true);
             const response = await axios.get('http://localhost:3000/items');
-            setItems(response.data);
+            const activeItems = response.data.filter(item => !item.isArchived);
+            setItems(activeItems);
             setError(null);
         } catch (error) {
             console.error('Error fetching items:', error);
@@ -188,6 +196,24 @@ function AddItems({ updateItem }) {
         });
         setIsEditing(false);
         setSuccessMessage('');
+    };
+
+    const handleArchive = async (item) => {
+        if (window.confirm('Are you sure you want to archive this item?')) {
+            try {
+                const response = await axios.patch(`http://localhost:3000/items/${item.item_id}`, {
+                    isArchived: true
+                });
+                
+                if (response.status === 200) {
+                    setSuccessMessage('Item archived successfully');
+                    setItems(prevItems => prevItems.filter(i => i.item_id !== item.item_id));
+                }
+            } catch (error) {
+                console.error('Error archiving item:', error);
+                setError('Error archiving item');
+            }
+        }
     };
 
     const filteredItems = items.filter((item) =>
