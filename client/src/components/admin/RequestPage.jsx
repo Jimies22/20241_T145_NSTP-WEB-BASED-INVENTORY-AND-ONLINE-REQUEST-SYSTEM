@@ -1,90 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import Sidebar from '../sidebar/AdminSidebar';
-import AdminNavbar from '../Navbar/AdminNavbar'; // Ensure the correct path
-import '../../css/Navbar.css';
-import '../../css/RequestPage.css';
+import React, { useState, useEffect } from "react";
+import Sidebar from "../sidebar/AdminSidebar";
+import AdminNavbar from "../Navbar/AdminNavbar";
+import axios from "axios";
+import "../../css/Navbar.css";
+import "../../css/RequestPage.css";
 
 function RequestPage() {
-    const [overlayVisible, setOverlayVisible] = useState(false);
-    const [selectedItem, setSelectedItem] = useState({ title: '', image: '', status: '' });
-    const [borrowTime, setBorrowTime] = useState('');
-    const [isBookButtonActive, setIsBookButtonActive] = useState(false);
+  const [requests, setRequests] = useState([]);
 
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.src = "https://apis.google.com/js/api.js";
-        script.async = true;
-        document.body.appendChild(script);
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, []);
+  const fetchRequests = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/requests"); // Adjust the endpoint as necessary
+      setRequests(response.data);
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    }
+  };
 
-    useEffect(() => {
-        setIsBookButtonActive(!!borrowTime);
-    }, [borrowTime]);
+  const handleApprove = async (requestId) => {
+    try {
+      await axios.patch(`http://localhost:3000/requests/${requestId}`, {
+        status: "approved",
+      });
+      fetchRequests(); // Refresh the requests
+    } catch (error) {
+      console.error("Error approving request:", error);
+    }
+  };
 
-    const openOverlay = (item) => {
-        setSelectedItem(item);
-        setOverlayVisible(true);
-        setBorrowTime('');
-    };
+  const handleReject = async (requestId) => {
+    try {
+      await axios.patch(`http://localhost:3000/requests/${requestId}`, {
+        status: "rejected",
+      });
+      fetchRequests(); // Refresh the requests
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+    }
+  };
 
-    const closeOverlay = () => {
-        setOverlayVisible(false);
-    };
-
-    return (
-        <div className="user-dashboard">
-            <Sidebar />
-            <section id="content">
-                <AdminNavbar />
-                <main>
-      <div className="head-title">
-        <div className="left">
-          <h1>Request</h1>
-          <ul className="breadcrumb">
-            <li>
-              <a href="#">Request</a>
-            </li>
-            <li><i className="bx bx-chevron-right" /></li>
-            <li>
-              <a className="active" href="Canceled.html">Canceled</a>
-            </li>
-          </ul>
-        </div>
-        {/* <a href="#" class="btn-download">
-						<i class='bx bxs-cloud-download' ></i>
-						<span class="text">Download PDF</span>
-					</a> */}
-      </div>
-      <div className="table-data">
-        <div className="pending-requests">
-          <div className="head">
-            <h3>Pending Requests</h3>
-            <i className="bx bx-filter" />
+  return (
+    <div className="admin-dashboard">
+      <Sidebar />
+      <section id="content">
+        <AdminNavbar />
+        <main>
+          <div className="head-title">
+            <h1>Requests</h1>
           </div>
-          <div className="order">
-            <table>
-              <thead>
-                <tr>
-                  <th>Item Description</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="requested-items-list">
-                {/* Items will be inserted here dynamically */}
-              </tbody>
-            </table>
+          <div className="table-data">
+            <div className="pending-requests">
+              <div className="head">
+                <h3>Pending Requests</h3>
+              </div>
+              <div className="order">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>User ID</th>
+                      <th>Item ID</th>
+                      <th>Borrow Date</th>
+                      <th>Return Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {requests.map((request) => (
+                      <tr key={request._id}>
+                        <td>{request.userId}</td>
+                        <td>{request.item}</td>
+                        <td>{request.borrowDate}</td>
+                        <td>{request.returnDate}</td>
+                        <td>{request.status}</td>
+                        <td>
+                          <button onClick={() => handleApprove(request._id)}>
+                            Approve
+                          </button>
+                          <button onClick={() => handleReject(request._id)}>
+                            Reject
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>			
-      </div>
-    </main>
-            </section>
-        </div>
-    );
+        </main>
+      </section>
+    </div>
+  );
 }
 
 export default RequestPage;

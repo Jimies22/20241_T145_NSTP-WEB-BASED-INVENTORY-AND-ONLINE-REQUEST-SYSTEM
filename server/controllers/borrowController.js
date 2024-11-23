@@ -4,12 +4,13 @@ const borrowController = {
   // Create a new borrow request
   createRequest: async (req, res) => {
     try {
-      const { item } = req.body;
-      const userId = req.user.id; // From JWT middleware
-
+      const { userId, itemId, borrowDate, returnDate } = req.body; // Get userId and itemId from request body
       const newRequest = new Request({
         userId,
-        item,
+        item: itemId,
+        borrowDate,
+        returnDate,
+        status: "pending", // Default status
       });
 
       const savedRequest = await newRequest.save();
