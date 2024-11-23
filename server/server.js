@@ -10,7 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const itemRoutes = require("./routes/itemRoutes");
 const loginRoutes = require("./routes/loginRoutes");
-
+const borrowRoutes = require("./routes/borrowRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -51,7 +51,7 @@ const jwtVerifyMiddleware = (req, res, next) => {
     if (err) {
       return res
         .status(401)
-        .json({ message: "Unauthorized: Invalid or expired token" });
+        .json({ message: "Unauthorized: Invalid or expired token 1" });
     }
     req.user = decoded; // Attach decoded user info to request
     next();
@@ -97,7 +97,7 @@ app.use("/users", userRoutes);
 app.use("/documents", documentRoutes);
 app.use("/items", itemRoutes);
 app.use("/login", loginRoutes);
-// app.use("/borrow", borrowRoutes);
+app.use("/borrow", borrowRoutes);
 //app.use("/admin", adminRoutes);
 
 // Logout route to clear the session
@@ -110,3 +110,6 @@ app.post("/logout", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+// Export the middleware
+module.exports = { jwtVerifyMiddleware };
