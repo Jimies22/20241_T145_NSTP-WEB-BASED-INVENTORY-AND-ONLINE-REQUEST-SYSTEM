@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
         }
     },
     googleId: String, // If you are using Google login, this might be needed
+    isArchived: { 
+        type: Boolean, 
+        default: false 
+    },
 }, { timestamps: true });
 
 userSchema.methods.generateGoogleId = function () {
