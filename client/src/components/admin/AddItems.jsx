@@ -273,7 +273,7 @@ function AddItems({ updateItem }) {
                                         padding: '0 8px'
                                     }}>
                                         <div>Items List</div>
-                                        <div className="search-wrapper">
+                                        <div className="search-wrapper1">
                                             <i className='bx bx-search'></i>
                                             <input
                                                 type="text"

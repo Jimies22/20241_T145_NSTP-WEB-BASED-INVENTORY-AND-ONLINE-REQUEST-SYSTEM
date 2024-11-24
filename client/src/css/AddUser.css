@@ -199,12 +199,16 @@ th {
     position: relative;
     display: flex;
     align-items: center;
+    width: 700px;
 }
 
 .search-wrapper i {
-    position: absolute;
-    left: 10px;
-    color: #666;
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 1.2rem;
 }
 
 .add-new-button {

@@ -427,12 +427,12 @@ body.modal-open {
 /* Update/Add these styles */
 
 /* Search Input Styling */
-.search-wrapper {
+.search-wrapper1 {
     position: relative;
-    width: 600px;
+    width: 700px;
 }
 
-.search-wrapper i {
+.search-wrapper1 i {
     position: absolute;
     left: 12px;
     top: 50%;
