@@ -429,7 +429,7 @@ body.modal-open {
 /* Search Input Styling */
 .search-wrapper {
     position: relative;
-    width: 300px;
+    width: 600px;
 }
 
 .search-wrapper i {
@@ -450,6 +450,7 @@ body.modal-open {
     border-radius: 8px;
     font-size: 0.9rem;
     transition: all 0.3s ease;
+    width: 600px;
 }
 
 .search-input:focus {
@@ -510,22 +511,27 @@ body.modal-open {
     background-color: rgb(255, 255, 255);
 }
 
-.edit-btn:hover {
+.edit-btn:hover  {
     background-color: rgba(60, 145, 230, 0.2);
 }
 
 .archive-btn:hover {
-    background-color: rgba(60, 255, 0, 0.719);
-}
-
-.edit-btn i {
-    color: #3C91E6;
-    font-size: 1.1rem;
+    background-color: rgb(48, 206, 0);
+    transition: all 0.2s ease;
 }
 
 .archive-btn i {
-    color: #000000;
+    color:  rgb(48, 206, 0);
     font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+.archive-btn:hover i {
+    color: rgb(255, 255, 255);
+}
+
+.edit-btn:hover i {
+    color: rgb(255, 255, 255);
 }
 
 /* Modal Styling */

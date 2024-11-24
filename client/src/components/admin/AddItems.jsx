@@ -264,18 +264,7 @@ function AddItems({ updateItem }) {
                     <div className="table-data">
                         <div className="order">
                             <DataTable
-                                title="Items List"
-                                columns={columns}
-                                data={filteredItems}
-                                pagination
-                                responsive
-                                highlightOnHover
-                                pointerOnHover
-                                progressPending={loading}
-                                progressComponent={<div className="loading">Loading items...</div>}
-                                customStyles={customStyles}
-                                subHeader
-                                subHeaderComponent={
+                                title={
                                     <div style={{ 
                                         display: 'flex', 
                                         justifyContent: 'space-between', 
@@ -283,6 +272,7 @@ function AddItems({ updateItem }) {
                                         width: '100%',
                                         padding: '0 8px'
                                     }}>
+                                        <div>Items List</div>
                                         <div className="search-wrapper">
                                             <i className='bx bx-search'></i>
                                             <input
@@ -302,6 +292,15 @@ function AddItems({ updateItem }) {
                                         </button>
                                     </div>
                                 }
+                                columns={columns}
+                                data={filteredItems}
+                                pagination
+                                responsive
+                                highlightOnHover
+                                pointerOnHover
+                                progressPending={loading}
+                                progressComponent={<div className="loading">Loading items...</div>}
+                                customStyles={customStyles}
                                 noDataComponent={
                                     <div className="no-data">
                                         {error ? error : "No items found"}
