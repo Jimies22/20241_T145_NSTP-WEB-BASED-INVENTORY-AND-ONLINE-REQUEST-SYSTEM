@@ -77,29 +77,53 @@ function AddItems({ updateItem }) {
         table: {
             style: {
                 backgroundColor: '#ffffff',
-                borderRadius: '8px',
-                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                border: '1px solid #e0e0e0',
             }
         },
         headRow: {
             style: {
                 backgroundColor: '#f8f9fa',
-                borderTopLeftRadius: '8px',
-                borderTopRightRadius: '8px',
+                borderTopLeftRadius: '12px',
+                borderTopRightRadius: '12px',
+                borderBottom: '2px solid #e0e0e0',
+                fontWeight: '600',
+                color: '#2c3e50',
+                fontSize: '0.95rem',
+                minHeight: '52px',
             }
         },
         rows: {
             style: {
-                minHeight: '60px',
+                fontSize: '0.9rem',
+                fontWeight: '400',
+                color: '#2c3e50',
+                minHeight: '52px',
                 '&:hover': {
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: '#f8f9fa',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
                 }
+            }
+        },
+        subHeader: {
+            style: {
+                padding: '16px 24px',
+                backgroundColor: '#ffffff',
             }
         },
         pagination: {
             style: {
-                borderTop: 'none',
-                marginTop: '10px',
+                borderTop: '1px solid #e0e0e0',
+                margin: '0',
+                padding: '16px',
+            },
+            pageButtonsStyle: {
+                borderRadius: '6px',
+                height: '32px',
+                padding: '0 12px',
+                margin: '0 4px',
             }
         }
     };
@@ -233,23 +257,6 @@ function AddItems({ updateItem }) {
                         <div className="left">
                             <h1>Items Management</h1>
                         </div>
-                        <div className="search-container" style={{ marginRight: '10px' }}>
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Search items..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                style={{ width: '250px' }}
-                            />
-                        </div>
-                        <button 
-                            className="btn btn-primary add-button" 
-                            onClick={() => handleShowModal()}
-                        >
-                            <i className='bx bx-plus'></i>
-                            Add New Item
-                        </button>
                     </div>
 
                     {successMessage && <div className="alert alert-success">{successMessage}</div>}
@@ -267,6 +274,34 @@ function AddItems({ updateItem }) {
                                 progressPending={loading}
                                 progressComponent={<div className="loading">Loading items...</div>}
                                 customStyles={customStyles}
+                                subHeader
+                                subHeaderComponent={
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        justifyContent: 'space-between', 
+                                        alignItems: 'center', 
+                                        width: '100%',
+                                        padding: '0 8px'
+                                    }}>
+                                        <div className="search-wrapper">
+                                            <i className='bx bx-search'></i>
+                                            <input
+                                                type="text"
+                                                className="search-input"
+                                                placeholder="Search items..."
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                            />
+                                        </div>
+                                        <button 
+                                            className="add-new-button" 
+                                            onClick={() => handleShowModal()}
+                                        >
+                                            <i className='bx bx-plus'></i>
+                                            Add New Item
+                                        </button>
+                                    </div>
+                                }
                                 noDataComponent={
                                     <div className="no-data">
                                         {error ? error : "No items found"}

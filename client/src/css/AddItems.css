@@ -31,23 +31,7 @@ main {
 	overflow: hidden;
 }
 
-/* Add any additional styles specific to the EditPage here */
 
-.add-button {
-    margin-top: 10px;
-    font-size: 9px;
-    height: 40px;
-    width: 90px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
 
 .edit-btn, .delete-btn {
     background: none;
@@ -429,7 +413,6 @@ body.modal-open {
 }
 
 .search-container input {
-    padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
@@ -439,4 +422,203 @@ body.modal-open {
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Update/Add these styles */
+
+/* Search Input Styling */
+.search-wrapper {
+    position: relative;
+    width: 300px;
+}
+
+.search-wrapper i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+
+.search-input {
+    color: black;
+    background-color: whitesmoke;
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3C91E6;
+    box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
+}
+
+/* Add New Button Styling */
+.add-new-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #3C91E6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-new-button:hover {
+    background-color: #2d7bc0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(60, 145, 230, 0.2);
+}
+
+.add-new-button i {
+    font-size: 1.2rem;
+}
+
+/* Action Buttons Styling */
+.actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.edit-btn, .archive-btn {
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-btn {
+    background-color: rgba(60, 145, 230, 0.1);
+}
+
+.archive-btn {
+    background-color: rgb(255, 255, 255);
+}
+
+.edit-btn:hover {
+    background-color: rgba(60, 145, 230, 0.2);
+}
+
+.archive-btn:hover {
+    background-color: rgba(60, 255, 0, 0.719);
+}
+
+.edit-btn i {
+    color: #3C91E6;
+    font-size: 1.1rem;
+}
+
+.archive-btn i {
+    color: #000000;
+    font-size: 1.1rem;
+}
+
+/* Modal Styling */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    padding: 20px 24px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.form-control {
+    padding: 10px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #3C91E6;
+    box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #3C91E6;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #2d7bc0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(60, 145, 230, 0.2);
+}
+
+.btn-secondary {
+    background-color: #e9ecef;
+    border: none;
+    color: #2c3e50;
+}
+
+.btn-secondary:hover {
+    background-color: #dee2e6;
+    color: #2c3e50;
+}
+
+/* Table Container Styling */
+.table-data {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin: 20px;
+    height: calc(100vh - 180px);
+}
+
+/* Success Message Styling */
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
 }
