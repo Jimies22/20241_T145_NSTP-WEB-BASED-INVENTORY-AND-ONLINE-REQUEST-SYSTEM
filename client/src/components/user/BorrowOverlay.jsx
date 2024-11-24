@@ -10,6 +10,7 @@ const BorrowOverlay = ({ item, onClose }) => {
   const [returnMinute, setReturnMinute] = useState("15"); // Default minute
   const [returnPeriod, setReturnPeriod] = useState("AM"); // Default period
   const userId = sessionStorage.getItem("userId"); // Assuming userId is stored in sessionStorage
+  const token = sessionStorage.getItem("token"); // Assuming token is stored in sessionStorage
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,11 +24,20 @@ const BorrowOverlay = ({ item, onClose }) => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/borrow", {
-        item: item._id,
-        borrowTime,
-        returnTime,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/borrow",
+        {
+          item: item._id,
+          borrowTime,
+          returnTime,
+          userId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include the JWT token in the headers
+          },
+        }
+      );
       alert(`You have successfully borrowed ${item.name}`);
       onClose(); // Close the overlay after successful borrowing
     } catch (error) {
