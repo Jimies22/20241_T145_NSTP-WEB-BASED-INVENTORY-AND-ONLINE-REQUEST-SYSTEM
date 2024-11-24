@@ -36,11 +36,13 @@ const loginUser = async (req, res) => {
         name: user.name,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "12h" }
     );
 
     // User exists, log their role
-    console.log(`User ${email} logged in. Role: ${user.role}`);
+    console.log(
+      `User ${email} logged in. Role: ${user.role}. JWT Token: ${sessionToken}`
+    );
 
     res.json({
       message: "Login successful",
@@ -92,11 +94,11 @@ const loginAdmin = async (req, res) => {
         name: admin.name,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "12h" }
     );
 
     console.log("Admin login successful:", email);
-
+    console.log("Admin token:", token);
     // Send success response
     res.status(200).json({
       message: "Login successful",

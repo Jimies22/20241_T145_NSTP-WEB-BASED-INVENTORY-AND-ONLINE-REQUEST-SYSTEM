@@ -126,6 +126,7 @@ function Login() {
       if (response.ok && data.message === "Login successful") {
         sessionStorage.setItem("sessionToken", data.token);
         console.log("User role:", data.user.role);
+        console.log("Session Token:", data.token);
 
         if (data.user.role === "admin") {
           navigate("/admin");
