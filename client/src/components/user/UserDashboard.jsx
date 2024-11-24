@@ -83,6 +83,12 @@ const UserDashboard = () => {
     setSelectedItem(null);
   };
 
+  const handleBorrowSuccess = () => {
+    // Refresh the items list or update the state as needed
+    fetchItems(); // Re-fetch items to reflect any changes
+    handleCloseBorrowOverlay(); // Close the overlay after successful borrowing
+  };
+
   const filteredItems = items.filter((item) =>
     Object.values(item)
       .join(" ")
@@ -132,8 +138,14 @@ const UserDashboard = () => {
                   <div className="card-content">
                     <h3>{item.name}</h3>
                     <p className="availability">
-                      {item.availability ? "AVAILABLE" : "AVAILABLE"}
+                      {item.availability ? "AVAILABLE" : "UNAVAILABLE"}
                     </p>
+                    <button
+                      onClick={() => handleBorrowItem(item)}
+                      disabled={!item.availability}
+                    >
+                      Borrow
+                    </button>
                   </div>
                 </div>
               ))
@@ -177,6 +189,7 @@ const UserDashboard = () => {
             <BorrowOverlay
               item={selectedItem}
               onClose={handleCloseBorrowOverlay}
+              onSuccess={handleBorrowSuccess} // Pass the success handler
             />
           )}
         </main>

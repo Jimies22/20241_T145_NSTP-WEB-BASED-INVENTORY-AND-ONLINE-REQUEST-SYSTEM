@@ -1,14 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const itemService = require("../services/itemService");
-const Item = require("../models/Item");
 const borrowController = require("../controllers/borrowController");
-const { jwtVerifyMiddleware } = require("../middleware/authMiddleware"); // Adjust the path accordingly
+const { jwtVerifyMiddleware } = require("../middleware/authMiddleware");
 
 // Get all items
 router.get("/", async (req, res) => {
   try {
-    const items = await Item.find();
+    const items = await itemService.getAllItems();
     res.json(items);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -28,8 +27,8 @@ router.get("/:item_id", async (req, res) => {
   }
 });
 
-// Create new item
-router.post("/additem", async (req, res) => {
+// Create new item (protected route)
+router.post("/additem", jwtVerifyMiddleware, async (req, res) => {
   try {
     const newItem = await itemService.createItem(req.body);
     res.status(201).json(newItem);
@@ -38,28 +37,24 @@ router.post("/additem", async (req, res) => {
   }
 });
 
-// Update item by item_id
-router.patch("/:item_id", async (req, res) => {
+// Update item by item_id (protected route)
+router.patch("/:item_id", jwtVerifyMiddleware, async (req, res) => {
   try {
-    const updatedItem = await Item.findOneAndUpdate(
-      { item_id: req.params.item_id },
-      { $set: req.body },
-      { new: true }
+    const updatedItem = await itemService.updateItem(
+      req.params.item_id,
+      req.body
     );
-
     if (!updatedItem) {
       return res.status(404).json({ message: "Item not found" });
     }
-
     res.json(updatedItem);
   } catch (error) {
-    console.error("Error updating item:", error);
     res.status(400).json({ message: error.message });
   }
 });
 
-// Delete item by item_id
-router.delete("/:item_id", async (req, res) => {
+// Delete item by item_id (protected route)
+router.delete("/:item_id", jwtVerifyMiddleware, async (req, res) => {
   try {
     const deletedItem = await itemService.deleteItem(req.params.item_id);
     if (!deletedItem) {

@@ -3,22 +3,21 @@ import "../../css/BorrowOverlay.css";
 import axios from "axios";
 
 const BorrowOverlay = ({ item, onClose }) => {
-  const [borrowDate, setBorrowDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
+  const [borrowTime, setBorrowTime] = useState("");
+  const [returnTime, setReturnTime] = useState("");
   const userId = sessionStorage.getItem("userId"); // Assuming userId is stored in sessionStorage
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (new Date(returnDate) <= new Date(borrowDate)) {
-      alert("Return date must be after borrow date.");
+    if (returnTime <= borrowTime) {
+      alert("Return time must be after borrow time.");
       return;
     }
     try {
-      const response = await axios.post("http://localhost:3000/items/borrow", {
-        userId,
-        itemId: item.item_id,
-        borrowDate,
-        returnDate,
+      const response = await axios.post("http://localhost:3000/borrow", {
+        item: item._id,
+        borrowTime,
+        returnTime,
       });
       alert(`You have successfully borrowed ${item.name}`);
       onClose(); // Close the overlay after successful borrowing
@@ -39,27 +38,27 @@ const BorrowOverlay = ({ item, onClose }) => {
         </div>
 
         <div className="booking-layout">
-          <h3>Select Date</h3>
+          <h3>Select Time</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Borrow Date:</label>
+              <label>Borrow Time:</label>
               <input
-                type="date"
-                value={borrowDate}
-                onChange={(e) => setBorrowDate(e.target.value)}
+                type="time"
+                value={borrowTime}
+                onChange={(e) => setBorrowTime(e.target.value)}
                 required
-                className="date-input"
+                className="time-input"
               />
             </div>
 
             <div className="form-group">
-              <label>Return Date:</label>
+              <label>Return Time:</label>
               <input
-                type="date"
-                value={returnDate}
-                onChange={(e) => setReturnDate(e.target.value)}
+                type="time"
+                value={returnTime}
+                onChange={(e) => setReturnTime(e.target.value)}
                 required
-                className="date-input"
+                className="time-input"
               />
             </div>
 
