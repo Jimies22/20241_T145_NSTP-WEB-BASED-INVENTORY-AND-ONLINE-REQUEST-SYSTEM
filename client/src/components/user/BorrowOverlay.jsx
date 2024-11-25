@@ -1,48 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../css/BorrowOverlay.css";
 import axios from "axios";
 
 const BorrowOverlay = ({ item, onClose }) => {
   const [borrowHour, setBorrowHour] = useState("12"); // Default hour
   const [borrowMinute, setBorrowMinute] = useState("00"); // Default minute
-  const [borrowPeriod, setBorrowPeriod] = useState("AM"); // Default period
   const [returnHour, setReturnHour] = useState("12"); // Default hour
   const [returnMinute, setReturnMinute] = useState("15"); // Default minute
-  const [returnPeriod, setReturnPeriod] = useState("AM"); // Default period
-  const userId = sessionStorage.getItem("userId"); // Assuming userId is stored in sessionStorage
-  const token = sessionStorage.getItem("token"); // Assuming token is stored in sessionStorage
+  const [userId, setUserId] = useState(null); // State to store userId
+  const token = sessionStorage.getItem("sessionToken");
+
+  const fetchUserId = async () => {
+    // Retrieve JWT token from sessionStorage
+    try {
+      const response = await axios.get("http://localhost:3000/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserId(response.data.userId);
+    } catch (error) {
+      console.error("Error retrieving user ID:", error);
+    }
+  };
+
+  // Call fetchUserId when the component mounts
+  useEffect(() => {
+    fetchUserId();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate that return time is after borrow time
-    const borrowTime = `${borrowHour}:${borrowMinute} ${borrowPeriod}`;
-    const returnTime = `${returnHour}:${returnMinute} ${returnPeriod}`;
+    const borrowDate = new Date(); // Current date
+    borrowDate.setHours(borrowHour, borrowMinute); // Set hours and minutes
 
-    if (returnTime <= borrowTime) {
-      alert("Return time must be after borrow time.");
-      return;
-    }
+    const returnDate = new Date(); // Current date
+    returnDate.setHours(returnHour, returnMinute); // Set hours and minutes
 
     try {
       const response = await axios.post(
         "http://localhost:3000/borrow",
         {
           item: item._id,
-          borrowTime,
-          returnTime,
+          borrowDate, // Send in 24-hour format
+          returnDate, // Send in 24-hour format
           userId,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the JWT token in the headers
+            Authorization: `Bearer ${token}`,
           },
         }
       );
       alert(`You have successfully borrowed ${item.name}`);
-      onClose(); // Close the overlay after successful borrowing
+      onClose();
     } catch (error) {
-      console.error("Error borrowing item:", error);
-      alert("Failed to borrow item");
+      alert(
+        `Failed to borrow item: ${item.name}. Error: ${
+          error.message
+        }. Item ID: ${
+          item._id
+        }. Borrow Date: ${borrowDate.toISOString()}. Return Date: ${returnDate.toISOString()}. User ID: ${userId}`
+      );
     }
   };
 
@@ -66,14 +85,18 @@ const BorrowOverlay = ({ item, onClose }) => {
                   value={borrowHour}
                   onChange={(e) => setBorrowHour(e.target.value)}
                 >
-                  {[...Array(12).keys()].map((hour) => (
-                    <option
-                      key={hour}
-                      value={(hour + 1).toString().padStart(2, "0")}
-                    >
-                      {(hour + 1).toString().padStart(2, "0")}
-                    </option>
-                  ))}
+                  {[...Array(24).keys()].map(
+                    (
+                      hour // Change to 24-hour format
+                    ) => (
+                      <option
+                        key={hour}
+                        value={hour.toString().padStart(2, "0")}
+                      >
+                        {hour.toString().padStart(2, "0")}
+                      </option>
+                    )
+                  )}
                 </select>
                 <select
                   value={borrowMinute}
@@ -82,16 +105,6 @@ const BorrowOverlay = ({ item, onClose }) => {
                   {["00", "15", "30", "45"].map((minute) => (
                     <option key={minute} value={minute}>
                       {minute}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={borrowPeriod}
-                  onChange={(e) => setBorrowPeriod(e.target.value)}
-                >
-                  {["AM", "PM"].map((period) => (
-                    <option key={period} value={period}>
-                      {period}
                     </option>
                   ))}
                 </select>
@@ -105,14 +118,18 @@ const BorrowOverlay = ({ item, onClose }) => {
                   value={returnHour}
                   onChange={(e) => setReturnHour(e.target.value)}
                 >
-                  {[...Array(12).keys()].map((hour) => (
-                    <option
-                      key={hour}
-                      value={(hour + 1).toString().padStart(2, "0")}
-                    >
-                      {(hour + 1).toString().padStart(2, "0")}
-                    </option>
-                  ))}
+                  {[...Array(24).keys()].map(
+                    (
+                      hour // Change to 24-hour format
+                    ) => (
+                      <option
+                        key={hour}
+                        value={hour.toString().padStart(2, "0")}
+                      >
+                        {hour.toString().padStart(2, "0")}
+                      </option>
+                    )
+                  )}
                 </select>
                 <select
                   value={returnMinute}
@@ -121,16 +138,6 @@ const BorrowOverlay = ({ item, onClose }) => {
                   {["00", "15", "30", "45"].map((minute) => (
                     <option key={minute} value={minute}>
                       {minute}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={returnPeriod}
-                  onChange={(e) => setReturnPeriod(e.target.value)}
-                >
-                  {["AM", "PM"].map((period) => (
-                    <option key={period} value={period}>
-                      {period}
                     </option>
                   ))}
                 </select>
