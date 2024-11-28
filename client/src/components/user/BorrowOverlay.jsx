@@ -13,11 +13,13 @@ const BorrowOverlay = ({ item, onClose }) => {
   const fetchUserId = async () => {
     // Retrieve JWT token from sessionStorage
     try {
+      console.log("Token:", token); // Log the token
       const response = await axios.get("http://localhost:3000/user", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("User ID response:", response.data); // Log the response
       setUserId(response.data.userId);
     } catch (error) {
       console.error("Error retrieving user ID:", error);
@@ -33,9 +35,11 @@ const BorrowOverlay = ({ item, onClose }) => {
     e.preventDefault();
     const borrowDate = new Date(); // Current date
     borrowDate.setHours(borrowHour, borrowMinute); // Set hours and minutes
+    const borrowTime = borrowDate.toISOString(); // Define borrowTime
 
     const returnDate = new Date(); // Current date
     returnDate.setHours(returnHour, returnMinute); // Set hours and minutes
+    const returnTime = returnDate.toISOString(); // Define returnTime
 
     try {
       const response = await axios.post("http://localhost:3000/borrow", {
