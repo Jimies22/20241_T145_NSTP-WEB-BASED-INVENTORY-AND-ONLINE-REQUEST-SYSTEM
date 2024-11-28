@@ -10,11 +10,9 @@ const BorrowOverlay = ({ item, onClose }) => {
   const [returnHour, setReturnHour] = useState("12"); // Default hour
   const [returnMinute, setReturnMinute] = useState("15"); // Default minute
   const [userId, setUserId] = useState(null); // State to store userId
-
+  const token = sessionStorage.getItem("sessionToken");
   const fetchUserId = () => {
     try {
-      const token = sessionStorage.getItem("sessionToken");
-
       if (!token) {
         console.warn("No token found in session storage");
         return;
@@ -49,12 +47,21 @@ const BorrowOverlay = ({ item, onClose }) => {
     const returnTime = returnDate.toISOString(); // Define returnTime
 
     try {
-      const response = await axios.post("http://localhost:3000/borrow", {
-        userId,
-        item: item._id,
-        borrowTime,
-        returnTime,
-      });
+      const token = sessionStorage.getItem("sessionToken"); // Get token from session storage
+      const response = await axios.post(
+        "http://localhost:3000/borrow",
+        {
+          userId,
+          item: item._id,
+          borrowTime,
+          returnTime,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add authorization header
+          },
+        }
+      );
       alert(`You have successfully borrowed ${item.name}`);
       onClose();
     } catch (error) {
