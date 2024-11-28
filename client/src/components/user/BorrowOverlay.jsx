@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../css/BorrowOverlay.css";
 import axios from "axios";
+import * as jwt_decode from "jwt-decode";
 
 const BorrowOverlay = ({ item, onClose }) => {
   const [borrowHour, setBorrowHour] = useState("12"); // Default hour
@@ -10,19 +11,17 @@ const BorrowOverlay = ({ item, onClose }) => {
   const [userId, setUserId] = useState(null); // State to store userId
   const token = sessionStorage.getItem("sessionToken");
 
-  const fetchUserId = async () => {
-    // Retrieve JWT token from sessionStorage
-    try {
-      console.log("Token:", token); // Log the token
-      const response = await axios.get("http://localhost:3000/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("User ID response:", response.data); // Log the response
-      setUserId(response.data.userId);
-    } catch (error) {
-      console.error("Error retrieving user ID:", error);
+  const fetchUserId = () => {
+    if (token) {
+      try {
+        const decodedToken = jwt_decode(token);
+        console.log("Decoded Token:", decodedToken); // Log the decoded token
+        setUserId(decodedToken.userId); // Ensure the correct field name
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    } else {
+      console.error("No token found in session storage");
     }
   };
 
