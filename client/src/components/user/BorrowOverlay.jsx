@@ -24,6 +24,7 @@ const BorrowOverlay = ({ item, onClose }) => {
 
     try {
       const response = await axios.post("http://localhost:3000/borrow", {
+        userId,
         item: item._id,
         borrowTime,
         returnTime,
