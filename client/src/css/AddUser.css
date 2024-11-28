@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .add-user-container {
   padding: 20px;
   max-width: 1200px;
@@ -167,4 +175,59 @@ th {
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.edit-btn i {
+    color: #3C91E6;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+.archive-btn i {
+    color: rgb(48, 206, 0);
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+.delete-btn i {
+    color: #f44336;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 700px;
+}
+
+.search-wrapper i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 1.2rem;
+}
+
+.add-new-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-new-button:hover {
+    background-color: #0056b3;
+}
+
+.add-new-button i {
+    font-size: 1.2rem;
 }
