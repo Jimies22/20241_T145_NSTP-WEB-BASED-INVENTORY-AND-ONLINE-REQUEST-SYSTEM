@@ -72,7 +72,7 @@ const borrowController = {
   // Get user's requests
   getUserRequests: async (req, res) => {
     try {
-      const userId = req.user.id; // From JWT middleware
+      const userId = req.user.userId; // From JWT middleware
       const requests = await Request.find({ userId }).populate("item"); // Populate item details
       res.status(200).json(requests);
     } catch (error) {
