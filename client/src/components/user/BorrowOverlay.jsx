@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "../../css/BorrowOverlay.css";
 import axios from "axios";
-import * as jwt_decode from "jwt-decode";
+// import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const BorrowOverlay = ({ item, onClose }) => {
   const [borrowHour, setBorrowHour] = useState("12"); // Default hour
@@ -9,19 +10,26 @@ const BorrowOverlay = ({ item, onClose }) => {
   const [returnHour, setReturnHour] = useState("12"); // Default hour
   const [returnMinute, setReturnMinute] = useState("15"); // Default minute
   const [userId, setUserId] = useState(null); // State to store userId
-  const token = sessionStorage.getItem("sessionToken");
 
   const fetchUserId = () => {
-    if (token) {
-      try {
-        const decodedToken = jwt_decode(token);
-        console.log("Decoded Token:", decodedToken); // Log the decoded token
-        setUserId(decodedToken.userId); // Ensure the correct field name
-      } catch (error) {
-        console.error("Error decoding token:", error);
+    try {
+      const token = sessionStorage.getItem("sessionToken");
+
+      if (!token) {
+        console.warn("No token found in session storage");
+        return;
       }
-    } else {
-      console.error("No token found in session storage");
+
+      const decodedToken = jwtDecode(token);
+
+      if (!decodedToken || !decodedToken.userId) {
+        throw new Error("Invalid token structure: userId not found");
+      }
+
+      console.log("Decoded Token:", decodedToken); // Optional: useful for debugging
+      setUserId(decodedToken.userId);
+    } catch (error) {
+      console.error("Failed to fetch or decode token:", error.message || error);
     }
   };
 
