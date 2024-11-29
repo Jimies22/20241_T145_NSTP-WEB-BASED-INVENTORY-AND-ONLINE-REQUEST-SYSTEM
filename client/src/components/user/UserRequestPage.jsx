@@ -3,11 +3,14 @@ import Sidebar from "../sidebar/UserSidebar"; // Ensure the correct path
 import UserNavbar from "../Navbar/UserNavbar"; // Ensure the correct path
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
+import "../../css/Modal.css"; // You'll need to create this CSS file
 
 function RequestPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [userRequests, setUserRequests] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
 
   useEffect(() => {
     const fetchUserRequests = async () => {
@@ -68,11 +71,12 @@ function RequestPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/borrow/cancel/${requestId}`,
+        `http://localhost:3000/borrow/${requestId}/cancel`,
         {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
@@ -93,6 +97,16 @@ function RequestPage() {
       console.error("Error cancelling request:", error);
       alert("Failed to cancel request. Please try again.");
     }
+  };
+
+  const handleViewClick = (request) => {
+    setSelectedRequest(request);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedRequest(null);
   };
 
   return (
@@ -157,7 +171,12 @@ function RequestPage() {
                         </td>
                         <td>
                           <div className="action-buttons">
-                            <button className="view-btn">View</button>
+                            <button
+                              className="view-btn"
+                              onClick={() => handleViewClick(request)}
+                            >
+                              View
+                            </button>
                             {request.status.toLowerCase() === "pending" && (
                               <button className="cancel-btn">Cancel</button>
                             )}
@@ -172,6 +191,59 @@ function RequestPage() {
           </div>
         </main>
       </section>
+
+      {/* Add Modal */}
+      {isModalOpen && selectedRequest && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Request Details</h2>
+              <button className="close-btn" onClick={closeModal}>
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="request-info">
+                <p>
+                  <strong>Item Name:</strong> {selectedRequest.item.name}
+                </p>
+                <p>
+                  <strong>Status:</strong>
+                  <span
+                    className={`status ${selectedRequest.status.toLowerCase()}`}
+                  >
+                    {selectedRequest.status}
+                  </span>
+                </p>
+                <p>
+                  <strong>Category:</strong> {selectedRequest.item.category}
+                </p>
+                <p>
+                  <strong>Description:</strong>{" "}
+                  {selectedRequest.item.description}
+                </p>
+                <p>
+                  <strong>Request Date:</strong>{" "}
+                  {new Date(selectedRequest.createdAt).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Borrow Date:</strong>{" "}
+                  {new Date(selectedRequest.borrowDate).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Return Date:</strong>{" "}
+                  {new Date(selectedRequest.returnDate).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="close-modal-btn" onClick={closeModal}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

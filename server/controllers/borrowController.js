@@ -124,6 +124,28 @@ const borrowController = {
         .json({ message: "Error deleting request", error: error.message });
     }
   },
+
+  // Cancel a request
+  cancelRequest: async (req, res) => {
+    try {
+      const { requestId } = req.params;
+      const updatedRequest = await Request.findByIdAndUpdate(
+        requestId,
+        { status: "Cancelled" },
+        { new: true }
+      );
+
+      if (!updatedRequest) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+
+      res.status(200).json(updatedRequest);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error cancelling request", error: error.message });
+    }
+  },
 };
 
 module.exports = borrowController;
