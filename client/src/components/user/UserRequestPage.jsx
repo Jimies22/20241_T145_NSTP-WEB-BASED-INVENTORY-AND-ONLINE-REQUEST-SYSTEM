@@ -178,7 +178,12 @@ function RequestPage() {
                               View
                             </button>
                             {request.status.toLowerCase() === "pending" && (
-                              <button className="cancel-btn">Cancel</button>
+                              <button
+                                className="cancel-btn"
+                                onClick={() => handleCancel(request._id)}
+                              >
+                                Cancel
+                              </button>
                             )}
                           </div>
                         </td>
