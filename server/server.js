@@ -98,7 +98,6 @@ app.use("/documents", documentRoutes);
 app.use("/items", itemRoutes);
 app.use("/login", loginRoutes);
 app.use("/borrow", borrowRoutes);
-//app.use("/admin", adminRoutes);
 
 // Logout route to clear the session
 app.post("/logout", (req, res) => {
@@ -110,3 +109,6 @@ app.post("/logout", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+// Export the middleware
+module.exports = { jwtVerifyMiddleware };

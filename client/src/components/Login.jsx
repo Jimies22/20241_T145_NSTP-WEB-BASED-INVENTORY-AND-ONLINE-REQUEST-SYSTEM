@@ -38,6 +38,8 @@ function Login() {
       .then((response) => response.json())
       .then((data) => {
         if (data.message === "Login successful") {
+          localStorage.setItem("token", data.token); // Ensure you're using the correct key
+
           sessionStorage.setItem("sessionToken", data.token);
           if (data.user.role === "admin") {
             navigate("/admin");
