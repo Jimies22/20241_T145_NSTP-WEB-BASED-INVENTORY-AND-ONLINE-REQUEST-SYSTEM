@@ -3,7 +3,7 @@ import Sidebar from "../sidebar/UserSidebar"; // Ensure the correct path
 import UserNavbar from "../Navbar/UserNavbar"; // Ensure the correct path
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
-import "../../css/Modal.css"; // You'll need to create this CSS file
+import "../../css/RequestModal.css"; // Updated import statement
 
 function RequestPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
