@@ -129,11 +129,25 @@ const borrowController = {
   cancelRequest: async (req, res) => {
     try {
       const { requestId } = req.params;
+      const userId = req.user.userId;
+
+      const request = await Request.findOne({ _id: requestId, userId });
+
+      if (!request) {
+        return res.status(404).json({ message: "Request not found" });
+      }
+
+      if (request.status !== "pending") {
+        return res
+          .status(400)
+          .json({ message: "Only pending requests can be cancelled" });
+      }
+
       const updatedRequest = await Request.findByIdAndUpdate(
         requestId,
-        { status: "Cancelled" },
+        { status: "cancelled" }, // Changed to lowercase to match schema
         { new: true }
-      );
+      ).populate("item");
 
       if (!updatedRequest) {
         return res.status(404).json({ message: "Request not found" });

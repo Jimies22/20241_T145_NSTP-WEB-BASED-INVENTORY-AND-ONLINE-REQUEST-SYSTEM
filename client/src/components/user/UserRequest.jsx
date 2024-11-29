@@ -1,65 +1,93 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "../../css/UserRequest.css"; // Updated path
-
-// Import components
-import UserSidebar from "../sidebar/UserSidebar"; // Updated import
+import UserSidebar from "../sidebar/UserSidebar";
 import Navbar from "../Navbar";
 import ItemModal from "./ItemModal";
+import "../../css/UserRequest.css";
 
 const UserRequest = () => {
-  // Renamed component
   const [isModalActive, setIsModalActive] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [userRequests, setUserRequests] = useState([]);
 
-  // ... existing useEffect code ...
+  useEffect(() => {
+    const fetchRequests = async () => {
+      const token = sessionStorage.getItem("sessionToken");
+      try {
+        const response = await fetch(
+          "http://localhost:3000/borrow/my-requests",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        console.log("Fetched requests:", data);
+        setUserRequests(data);
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      }
+    };
 
-  const handleViewClick = (item) => {
-    setSelectedItem({
-      itemId: "12345",
-      itemName: "Epson 705HD Powerlite Home Cinema LCD Projector",
-      borrowerName: "John Doe",
-      borrowerId: "67890",
-      itemDescription: "High-quality projector for home cinema",
-      itemDateTime: "2024-06-11 11:54:30",
-      requestAccepted: "2024-06-10 10:00:00",
-      itemReturned: "2024-06-12 15:00:00",
-    });
-    setIsModalActive(true);
+    fetchRequests();
+  }, []);
+
+  const handleCancel = async (requestId) => {
+    if (!requestId) {
+      alert("Invalid request ID");
+      return;
+    }
+
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this request?"
+    );
+
+    if (confirmCancel) {
+      try {
+        const token = sessionStorage.getItem("sessionToken");
+
+        const response = await fetch(
+          `http://localhost:3000/borrow/${requestId}/cancel`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          // Revert UI if request fails
+          setUserRequests((prevRequests) =>
+            prevRequests.map((request) =>
+              request._id === requestId
+                ? { ...request, status: "pending" }
+                : request
+            )
+          );
+          throw new Error("Failed to cancel request");
+        }
+
+        alert("Request cancelled successfully!");
+      } catch (error) {
+        console.error("Error cancelling request:", error);
+        alert("Failed to cancel request. Please try again.");
+      }
+    }
   };
 
   return (
     <>
-      <UserSidebar /> {/* Updated to UserSidebar */}
+      <UserSidebar />
       <section id="content">
         <Navbar notificationCount={notificationCount} />
-
         <main>
-          <div className="head-title">
-            <div className="left">
-              <h1>My Requests</h1> {/* Updated title */}
-              <ul className="breadcrumb">
-                <li>
-                  <Link to="#">Requests</Link>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right"></i>
-                </li>
-                <li>
-                  <Link to="/dashboard" className="active">
-                    Home
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
           <div className="table-data">
             <div className="pending-requests">
               <div className="head">
-                <h3>My Request History</h3> {/* Updated heading */}
-                <i className="bx bx-filter"></i>
+                <h3>My Request History ({userRequests.length} requests)</h3>
               </div>
               <div className="order">
                 <table>
@@ -67,32 +95,47 @@ const UserRequest = () => {
                     <tr>
                       <th>Item Description</th>
                       <th>Status</th>
-                      <th></th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>
-                        <img src="/img/people.png" alt="User" />
-                        <p>Epson 705HD Powerlite Home Cinema LCD Projector</p>
-                      </td>
-                      <td>
-                        <span className="status R1">Pending</span>
-                      </td>{" "}
-                      {/* Updated status */}
-                      <td>
-                        <a
-                          href="#"
-                          className="view-button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleViewClick();
-                          }}
-                        >
-                          <span className="status R2">view</span>
-                        </a>
-                      </td>
-                    </tr>
+                    {userRequests.map((request) => (
+                      <tr key={request._id}>
+                        <td>
+                          <img src="/img/people.png" alt="User" />
+                          <p>{request.item.name}</p>
+                        </td>
+                        <td>
+                          <span
+                            className={`status ${request.status.toLowerCase()}`}
+                          >
+                            {request.status}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <button
+                              className="view-button"
+                              onClick={() => {
+                                setSelectedItem(request);
+                                setIsModalActive(true);
+                              }}
+                            >
+                              View
+                            </button>
+                            {request.status.toLowerCase() === "pending" && (
+                              <button
+                                type="button"
+                                className="cancel-btn"
+                                onClick={() => handleCancel(request._id)}
+                              >
+                                Cancel
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -109,4 +152,4 @@ const UserRequest = () => {
   );
 };
 
-export default UserRequest; // Updated export name
+export default UserRequest;

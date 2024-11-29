@@ -8,7 +8,7 @@ const requestSchema = new mongoose.Schema({
     default: "pending",
     required: true,
   },
-  requestDate: { type: Date, default: Date.now },
+  requestDate: { type: Date, default: Date.now, required: true },
   borrowDate: { type: Date },
   returnDate: { type: Date },
 });
