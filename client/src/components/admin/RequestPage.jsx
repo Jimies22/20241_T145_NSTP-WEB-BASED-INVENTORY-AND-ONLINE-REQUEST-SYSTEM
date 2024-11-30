@@ -13,9 +13,15 @@ function RequestPage() {
   }, []);
 
   const fetchRequests = async () => {
+    const token = sessionStorage.getItem("sessionToken");
     try {
-      const response = await axios.get("http://localhost:3000/requests"); // Adjust the endpoint as necessary
+      const response = await axios.get("http://localhost:3000/borrow/all", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add your admin token here
+        },
+      }); // Fetching all requests without any filters
       setRequests(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching requests:", error);
     }
@@ -61,8 +67,8 @@ function RequestPage() {
                 <table>
                   <thead>
                     <tr>
-                      <th>User ID</th>
-                      <th>Item ID</th>
+                      <th>User Name</th>
+                      <th>Item Name</th>
                       <th>Borrow Date</th>
                       <th>Return Date</th>
                       <th>Status</th>
@@ -72,8 +78,8 @@ function RequestPage() {
                   <tbody>
                     {requests.map((request) => (
                       <tr key={request._id}>
-                        <td>{request.userId}</td>
-                        <td>{request.item}</td>
+                        <td>{request.userName}</td>
+                        <td>{request.itemName}</td>
                         <td>{request.borrowDate}</td>
                         <td>{request.returnDate}</td>
                         <td>{request.status}</td>
