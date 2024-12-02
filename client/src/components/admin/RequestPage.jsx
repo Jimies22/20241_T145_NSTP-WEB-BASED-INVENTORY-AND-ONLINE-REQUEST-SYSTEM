@@ -7,9 +7,13 @@ import "../../css/RequestPage.css";
 
 function RequestPage() {
   const [requests, setRequests] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     fetchRequests();
+    fetchUsers();
+    fetchItems();
   }, []);
 
   const fetchRequests = async () => {
@@ -17,13 +21,44 @@ function RequestPage() {
     try {
       const response = await axios.get("http://localhost:3000/borrow/all", {
         headers: {
-          Authorization: `Bearer ${token}`, // Add your admin token here
+          Authorization: `Bearer ${token}`,
         },
-      }); // Fetching all requests without any filters
+      });
       setRequests(response.data);
-      console.log(response.data);
     } catch (error) {
       console.error("Error fetching requests:", error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    const token = sessionStorage.getItem("sessionToken");
+    try {
+      const response = await axios.get("http://localhost:3000/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  const fetchItems = async () => {
+    const itemId = requests.item._id;
+    const token = sessionStorage.getItem("sessionToken");
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/items/${itemId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setItems(response.data);
+    } catch (error) {
+      console.error("Error fetching items:", error);
     }
   };
 
@@ -32,7 +67,7 @@ function RequestPage() {
       await axios.patch(`http://localhost:3000/requests/${requestId}`, {
         status: "approved",
       });
-      fetchRequests(); // Refresh the requests
+      fetchRequests();
     } catch (error) {
       console.error("Error approving request:", error);
     }
@@ -43,7 +78,7 @@ function RequestPage() {
       await axios.patch(`http://localhost:3000/requests/${requestId}`, {
         status: "rejected",
       });
-      fetchRequests(); // Refresh the requests
+      fetchRequests();
     } catch (error) {
       console.error("Error rejecting request:", error);
     }
@@ -78,8 +113,8 @@ function RequestPage() {
                   <tbody>
                     {requests.map((request) => (
                       <tr key={request._id}>
-                        <td>{request.userName}</td>
-                        <td>{request.itemName}</td>
+                        <td>{request.user.name}</td>
+                        <td>{request.item.name}</td>
                         <td>{request.borrowDate}</td>
                         <td>{request.returnDate}</td>
                         <td>{request.status}</td>

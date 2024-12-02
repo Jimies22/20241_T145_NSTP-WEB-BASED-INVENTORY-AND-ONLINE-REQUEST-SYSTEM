@@ -6,8 +6,10 @@ const borrowController = {
   // Create a new borrow request
   createRequest: async (req, res) => {
     try {
-      const { item, borrowDate, returnDate } = req.body; // Get itemId from request body
+      const { item, borrowDate, returnDate, requestDate } = req.body; // Added requestDate
       const userId = req.user.userId; // Get userId from JWT middleware
+
+      console.log("Incoming request body:", req.body);
 
       // Validate if userId exists in the database
       const userExists = await User.findById(userId);
@@ -15,20 +17,26 @@ const borrowController = {
         return res.status(404).json({ message: `User not found: ${userId}` });
       }
 
-      // Validate if itemId exists in the database
+      // Validate if item exists in the database
       const itemExists = await Item.findById(item);
       if (!itemExists) {
         return res.status(404).json({ message: `Item not found: ${item}` });
       }
 
-      // Validate that borrowDate and returnDate are on the same day
+      // Convert borrowDate, returnDate, and requestDate into Date objects
       const borrowDateObj = new Date(borrowDate);
       const returnDateObj = new Date(returnDate);
+      const requestDateObj = new Date(requestDate); // Convert requestDate to Date object
 
+      console.log("Borrow Date from Request:", borrowDate);
+      console.log("Return Date from Request:", returnDate);
+      console.log("Request Date from Request:", requestDate);
+
+      // Validate that borrowDate and returnDate are on the same day
       if (borrowDateObj.toDateString() !== returnDateObj.toDateString()) {
-        return res
-          .status(400)
-          .json({ message: "Borrow and return dates must be the same day." });
+        return res.status(400).json({
+          message: "Borrow and return dates must be on the same day.",
+        });
       }
 
       // Validate that returnDate is after borrowDate
@@ -38,17 +46,21 @@ const borrowController = {
           .json({ message: "Return date must be after borrow date." });
       }
 
+      // Save the request in the database
       const newRequest = new Request({
         userId,
-        item: item,
-        borrowDate,
-        returnDate,
-        status: "pending", // Default status
+        item,
+        borrowDate: borrowDateObj,
+        returnDate: returnDateObj,
+        requestDate: requestDateObj, // Store requestDate as Date object
+        status: "pending",
       });
 
       const savedRequest = await newRequest.save();
+      console.log("Saved Request:", savedRequest); // Log the saved request for debugging
       res.status(201).json(savedRequest);
     } catch (error) {
+      console.error("Error creating request:", error); // Log the error for debugging
       res
         .status(500)
         .json({ message: "Error creating request", error: error.message });

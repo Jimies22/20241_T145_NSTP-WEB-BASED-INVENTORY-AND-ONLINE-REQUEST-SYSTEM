@@ -120,14 +120,17 @@ function RequestPage() {
               <h1>Pending Request</h1>
               <ul className="breadcrumb">
                 <li>
-                  <a href="#">Pending Request</a>
+                  <a href="http://localhost:3001/user-request">Pending</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
                 </li>
                 <li>
-                  <a className="active" href="Canceled.html">
-                    Canceled
+                  <a
+                    className="active"
+                    href="http://localhost:3001/user-request/cancelled"
+                  >
+                    Cancelled
                   </a>
                 </li>
               </ul>
