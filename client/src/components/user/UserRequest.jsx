@@ -104,36 +104,36 @@ const UserRequest = () => {
     );
   };
 
-  const handleCreateRequest = async () => {
-    const requestData = {
-      item: selectedItem._id,
-      borrowDate: borrowDate, // Ensure this is set
-      returnDate: returnDate, // Ensure this is set
-      requestDate: new Date().toISOString(), // Set current date and time in ISO format
-    };
+  // const handleCreateRequest = async () => {
+  //   const requestData = {
+  //     item: selectedItem._id,
+  //     borrowDate: borrowDate, // Ensure this is set
+  //     returnDate: returnDate, // Ensure this is set
+  //     requestDate: new Date().toISOString(), // Set current date and time in ISO format
+  //   };
 
-    try {
-      const response = await fetch("http://localhost:3000/borrow/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(requestData),
-      });
+  //   try {
+  //     const response = await fetch("http://localhost:3000/borrow/create", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify(requestData),
+  //     });
 
-      if (!response.ok) {
-        throw new Error("Failed to create request");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Failed to create request");
+  //     }
 
-      const data = await response.json();
-      console.log("Request created:", data);
-      console.log("Request Date from Request:", requestDate);
-      // Handle success (e.g., update state)
-    } catch (error) {
-      console.error("Error creating request:", error);
-    }
-  };
+  //     const data = await response.json();
+  //     console.log("Request created:", data);
+  //     console.log("Request Date from Request:", requestDate);
+  //     // Handle success (e.g., update state)
+  //   } catch (error) {
+  //     console.error("Error creating request:", error);
+  //   }
+  // };
 
   return (
     <>

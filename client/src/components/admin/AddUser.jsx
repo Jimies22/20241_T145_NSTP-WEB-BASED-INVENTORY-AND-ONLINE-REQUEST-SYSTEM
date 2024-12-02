@@ -50,12 +50,12 @@ function AddUser() {
           <button onClick={() => handleShowModal(row)} className="edit-btn">
             <i className="bx bx-edit addButton"></i>
           </button>
-          {/* <button
+          <button
             onClick={() => handleDelete(row.userID)}
             className="delete-btn"
           >
             <i className="bx bx-trash addButton"></i>
-          </button> */}
+          </button>
           <button
             onClick={() => handleArchive(row.userID)}
             className="archive-btn"
@@ -72,56 +72,32 @@ function AddUser() {
   const customStyles = {
     table: {
       style: {
-        backgroundColor: '#ffffff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        border: '1px solid #e0e0e0',
-      }
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+      },
     },
     headRow: {
       style: {
-        backgroundColor: '#f8f9fa',
-        borderTopLeftRadius: '12px',
-        borderTopRightRadius: '12px',
-        borderBottom: '2px solid #e0e0e0',
-        fontWeight: '600',
-        color: '#2c3e50',
-        fontSize: '0.95rem',
-        minHeight: '52px',
-      }
+        backgroundColor: "#f8f9fa",
+        borderTopLeftRadius: "8px",
+        borderTopRightRadius: "8px",
+      },
     },
     rows: {
       style: {
-        fontSize: '0.9rem',
-        fontWeight: '400',
-        color: '#2c3e50',
-        minHeight: '52px',
-        '&:hover': {
-          backgroundColor: '#f8f9fa',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-        }
-      }
-    },
-    subHeader: {
-      style: {
-        padding: '16px 24px',
-        backgroundColor: '#ffffff',
-      }
+        minHeight: "60px",
+        "&:hover": {
+          backgroundColor: "#f5f5f5",
+        },
+      },
     },
     pagination: {
       style: {
-        borderTop: '1px solid #e0e0e0',
-        margin: '0',
-        padding: '16px',
+        borderTop: "none",
+        marginTop: "10px",
       },
-      pageButtonsStyle: {
-        borderRadius: '6px',
-        height: '32px',
-        padding: '0 12px',
-        margin: '0 4px',
-      }
-    }
+    },
   };
 
   useEffect(() => {
@@ -134,7 +110,7 @@ function AddUser() {
       const response = await axios.get("http://localhost:3000/users");
       console.log("Fetched users:", response.data);
       if (Array.isArray(response.data)) {
-        const activeUsers = response.data.filter(user => !user.isArchived);
+        const activeUsers = response.data.filter((user) => !user.isArchived);
         setUsers(activeUsers);
         setError(null);
       } else {
@@ -173,10 +149,7 @@ function AddUser() {
         );
         setSuccessMessage("User updated successfully");
       } else {
-        if (
-          !userData.email.includes("@") &&
-          userData.role === "user"
-        ) {
+        if (!userData.email.includes("@") && userData.role === "user") {
           setError("Faculty email must have @");
           return;
         }
@@ -212,7 +185,7 @@ function AddUser() {
     if (window.confirm("Are you sure you want to archive this user?")) {
       try {
         await axios.patch(`http://localhost:3000/users/${userID}/archive`, {
-          isArchived: true
+          isArchived: true,
         });
         setSuccessMessage("User archived successfully");
         await fetchUsers(); // Refresh the user list
@@ -286,7 +259,7 @@ function AddUser() {
     try {
       setLoading(true);
       const response = await axios.get("http://localhost:3000/users");
-      const activeUsers = response.data.filter(user => !user.isArchived);
+      const activeUsers = response.data.filter((user) => !user.isArchived);
       setUsers(activeUsers);
       setError(null);
     } catch (error) {
@@ -307,42 +280,40 @@ function AddUser() {
             <div className="left">
               <h1>Users Management</h1>
             </div>
+            <div className="search-container" style={{ marginRight: "10px" }}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ width: "250px" }}
+              />
+            </div>
+            <button
+              className="btn btn-primary add-button"
+              onClick={() => handleShowModal()}
+            >
+              <i className="bx bx-plus"></i>
+              Add New User
+            </button>
           </div>
 
-          {successMessage && <div className="alert alert-success">{successMessage}</div>}
-          {error && <div className="alert alert-danger">{error}</div>}
+          {successMessage && (
+            <div className="alert alert-success" role="alert">
+              {successMessage}
+            </div>
+          )}
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              {error}
+            </div>
+          )}
 
           <div className="table-data">
             <div className="order">
               <DataTable
-                title={
-                  <div style={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    width: '100%',
-                    padding: '0 8px'
-                  }}>
-                    <div>Users List</div>
-                    <div className="search-wrapper">
-                      <i className='bx bx-search'></i>
-                      <input
-                        type="text"
-                        className="search-input"
-                        placeholder="Search users..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </div>
-                    <button 
-                      className="add-new-button" 
-                      onClick={() => handleShowModal()}
-                    >
-                      <i className='bx bx-plus'></i>
-                      Add New User
-                    </button>
-                  </div>
-                }
+                title="Users List"
                 columns={columns}
                 data={filteredUsers}
                 pagination
@@ -350,13 +321,9 @@ function AddUser() {
                 highlightOnHover
                 pointerOnHover
                 progressPending={loading}
-                progressComponent={<div className="loading">Loading users...</div>}
+                progressComponent={<LoadingComponent />}
+                noDataComponent={<NoDataComponent />}
                 customStyles={customStyles}
-                noDataComponent={
-                  <div className="no-data">
-                    {error ? error : "No users found"}
-                  </div>
-                }
               />
             </div>
           </div>
