@@ -78,6 +78,27 @@ const UserRequest = () => {
     }
   };
 
+  const RequestDetails = ({ request }) => {
+    const formattedRequestDate = request.requestDate
+      ? new Date(request.requestDate).toLocaleString()
+      : "Invalid Date"; // Check for undefined
+
+    return (
+      <div>
+        <h2>Request Details</h2>
+        <p>Item Name: {request.itemName}</p>
+        <p>Status: {request.status}</p>
+        <p>Category: {request.category}</p>
+        <p>Description: {request.description}</p>
+        <p>Request Date: {formattedRequestDate}</p>{" "}
+        {/* Display formatted date */}
+        <p>Borrow Date: {new Date(request.borrowDate).toLocaleString()}</p>
+        <p>Return Date: {new Date(request.returnDate).toLocaleString()}</p>
+        <button onClick={onClose}>Close</button>
+      </div>
+    );
+  };
+
   return (
     <>
       <UserSidebar />

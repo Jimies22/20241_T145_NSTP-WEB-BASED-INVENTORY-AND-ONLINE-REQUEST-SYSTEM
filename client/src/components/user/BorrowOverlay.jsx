@@ -6,8 +6,8 @@ import { jwtDecode } from "jwt-decode";
 const BorrowOverlay = ({ item, onClose }) => {
   const [borrowHour, setBorrowHour] = useState("5"); // Default hour
   const [borrowMinute, setBorrowMinute] = useState("00"); // Default minute
-  const [returnHour, setReturnHour] = useState("5"); // Default hour
-  const [returnMinute, setReturnMinute] = useState("00"); // Default minute
+  const [returnHour, setReturnHour] = useState("6"); // Default return hour (1 hour after borrow)
+  const [returnMinute, setReturnMinute] = useState("00"); // Default return minute
   const [returnPeriod, setReturnPeriod] = useState("AM"); // AM/PM for return time
   const [borrowPeriod, setBorrowPeriod] = useState("AM"); // AM/PM for borrow time
   const [userId, setUserId] = useState(null); // State to store userId
@@ -40,44 +40,72 @@ const BorrowOverlay = ({ item, onClose }) => {
     fetchUserId();
   }, []);
 
+  useEffect(() => {
+    const currentTime = new Date();
+    const adjustedBorrowDate = new Date(currentTime.getTime() + 60 * 60 * 1000); // Add 1 hour
+
+    setBorrowHour(adjustedBorrowDate.getHours() % 12 || 12); // Convert to 12-hour format
+    setBorrowMinute(
+      adjustedBorrowDate.getMinutes().toString().padStart(2, "0")
+    ); // Format minutes
+    setBorrowPeriod(adjustedBorrowDate.getHours() >= 12 ? "PM" : "AM");
+
+    // Set return time to 1 hour after borrow time
+    const adjustedReturnDate = new Date(
+      adjustedBorrowDate.getTime() + 60 * 60 * 1000
+    ); // Add 1 hour
+    setReturnHour(adjustedReturnDate.getHours() % 12 || 12); // Convert to 12-hour format
+    setReturnMinute(
+      adjustedReturnDate.getMinutes().toString().padStart(2, "0")
+    ); // Format minutes
+    setReturnPeriod(adjustedReturnDate.getHours() >= 12 ? "PM" : "AM");
+  }, []);
+
+  const handleBorrowTimeChange = (hour, minute, period) => {
+    setBorrowHour(hour);
+    setBorrowMinute(minute);
+    setBorrowPeriod(period);
+
+    // Update return time to be 1 hour after the new borrow time
+    const borrowDate = createDate(hour, minute, period);
+    const newReturnDate = new Date(borrowDate.getTime() + 60 * 60 * 1000); // Add 1 hour
+    setReturnHour(newReturnDate.getHours() % 12 || 12); // Convert to 12-hour format
+    setReturnMinute(newReturnDate.getMinutes().toString().padStart(2, "0")); // Format minutes
+    setReturnPeriod(newReturnDate.getHours() >= 12 ? "PM" : "AM");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const requestDate = new Date(); // Get current date in local time
 
-    // Set borrow date to selected borrow hour and minute
-    const borrowDate = new Date();
-    borrowDate.setHours(
-      borrowPeriod === "PM" ? parseInt(borrowHour) + 12 : parseInt(borrowHour),
-      parseInt(borrowMinute),
-      0
-    );
-    borrowDate.setDate(new Date().getDate()); // Ensure it's set to today
+    // Helper function to create a date object
+    const createDate = (hour, minute, period) => {
+      const date = new Date();
+      // Set hours correctly for AM/PM
+      if (period === "PM" && hour < 12) {
+        hour += 12; // Convert PM hour to 24-hour format
+      } else if (period === "AM" && hour === 12) {
+        hour = 0; // Convert 12 AM to 0 hours
+      }
+      date.setHours(hour, minute, 0);
+      return date;
+    };
 
-    // Set return date to selected return hour and minute
-    const returnDate = new Date();
-    returnDate.setHours(
-      returnPeriod === "PM" ? parseInt(returnHour) + 12 : parseInt(returnHour),
-      parseInt(returnMinute),
-      0
-    );
-    returnDate.setDate(new Date().getDate()); // Ensure it's set to today
-
-    // Get the current time for comparison
-    const currentTime = new Date();
+    const borrowDate = createDate(borrowHour, borrowMinute, borrowPeriod);
+    const returnDate = createDate(returnHour, returnMinute, returnPeriod);
 
     // Log the dates for debugging
-    console.log("Current Time:", currentTime);
     console.log("Borrow Date:", borrowDate);
     console.log("Return Date:", returnDate);
 
     // Validate that the selected time is not in the past
-    if (borrowDate < currentTime) {
+    if (borrowDate < new Date()) {
       alert("Borrow time cannot be in the past.");
       return;
     }
 
-    // Validate that the selected time is within allowed hours (5 AM to 5 PM)
+    // Validate that borrow time is between 5 AM and 5 PM
     if (borrowDate.getHours() < 5 || borrowDate.getHours() > 17) {
       alert("Borrow time must be between 5 AM and 5 PM.");
       return;
@@ -89,38 +117,34 @@ const BorrowOverlay = ({ item, onClose }) => {
       return;
     }
 
+    // Validate that return time is also within the allowed hours (5 AM to 5 PM)
+    if (returnDate.getHours() < 5 || returnDate.getHours() > 17) {
+      alert("Return time must be between 5 AM and 5 PM.");
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:3000/borrow",
         {
           userId,
           item: item._id,
-          borrowDate: borrowDate.toISOString(), // Match backend field name
-          returnDate: returnDate.toISOString(), // Match backend field name
-          requestDate: requestDate.toISOString(), // Match backend field name
+          borrowDate: borrowDate.toISOString(),
+          returnDate: returnDate.toISOString(),
+          requestDate: requestDate.toISOString(),
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Add authorization header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      alert(
-        `You have successfully borrowed ${item.name}. Item ID: ${
-          item._id
-        }. Borrow Date: ${borrowDate.toISOString()}. Return Date: ${returnDate.toISOString()}. User ID: ${userId}. Request Date: ${requestDate.toISOString()}`
-      );
+      alert(`You have successfully borrowed ${item.name}.`);
       onClose();
     } catch (error) {
-      console.error("Error submitting request:", error); // Log the error for debugging
-      alert(
-        `Failed to borrow item: ${item.name}. Error: ${
-          error.message
-        }. Item ID: ${
-          item._id
-        }. Borrow Date: ${borrowDate.toISOString()}. Return Date: ${returnDate.toISOString()}. User ID: ${userId}`
-      );
+      console.error("Error submitting request:", error);
+      alert(`Failed to borrow item: ${item.name}. Error: ${error.message}`);
     }
   };
 
@@ -142,7 +166,13 @@ const BorrowOverlay = ({ item, onClose }) => {
               <div className="time-input">
                 <select
                   value={borrowHour}
-                  onChange={(e) => setBorrowHour(e.target.value)}
+                  onChange={(e) =>
+                    handleBorrowTimeChange(
+                      e.target.value,
+                      borrowMinute,
+                      borrowPeriod
+                    )
+                  }
                 >
                   {[...Array(12).keys()].map((hour) => (
                     <option key={hour} value={hour + 1}>
@@ -152,7 +182,13 @@ const BorrowOverlay = ({ item, onClose }) => {
                 </select>
                 <select
                   value={borrowMinute}
-                  onChange={(e) => setBorrowMinute(e.target.value)}
+                  onChange={(e) =>
+                    handleBorrowTimeChange(
+                      borrowHour,
+                      e.target.value,
+                      borrowPeriod
+                    )
+                  }
                 >
                   {["00", "15", "30", "45"].map((minute) => (
                     <option key={minute} value={minute}>
@@ -162,7 +198,13 @@ const BorrowOverlay = ({ item, onClose }) => {
                 </select>
                 <select
                   value={borrowPeriod}
-                  onChange={(e) => setBorrowPeriod(e.target.value)}
+                  onChange={(e) =>
+                    handleBorrowTimeChange(
+                      borrowHour,
+                      borrowMinute,
+                      e.target.value
+                    )
+                  }
                 >
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
