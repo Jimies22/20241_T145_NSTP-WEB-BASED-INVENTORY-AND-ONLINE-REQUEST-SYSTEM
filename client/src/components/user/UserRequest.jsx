@@ -79,9 +79,15 @@ const UserRequest = () => {
   };
 
   const RequestDetails = ({ request }) => {
-    const formattedRequestDate = request.requestDate
-      ? new Date(request.requestDate).toLocaleString()
-      : "Invalid Date"; // Check for undefined
+    const formatDateTime = (dateString) => {
+      return dateString
+        ? new Date(dateString).toLocaleString()
+        : "Invalid Date"; // Format date and time
+    };
+
+    const formattedRequestDate = formatDateTime(request.requestDate); // Format request date
+    const formattedBorrowDate = formatDateTime(request.borrowDate); // Format borrow date
+    const formattedReturnDate = formatDateTime(request.returnDate); // Format return date
 
     return (
       <div>
@@ -90,13 +96,43 @@ const UserRequest = () => {
         <p>Status: {request.status}</p>
         <p>Category: {request.category}</p>
         <p>Description: {request.description}</p>
-        <p>Request Date: {formattedRequestDate}</p>{" "}
-        {/* Display formatted date */}
-        <p>Borrow Date: {new Date(request.borrowDate).toLocaleString()}</p>
-        <p>Return Date: {new Date(request.returnDate).toLocaleString()}</p>
+        <p>Request Date: {formattedRequestDate}</p>
+        <p>Borrow Date: {formattedBorrowDate}</p>
+        <p>Return Date: {formattedReturnDate}</p>
         <button onClick={onClose}>Close</button>
       </div>
     );
+  };
+
+  const handleCreateRequest = async () => {
+    const requestData = {
+      item: selectedItem._id,
+      borrowDate: borrowDate, // Ensure this is set
+      returnDate: returnDate, // Ensure this is set
+      requestDate: new Date().toISOString(), // Set current date and time in ISO format
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/borrow/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create request");
+      }
+
+      const data = await response.json();
+      console.log("Request created:", data);
+      console.log("Request Date from Request:", requestDate);
+      // Handle success (e.g., update state)
+    } catch (error) {
+      console.error("Error creating request:", error);
+    }
   };
 
   return (

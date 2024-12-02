@@ -232,15 +232,15 @@ function RequestPage() {
                 </p>
                 <p>
                   <strong>Request Date:</strong>{" "}
-                  {new Date(selectedRequest.createdAt).toLocaleDateString()}
+                  {new Date(selectedRequest.requestDate).toLocaleString()}
                 </p>
                 <p>
                   <strong>Borrow Date:</strong>{" "}
-                  {new Date(selectedRequest.borrowDate).toLocaleDateString()}
+                  {new Date(selectedRequest.borrowDate).toLocaleString()}
                 </p>
                 <p>
                   <strong>Return Date:</strong>{" "}
-                  {new Date(selectedRequest.returnDate).toLocaleDateString()}
+                  {new Date(selectedRequest.returnDate).toLocaleString()}
                 </p>
               </div>
             </div>
