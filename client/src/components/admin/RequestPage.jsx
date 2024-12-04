@@ -46,6 +46,7 @@ const RequestPage = () => {
         },
       });
       setUsers(response.data);
+      console.log("Users:", response.data); // debug output
 
       // Map user IDs in requests to user names
       const userIdToNameMap = response.data.reduce((map, user) => {

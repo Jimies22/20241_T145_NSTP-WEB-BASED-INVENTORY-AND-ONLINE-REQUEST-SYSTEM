@@ -13,6 +13,7 @@ const isAdmin = (req, res, next) => {
 
 // Create a new borrow request (user only)
 router.post("/", jwtVerifyMiddleware, borrowController.createRequest);
+
 // Get all requests (admin only)
 router.get(
   "/all",
@@ -41,13 +42,6 @@ router.delete(
   "/:requestId",
   jwtVerifyMiddleware,
   borrowController.deleteRequest
-);
-
-// Add this new route for canceling requests
-router.put(
-  "/:requestId/cancel",
-  jwtVerifyMiddleware,
-  borrowController.cancelRequest
 );
 
 module.exports = router;
