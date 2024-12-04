@@ -31,13 +31,21 @@ function RequestPage() {
   };
 
   const fetchUsers = async () => {
+    const userID = requests.length > 0 ? requests[0].userId._id : null;
     const token = sessionStorage.getItem("sessionToken");
+    if (!userID) {
+      console.error("No user ID found in requests.");
+      return; // Exit early if no user ID is found
+    }
     try {
-      const response = await axios.get("http://localhost:3000/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `http://localhost:3000/users/${userID}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -45,8 +53,14 @@ function RequestPage() {
   };
 
   const fetchItems = async () => {
-    const itemId = requests.item._id;
+    const itemId = requests.length > 0 ? requests[0].item._id : null;
     const token = sessionStorage.getItem("sessionToken");
+
+    if (!itemId) {
+      console.error("No item ID found in requests.");
+      return;
+    }
+
     try {
       const response = await axios.get(
         `http://localhost:3000/items/${itemId}`,
@@ -111,23 +125,35 @@ function RequestPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {requests.map((request) => (
-                      <tr key={request._id}>
-                        <td>{request.user.name}</td>
-                        <td>{request.item.name}</td>
-                        <td>{request.borrowDate}</td>
-                        <td>{request.returnDate}</td>
-                        <td>{request.status}</td>
-                        <td>
-                          <button onClick={() => handleApprove(request._id)}>
-                            Approve
-                          </button>
-                          <button onClick={() => handleReject(request._id)}>
-                            Reject
-                          </button>
-                        </td>
+                    {requests.length > 0 ? (
+                      requests.map((request) => (
+                        <tr key={request._id}>
+                          <td>
+                            {request.userId
+                              ? request.userId._id
+                              : "Unknown User"}
+                          </td>
+                          <td>
+                            {request.item ? request.item._id : "Unknown Item"}
+                          </td>
+                          <td>{request.borrowDate}</td>
+                          <td>{request.returnDate}</td>
+                          <td>{request.status}</td>
+                          <td>
+                            <button onClick={() => handleApprove(request._id)}>
+                              Approve
+                            </button>
+                            <button onClick={() => handleReject(request._id)}>
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6">No requests available.</td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
