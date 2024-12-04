@@ -11,6 +11,9 @@ body {
   background-color: var(--light);
   color: var(--dark);
 }
+.head {
+  color: #2b2b2b;
+}
 
 /* CONTENT */
 #content {
