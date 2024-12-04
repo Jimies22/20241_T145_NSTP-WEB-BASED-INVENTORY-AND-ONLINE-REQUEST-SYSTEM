@@ -5,16 +5,23 @@ import axios from "axios";
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 
-function RequestPage() {
+const RequestPage = () => {
   const [requests, setRequests] = useState([]);
   const [users, setUsers] = useState([]);
   const [items, setItems] = useState([]);
+  const [userIdToNameMap, setUserIdToNameMap] = useState({});
+  const [itemIdToNameMap, setItemIdToNameMap] = useState({});
 
   useEffect(() => {
     fetchRequests();
-    fetchUsers();
-    fetchItems();
   }, []);
+
+  useEffect(() => {
+    if (requests.length > 0) {
+      fetchUsers();
+      fetchItems();
+    }
+  }, [requests]);
 
   const fetchRequests = async () => {
     const token = sessionStorage.getItem("sessionToken");
@@ -31,46 +38,42 @@ function RequestPage() {
   };
 
   const fetchUsers = async () => {
-    const userID = requests.length > 0 ? requests[0].userId._id : null;
     const token = sessionStorage.getItem("sessionToken");
-    if (!userID) {
-      console.error("No user ID found in requests.");
-      return; // Exit early if no user ID is found
-    }
     try {
-      const response = await axios.get(
-        `http://localhost:3000/users/${userID}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get("http://localhost:3000/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUsers(response.data);
+
+      // Map user IDs in requests to user names
+      const userIdToNameMap = response.data.reduce((map, user) => {
+        map[user._id] = user.name;
+        return map;
+      }, {});
+      setUserIdToNameMap(userIdToNameMap);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
 
   const fetchItems = async () => {
-    const itemId = requests.length > 0 ? requests[0].item._id : null;
     const token = sessionStorage.getItem("sessionToken");
-
-    if (!itemId) {
-      console.error("No item ID found in requests.");
-      return;
-    }
-
     try {
-      const response = await axios.get(
-        `http://localhost:3000/items/${itemId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get("http://localhost:3000/items", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setItems(response.data);
+
+      // Map item IDs to item names
+      const itemIdToNameMap = response.data.reduce((map, item) => {
+        map[item._id] = item.name;
+        return map;
+      }, {});
+      setItemIdToNameMap(itemIdToNameMap);
     } catch (error) {
       console.error("Error fetching items:", error);
     }
@@ -129,12 +132,11 @@ function RequestPage() {
                       requests.map((request) => (
                         <tr key={request._id}>
                           <td>
-                            {request.userId
-                              ? request.userId._id
-                              : "Unknown User"}
+                            {userIdToNameMap[request.userId] || "Unknown User"}
                           </td>
                           <td>
-                            {request.item ? request.item._id : "Unknown Item"}
+                            {itemIdToNameMap[request.item._id] ||
+                              "Unknown Item"}
                           </td>
                           <td>{request.borrowDate}</td>
                           <td>{request.returnDate}</td>
@@ -163,6 +165,6 @@ function RequestPage() {
       </section>
     </div>
   );
-}
+};
 
 export default RequestPage;
