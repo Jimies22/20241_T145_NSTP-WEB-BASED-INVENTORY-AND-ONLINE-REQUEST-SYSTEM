@@ -252,6 +252,37 @@ function AddItems({ updateItem }) {
       .includes(searchTerm.toLowerCase())
   );
 
+  const addNewItem = async (itemData) => {
+    try {
+      // First save the item
+      const response = await fetch('/items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('sessionToken')}`
+        },
+        body: JSON.stringify(itemData)
+      });
+      const savedItem = await response.json();
+      
+      // Then send notifications
+      await fetch('/notify/new-item', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem('sessionToken')}`
+        },
+        body: JSON.stringify({
+          itemName: itemData.name,
+          itemId: savedItem._id
+        })
+      });
+      
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
     <div className="dashboard">
       <Sidebar />

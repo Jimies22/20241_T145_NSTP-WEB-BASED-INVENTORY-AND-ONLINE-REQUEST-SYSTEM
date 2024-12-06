@@ -2,6 +2,13 @@ const express = require("express");
 const router = express.Router();
 const borrowController = require("../controllers/borrowController");
 const { jwtVerifyMiddleware } = require("../middleware/authMiddleware"); // Ensure this path is correct
+const { 
+    sendEmail, 
+    getBorrowSuccessEmail, 
+    getBorrowCancelledEmail, 
+    getItemReturnedEmail,
+    getReturnOverdueEmail 
+} = require('../services/emailService');
 
 // Middleware to check if user is admin
 const isAdmin = (req, res, next) => {
@@ -43,5 +50,41 @@ router.delete(
   jwtVerifyMiddleware,
   borrowController.deleteRequest
 );
+
+// Example usage in your borrow success route
+router.post('/borrow-success', async (req, res) => {
+    try {
+        const { userName, userEmail, itemName, dueDate } = req.body;
+        
+        // Send email notification
+        await sendEmail({
+            to: userEmail,
+            ...getBorrowSuccessEmail(userName, itemName, dueDate)
+        });
+
+        res.json({ message: 'Borrow success notification sent' });
+    } catch (error) {
+        console.error('Error sending borrow success notification:', error);
+        res.status(500).json({ message: 'Failed to send notification' });
+    }
+});
+
+// Example usage in your return route
+router.post('/return-item', async (req, res) => {
+    try {
+        const { userName, userEmail, itemName } = req.body;
+        
+        // Send email notification
+        await sendEmail({
+            to: userEmail,
+            ...getItemReturnedEmail(userName, itemName, new Date())
+        });
+
+        res.json({ message: 'Return notification sent' });
+    } catch (error) {
+        console.error('Error sending return notification:', error);
+        res.status(500).json({ message: 'Failed to send notification' });
+    }
+});
 
 module.exports = router;

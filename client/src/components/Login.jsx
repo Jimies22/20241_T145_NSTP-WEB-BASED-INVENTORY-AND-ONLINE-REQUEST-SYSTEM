@@ -25,7 +25,7 @@ function Login() {
       return;
     }
 
-    console.log("Login Success:", credentialResponse);
+    console.log("Google Login Attempt:", credentialResponse);
     const { credential } = credentialResponse;
 
     fetch("http://localhost:3000/login/google", {
@@ -33,29 +33,35 @@ function Login() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ token: credential }),
+      credentials: 'include',
+      body: JSON.stringify({ token: credential })
     })
-      .then((response) => response.json())
+      .then(async (response) => {
+        const data = await response.json();
+        console.log("Server response:", data);
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Login failed');
+        }
+        return data;
+      })
       .then((data) => {
-        if (data.message === "Login successful") {
-          sessionStorage.setItem("sessionToken", data.token);
-          if (data.user.role === "admin") {
-            navigate("/admin");
-          } else {
-            navigate("/user");
-          }
+        console.log("Login successful:", data);
+        sessionStorage.setItem("sessionToken", data.token);
+        
+        if (data.user.role === "admin") {
+          navigate("/admin");
         } else {
-          alert(data.message);
+          navigate("/user");
         }
       })
       .catch((error) => {
-        console.error("Error during login:", error);
-        alert("Login failed: An error occurred while logging in 1.");
-        //alert("Login failed: An error occurred in /login/google.");
+        console.error("Login error:", error);
+        alert(error.message || "Login failed. Please try again.");
       });
   };
 
-  const handleAdminLogin = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -63,27 +69,40 @@ function Login() {
       return;
     }
 
+    if (!isRecaptchaValid) {
+      alert("Please complete the reCAPTCHA");
+      return;
+    }
+
     try {
+      console.log("Admin Login Attempt:", email);
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
       });
 
       const data = await response.json();
+      console.log("Server response:", data);
 
-      if (response.ok && data.message === "Login successful") {
-        sessionStorage.setItem("sessionToken", data.token);
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      sessionStorage.setItem("sessionToken", data.token);
+      console.log("Login successful:", data);
+
+      if (data.user.role === "admin") {
         navigate("/admin");
       } else {
-        alert(data.message || "Invalid credentials");
+        navigate("/user");
       }
     } catch (error) {
-      console.error("Admin login error:", error);
-      alert("Login failed: An error occurred while logging in 2.");
-      //alert("Login failed: An error occurred in login/admin.");
+      console.error("Login error:", error);
+      alert(error.message || "Login failed. Please try again.");
     }
   };
 
@@ -95,51 +114,6 @@ function Login() {
   const onRecaptchaChange = (value) => {
     setRecaptchaValue(value);
     setIsRecaptchaValid(true);
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    // Check for empty inputs
-    if (!email.trim() || !password.trim()) {
-      alert("Please fill in all fields");
-      return;
-    }
-
-    if (!isRecaptchaValid) {
-      alert("Please complete the reCAPTCHA");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:3000/login/admin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-      console.log("Login response:", data);
-
-      if (response.ok && data.message === "Login successful") {
-        sessionStorage.setItem("sessionToken", data.token);
-        console.log("User role:", data.user.role);
-        console.log("Session Token:", data.token);
-
-        if (data.user.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/user");
-        }
-      } else {
-        alert(data.message || "Login failed");
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      alert("Login failed: An error occurred while logging in 3.");
-    }
   };
 
   return (
