@@ -81,6 +81,42 @@ router.patch("/:item_id/archive", jwtVerifyMiddleware, async (req, res) => {
   }
 });
 
+// Add new restore route
+router.patch("/:item_id/restore", jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const itemId = req.params.item_id;
+
+    // Add validation for itemId
+    if (!itemId) {
+      console.error("No item ID provided");
+      return res.status(400).json({ message: "Item ID is required" });
+    }
+
+    console.log("Attempting to restore item with ID:", itemId);
+
+    // Check if item exists first
+    const item = await itemService.getItemById(itemId);
+    if (!item) {
+      console.log("Item not found with ID:", itemId);
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    const updatedItem = await itemService.updateItem(itemId, {
+      isArchived: false,
+      status: "Available",
+    });
+
+    console.log("Item restored successfully:", updatedItem);
+    res.json(updatedItem);
+  } catch (error) {
+    console.error("Error in restore route:", error);
+    res.status(400).json({
+      message: "Error restoring item",
+      error: error.message,
+    });
+  }
+});
+
 // Route to handle borrow requests
 router.post("/borrow", jwtVerifyMiddleware, borrowController.createRequest);
 
