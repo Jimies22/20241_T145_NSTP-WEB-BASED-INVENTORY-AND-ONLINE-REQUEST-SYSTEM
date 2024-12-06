@@ -22,6 +22,7 @@ function AddItems({ updateItem }) {
   const [showModal, setShowModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [editLocked, setEditLocked] = useState(false);
 
   const columns = [
     {
@@ -49,8 +50,13 @@ function AddItems({ updateItem }) {
       name: "Actions",
       cell: (row) => (
         <div className="actions">
-          <button onClick={() => handleShowModal(row)} className="edit-btn">
-            <i className="bx bx-edit"></i>
+          <button
+            onClick={() => handleShowModal(row)}
+            className="edit-btn"
+            disabled={editLocked}
+            title={editLocked ? "Item is being edited by another user" : "Edit item"}
+          >
+            <i className={`bx ${editLocked ? 'bx-lock' : 'bx-edit'}`}></i>
           </button>
           <button
             onClick={() => handleArchive(row)}
@@ -128,6 +134,7 @@ function AddItems({ updateItem }) {
 
   useEffect(() => {
     fetchItems();
+    checkLockStatus();
   }, []);
 
   const fetchItems = async () => {
@@ -226,17 +233,60 @@ function AddItems({ updateItem }) {
     }
   };
 
-  const handleShowModal = (item = null) => {
-    if (item) {
-      setFormData({
-        item_id: item.item_id,
-        name: item.name,
-        description: item.description,
-        category: item.category,
-        isArchived: item.isArchived,
-      });
-      setIsEditing(true);
-    } else {
+  const handleShowModal = async (item = null) => {
+    try {
+      // Set lock when opening modal
+      await axios.patch(
+        `http://localhost:3000/locks/edit_button`,
+        { isLocked: true },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("sessionToken")}`,
+          },
+        }
+      );
+      setEditLocked(true);
+
+      if (item) {
+        setFormData({
+          item_id: item.item_id,
+          name: item.name,
+          description: item.description,
+          category: item.category,
+          isArchived: item.isArchived,
+        });
+        setIsEditing(true);
+      } else {
+        setFormData({
+          item_id: "",
+          name: "",
+          description: "",
+          category: "",
+          isArchived: false,
+        });
+        setIsEditing(false);
+      }
+      setShowModal(true);
+    } catch (error) {
+      console.error("Error setting lock:", error);
+    }
+  };
+
+  const handleCloseModal = async () => {
+    try {
+      // Release lock when closing modal
+      await axios.patch(
+        `http://localhost:3000/locks/edit_button`,
+        { isLocked: false },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("sessionToken")}`,
+          },
+        }
+      );
+      setEditLocked(false);
+
+      setShowModal(false);
       setFormData({
         item_id: "",
         name: "",
@@ -245,21 +295,10 @@ function AddItems({ updateItem }) {
         isArchived: false,
       });
       setIsEditing(false);
+      setSuccessMessage("");
+    } catch (error) {
+      console.error("Error releasing lock:", error);
     }
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setFormData({
-      item_id: "",
-      name: "",
-      description: "",
-      category: "",
-      isArchived: false,
-    });
-    setIsEditing(false);
-    setSuccessMessage("");
   };
 
   const handleArchive = async (item) => {
@@ -329,6 +368,15 @@ function AddItems({ updateItem }) {
       });
     } catch (error) {
       console.error("Error:", error);
+    }
+  };
+
+  const checkLockStatus = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/locks/edit_button`);
+      setEditLocked(response.data?.isLocked || false);
+    } catch (error) {
+      console.error("Error checking lock status:", error);
     }
   };
 

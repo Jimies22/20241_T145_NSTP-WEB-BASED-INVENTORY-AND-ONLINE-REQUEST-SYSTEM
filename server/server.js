@@ -14,6 +14,10 @@ const borrowRoutes = require("./routes/borrowRoutes");
 const notificationRoutes = require('./routes/notificationRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const lockRoutes = require("./routes/lockRoutes");
+
+
+
 
 require("dotenv").config();
 require("./config/passport");
@@ -103,6 +107,8 @@ app.use("/items", itemRoutes);
 app.use("/login", loginRoutes);
 app.use("/borrow", borrowRoutes);
 app.use('/notify', notificationRoutes);
+app.use("/locks", lockRoutes);
+
 
 // Logout route to clear the session
 app.post("/logout", (req, res) => {
@@ -120,44 +126,46 @@ module.exports = { jwtVerifyMiddleware };
 
 // Add this near the top after loading dotenv
 console.log('Environment check:', {
-    hasMongoUri: !!process.env.MONGODB_URI,
-    hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
-    hasJwtSecret: !!process.env.JWT_SECRET,
-    hasEmailCreds: !!(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD)
+  hasMongoUri: !!process.env.MONGODB_URI,
+  hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
+  hasJwtSecret: !!process.env.JWT_SECRET,
+  hasEmailCreds: !!(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD)
 });
 
 // Add this test endpoint
 app.get('/test', (req, res) => {
-    res.json({ 
-        message: 'Server is running',
-        environment: {
-            hasMongoUri: !!process.env.MONGODB_URI,
-            hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
-            hasJwtSecret: !!process.env.JWT_SECRET,
-            hasEmailCreds: !!(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD)
-        }
-    });
+  res.json({
+    message: 'Server is running',
+    environment: {
+      hasMongoUri: !!process.env.MONGODB_URI,
+      hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      hasEmailCreds: !!(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD)
+    }
+  });
 });
 
 // Add this temporary route to your server.js for testing
 app.get('/check-user/:email', async (req, res) => {
-    try {
-        const user = await User.findOne({ email: req.params.email });
-        res.json({ exists: !!user, user: user ? {
-            email: user.email,
-            role: user.role,
-            name: user.name
-        } : null });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const user = await User.findOne({ email: req.params.email });
+    res.json({
+      exists: !!user, user: user ? {
+        email: user.email,
+        role: user.role,
+        name: user.name
+      } : null
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Add this logging
 console.log('Email configuration:', {
-    emailUser: process.env.EMAIL_USER,
-    hasAppPassword: !!process.env.EMAIL_APP_PASSWORD,
-    appPasswordLength: process.env.EMAIL_APP_PASSWORD?.length
+  emailUser: process.env.EMAIL_USER,
+  hasAppPassword: !!process.env.EMAIL_APP_PASSWORD,
+  appPasswordLength: process.env.EMAIL_APP_PASSWORD?.length
 });
 
 // Add this temporary test code to your server.js
@@ -165,10 +173,10 @@ const { sendTestEmail } = require('./services/emailService');
 
 // Add this test endpoint
 app.get('/test-email/:email', async (req, res) => {
-    try {
-        await sendTestEmail(req.params.email);
-        res.json({ message: 'Test email sent' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    await sendTestEmail(req.params.email);
+    res.json({ message: 'Test email sent' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
