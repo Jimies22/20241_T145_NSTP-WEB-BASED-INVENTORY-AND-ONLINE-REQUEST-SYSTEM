@@ -81,14 +81,16 @@ const BorrowOverlay = ({ item, onClose }) => {
 
     // Helper function to create a date object
     const createDate = (hour, minute, period) => {
-      const date = new Date();
+      const date = new Date(); // Get the current date
+      console.log("Date:", date.toString());
       // Set hours correctly for AM/PM
       if (period === "PM" && hour < 12) {
         hour += 12; // Convert PM hour to 24-hour format
       } else if (period === "AM" && hour === 12) {
         hour = 0; // Convert 12 AM to 0 hours
       }
-      date.setHours(hour, minute, 0);
+      date.setHours(hour, minute, 0); // Set the hours and minutes
+      console.log("Date:", date.toString());
       return date;
     };
 
@@ -96,8 +98,8 @@ const BorrowOverlay = ({ item, onClose }) => {
     const returnDate = createDate(returnHour, returnMinute, returnPeriod);
 
     // Log the dates for debugging
-    console.log("Borrow Date:", borrowDate);
-    console.log("Return Date:", returnDate);
+    console.log("Borrow Date:", borrowDate.toString());
+    console.log("Return Date:", returnDate.toString());
 
     // Validate that the selected time is not in the past
     if (borrowDate < new Date()) {

@@ -66,6 +66,21 @@ router.delete("/:item_id", jwtVerifyMiddleware, async (req, res) => {
   }
 });
 
+router.patch("/:item_id/archive", jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const updatedItem = await itemService.archiveItem(
+      req.params.item_id,
+      req.body
+    );
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+    res.json(updatedItem);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 // Route to handle borrow requests
 router.post("/borrow", jwtVerifyMiddleware, borrowController.createRequest);
 

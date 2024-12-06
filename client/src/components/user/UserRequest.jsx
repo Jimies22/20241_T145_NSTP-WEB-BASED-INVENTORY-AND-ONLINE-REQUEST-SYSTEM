@@ -59,16 +59,16 @@ const UserRequest = () => {
         );
 
         if (!response.ok) {
-          // Revert UI if request fails
-          setUserRequests((prevRequests) =>
-            prevRequests.map((request) =>
-              request._id === requestId
-                ? { ...request, status: "pending" }
-                : request
-            )
-          );
           throw new Error("Failed to cancel request");
         }
+
+        setUserRequests((prevRequests) =>
+          prevRequests.map((request) =>
+            request._id === requestId
+              ? { ...request, status: "Cancelled" }
+              : request
+          )
+        );
 
         alert("Request cancelled successfully!");
       } catch (error) {

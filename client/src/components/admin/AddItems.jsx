@@ -133,9 +133,16 @@ function AddItems({ updateItem }) {
   const fetchItems = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3000/items");
-      const activeItems = response.data.filter((item) => !item.isArchived);
-      setItems(activeItems);
+      const token = sessionStorage.getItem("sessionToken");
+      const response = await axios.get("http://localhost:3000/items", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Display all unarchived items
+      const unarchivedItems = response.data.filter((item) => !item.isArchived);
+      setItems(unarchivedItems);
       setError(null);
     } catch (error) {
       console.error("Error fetching items:", error);
@@ -154,20 +161,53 @@ function AddItems({ updateItem }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = sessionStorage.getItem("sessionToken");
+
+    // Create a clean data object with only the required fields
+    const itemData = {
+      item_id: formData.item_id,
+      name: formData.name,
+      description: formData.description,
+      category: formData.category,
+      isArchived: formData.isArchived || false,
+    };
+
     try {
-      const response = isEditing
-        ? await axios.patch(
-            `http://localhost:3000/items/${formData.item_id}`,
-            formData
-          )
-        : await axios.post("http://localhost:3000/items/additem", formData);
-      setItems([...items, response.data]);
-      setSuccessMessage("Item added successfully");
+      if (isEditing) {
+        await axios.patch(
+          `http://localhost:3000/items/${formData.item_id}`,
+          itemData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } else {
+        await axios.post("http://localhost:3000/items/additem", itemData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      }
+      setSuccessMessage(
+        isEditing ? "Item updated successfully" : "Item added successfully"
+      );
       await fetchItems();
       handleCloseModal();
     } catch (error) {
       console.error("Error saving item:", error);
-      setError("Error saving item");
+      if (error.response) {
+        // Log more detailed error information
+        console.error("Error response:", error.response.data);
+        setError(
+          `Error saving item: ${error.response.data.message || "Unknown error"}`
+        );
+      } else {
+        setError("Error saving item");
+      }
     }
   };
 
@@ -225,15 +265,23 @@ function AddItems({ updateItem }) {
   const handleArchive = async (item) => {
     if (window.confirm("Are you sure you want to archive this item?")) {
       try {
+        const token = sessionStorage.getItem("sessionToken");
         const response = await axios.patch(
           `http://localhost:3000/items/${item.item_id}`,
           {
             isArchived: true,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           }
         );
 
         if (response.status === 200) {
           setSuccessMessage("Item archived successfully");
+          // Remove the archived item from the current items list
           setItems((prevItems) =>
             prevItems.filter((i) => i.item_id !== item.item_id)
           );
@@ -245,41 +293,42 @@ function AddItems({ updateItem }) {
     }
   };
 
-  const filteredItems = items.filter((item) =>
-    Object.values(item)
-      .join(" ")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+  const filteredItems = items
+    .filter((item) => !item.isArchived) // Only show unarchived items
+    .filter((item) =>
+      Object.values(item)
+        .join(" ")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
 
   const addNewItem = async (itemData) => {
     try {
       // First save the item
-      const response = await fetch('/items', {
-        method: 'POST',
+      const response = await fetch("/items", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionStorage.getItem('sessionToken')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("sessionToken")}`,
         },
-        body: JSON.stringify(itemData)
+        body: JSON.stringify(itemData),
       });
       const savedItem = await response.json();
-      
+
       // Then send notifications
-      await fetch('/notify/new-item', {
-        method: 'POST',
+      await fetch("/notify/new-item", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionStorage.getItem('sessionToken')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("sessionToken")}`,
         },
         body: JSON.stringify({
           itemName: itemData.name,
-          itemId: savedItem._id
-        })
+          itemId: savedItem._id,
+        }),
       });
-      
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
