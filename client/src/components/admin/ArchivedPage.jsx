@@ -250,7 +250,20 @@ const ArchivedPage = () => {
           <main>
             <div className="head-title">
               <div className="left">
-                <h1>Archived Items</h1>
+                <h1>Archives</h1>
+                <ul className="breadcrumb">
+                  <li>
+                    <a href="#">Items</a>
+                  </li>
+                  <li>
+                    <i className="bx bx-chevron-right"></i>
+                  </li>
+                  <li>
+                    <a className="active" href="#">
+                      Users
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
 
