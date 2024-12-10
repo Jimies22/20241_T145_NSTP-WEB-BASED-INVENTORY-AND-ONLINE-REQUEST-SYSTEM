@@ -197,7 +197,7 @@ const ArchivedPage = () => {
             display: "flex",
             gap: "8px",
             justifyContent: "center",
-            minWidth: "150px", // Ensure enough space for buttons
+            minWidth: "150px",
           }}
         >
           <button
