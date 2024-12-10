@@ -1,0 +1,274 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--light);
+  color: var(--dark);
+}
+.head {
+  color: #2b2b2b;
+}
+
+/* CONTENT */
+#content {
+  position: absolute;
+  width: calc(100% - 280px);
+  left: 280px;
+  top: 0;
+  transition: 0.3s ease;
+  margin: 0;
+  padding: 0;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+}
+
+/* MAIN */
+main {
+  font-family: var(--poppins);
+  min-height: calc(100vh - 56px);
+  overflow-y: auto;
+  background-color: #eee;
+  padding: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #content {
+    padding: 20px;
+  }
+}
+
+/* Adjust the content margin to avoid overlap with the navbar */
+#content {
+  margin-top: 0; /* Remove margin to align with the navbar */
+  overflow: hidden; /* Prevent scrolling */
+  height: calc(100vh - 56px); /* Set height to fill the remaining viewport */
+}
+
+/* Table Styling */
+.table-data {
+  padding: 24px;
+}
+
+.pending-requests {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.order {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.order table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.order table thead tr {
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.order table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.order table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+/* Scrollable body with fixed header */
+.order {
+  max-height: 70vh;
+  position: relative;
+}
+
+.order table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f8f9fa;
+}
+
+.order table tbody {
+  max-height: calc(70vh - 56px);
+  overflow-y: auto;
+}
+
+/* Remove any display: block from tbody and tr elements */
+.order table tbody,
+.order table tr {
+  display: table-row-group;
+}
+
+/* Item Details Styling */
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.item-details p {
+  margin: 0;
+}
+
+.item-details strong {
+  color: #2b2b2b;
+  font-size: 1.1em;
+}
+
+.item-details small {
+  color: #777;
+  display: block;
+}
+
+/* Status Badge Styling */
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status.pending {
+  background: #fff4e5;
+  color: #ff9800;
+}
+
+.status.approved {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status.rejected {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Action Button Styling */
+.order table button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.order table button:hover {
+  background: #2980b9;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .table-data {
+    padding: 16px;
+  }
+
+  .order table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .order table td,
+  .order table th {
+    padding: 12px 16px;
+  }
+}
+
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* Base Button Styles */
+.action-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-weight: 500;
+}
+
+/* View Button */
+.view-btn {
+  background: #3498db;
+  color: white;
+}
+
+.view-btn:hover {
+  background: #2980b9;
+}
+
+/* Cancel Button */
+.cancel-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #c0392b;
+}
+
+/* Status Details */
+.status-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-details .status-date {
+  color: #777;
+  font-size: 0.85em;
+}
+
+/* Table Header Styling */
+.pending-requests table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pending-requests table th {
+  padding: 12px 20px;
+  text-align: left;
+  background: #f6f6f6;
+  color: #2b2b2b;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}
+
+/* Make sure there's no conflicting styles */
+.pending-requests table thead {
+  display: table-header-group !important;
+}
+
+.pending-requests table tr {
+  display: table-row !important;
+}
+
+.pending-requests table th {
+  display: table-cell !important;
+}
