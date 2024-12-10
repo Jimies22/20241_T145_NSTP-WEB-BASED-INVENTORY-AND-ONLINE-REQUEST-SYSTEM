@@ -124,19 +124,6 @@ th {
   background-color: #d32f2f;
 }
 
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1040;
-}
-
-.modal {
-  z-index: 1050;
-}
 
 .alert {
   margin-bottom: 1rem;

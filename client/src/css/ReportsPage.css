@@ -189,49 +189,8 @@ main {
   }
 }
 
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
 
-.modal-content {
-  background: white;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 1200px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-}
 
-.modal-header {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-body {
-  padding: 20px;
-}
-
-.modal-footer {
-  padding: 20px;
-  border-top: 1px solid #eee;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
 
 .summary-stats {
   display: flex;
@@ -300,31 +259,7 @@ main {
   background: #5a6268;
 }
 
-/* Print styles */
-@media print {
-  .modal-overlay {
-    position: relative;
-    background: white;
-  }
 
-  .modal-content {
-    box-shadow: none;
-    max-height: none;
-  }
-
-  .close-btn,
-  .print-btn {
-    display: none;
-  }
-
-  .chart-container {
-    page-break-inside: avoid;
-  }
-
-  .details-section {
-    page-break-before: always;
-  }
-}
 
 /* Custom tooltip styles (these will be applied to the Chart.js generated tooltips) */
 .chart-tooltip {

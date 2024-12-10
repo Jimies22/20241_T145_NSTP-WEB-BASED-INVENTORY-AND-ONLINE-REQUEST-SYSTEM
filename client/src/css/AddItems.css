@@ -351,29 +351,6 @@ tr:hover {
     background-color: #45a049;
 }
 
-/* Add these styles for the modal */
-.modal {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header {
-    border-bottom: 1px solid #dee2e6;
-    background-color: #f8f9fa;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-}
-
-.modal-footer {
-    border-top: 1px solid #dee2e6;
-    background-color: #f8f9fa;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
 
 .form-control {
     border-radius: 4px;
@@ -406,10 +383,7 @@ tr:hover {
     border-color: #565e64;
 }
 
-/* Add this if you want to prevent body scrolling when modal is open */
-body.modal-open {
-    overflow: hidden;
-}
+
 
 :root {
     --poppins: 'Poppins', sans-serif;
@@ -555,28 +529,11 @@ body.modal-open {
     color: rgb(255, 255, 255);
 }
 
-/* Modal Styling */
-.modal-content {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
 
-.modal-header {
-    padding: 20px 24px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-}
 
-.modal-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #2c3e50;
-}
 
-.modal-body {
-    padding: 24px;
-}
+
+
 
 .form-label {
     font-weight: 500;
@@ -596,10 +553,6 @@ body.modal-open {
     box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
 }
 
-.modal-footer {
-    padding: 16px 24px;
-    border-top: 1px solid #e9ecef;
-}
 
 .btn {
     padding: 10px 20px;
@@ -639,4 +592,45 @@ body.modal-open {
     border-radius: 8px;
     margin-bottom: 20px;
     border: 1px solid #c3e6cb;
+}
+
+.custom-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid #eee;
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.custom-modal .btn {
+    min-width: 120px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.custom-modal .modal-dialog {
+    max-width: 800px;
+    width: 90%;
+    margin: 1.75rem auto;
+}
+
+.custom-modal .modal-content {
+    width: 100%;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.custom-modal .modal-body {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
 }

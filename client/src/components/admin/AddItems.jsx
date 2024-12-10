@@ -535,12 +535,7 @@ function AddItems({ updateItem }) {
                   <h5 className="modal-title">
                     {isEditing ? "Edit Item" : "Add New Item"}
                   </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={handleCloseModal}
-                    aria-label="Close"
-                  ></button>
+
                 </div>
                 <form onSubmit={handleSubmit}>
                   <div className="modal-body">
@@ -596,15 +591,16 @@ function AddItems({ updateItem }) {
                     </div>
                   </div>
                   <div className="modal-footer">
+                    
+                    <button type="submit" className="btn btn-primary">
+                      {isEditing ? "Update Item" : "Add Item"}
+                    </button>
                     <button
                       type="button"
                       className="btn btn-secondary"
                       onClick={handleCloseModal}
                     >
                       Cancel
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      {isEditing ? "Update Item" : "Add Item"}
                     </button>
                   </div>
                 </form>

@@ -459,12 +459,6 @@ function AddUser() {
                   <h5 className="modal-title">
                     {isEditing ? "Edit User" : "Add New User"}
                   </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={handleCloseModal}
-                    aria-label="Close"
-                  ></button>
                 </div>
                 <form onSubmit={handleSubmit}>
                   <div className="modal-body">
@@ -517,15 +511,16 @@ function AddUser() {
                     </div>
                   </div>
                   <div className="modal-footer">
+                    
+                    <button type="submit" className="btn btn-primary">
+                      {isEditing ? "Update User" : "Add User"}
+                    </button>
                     <button
                       type="button"
                       className="btn btn-secondary"
                       onClick={handleCloseModal}
                     >
                       Cancel
-                    </button>
-                    <button type="submit" className="btn btn-primary">
-                      {isEditing ? "Update User" : "Add User"}
                     </button>
                   </div>
                 </form>
