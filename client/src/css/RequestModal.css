@@ -15,7 +15,10 @@
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 100%;
+  width: 80%;
+  max-width: 600px;
+  max-height: 600px;
+  margin: auto;
   overflow-y: auto;
   color: black;
 }

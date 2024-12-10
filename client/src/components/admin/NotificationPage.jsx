@@ -47,7 +47,7 @@ function NotificationPage() {
                             <ul className="breadcrumb">
                                 <li><a href="Notification.html">Notifications</a></li>
                                 <li><i className="bx bx-chevron-right" /></li>
-                                <li><a className="active" href="Mainpage.html">Home</a></li>
+                                <li><a className="active" href="/admin">Home</a></li>
                             </ul>
                         </div>
                     </div>

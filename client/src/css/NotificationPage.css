@@ -121,6 +121,52 @@ body {
 
 /* Additional styles for the table and other elements can be added here */
 
+.unread {
+    background-color: #f8f9fa;
+    font-weight: 500;
+}
+
+.loading, .error, .no-notifications {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.error {
+    color: #dc3545;
+}
+
+.approve-btn, .reject-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 5px;
+}
+
+.approve-btn i {
+    color: #36f465;
+    font-size: 24px;
+}
+
+.reject-btn i {
+    color: #f44336;
+    font-size: 24px;
+}
+
+.card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 
 
 

@@ -6,6 +6,7 @@ import AdminNavbar from '../Navbar/AdminNavbar';
 import '../../css/AdminDashboard.css';
 import { Chart as ChartJS } from 'chart.js/auto';
 import { Bar } from 'react-chartjs-2';
+import axios from 'axios';
 
 function AdminDashboard() {
     const navigate = useNavigate();
@@ -60,12 +61,12 @@ function AdminDashboard() {
         const fetchStatistics = async () => {
             try {
                 // Fetch requests statistics
-                const requestsResponse = await fetch('/api/borrow/all', {
+                const requestsResponse = await axios.get("http://localhost:3000/borrow/all", {
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('sessionToken')}`
                     }
                 });
-                const requestsData = await requestsResponse.json();
+                const requestsData = requestsResponse.data;
 
                 // Count requests by status
                 const requestStats = requestsData.reduce((acc, request) => {
@@ -74,12 +75,12 @@ function AdminDashboard() {
                 }, {});
 
                 // Fetch items statistics
-                const itemsResponse = await fetch('/api/items', {
+                const itemsResponse = await axios.get("http://localhost:3000/items", {
                     headers: {
                         'Authorization': `Bearer ${sessionStorage.getItem('sessionToken')}`
                     }
                 });
-                const itemsData = await itemsResponse.json();
+                const itemsData = itemsResponse.data;
 
                 // Count items by status
                 const itemStats = itemsData.reduce((acc, item) => {

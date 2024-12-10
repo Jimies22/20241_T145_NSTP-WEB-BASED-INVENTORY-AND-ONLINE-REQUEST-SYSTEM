@@ -14,7 +14,7 @@ function AdminNavbar() {
                     <button type="submit" className="search-btn"><i className='bx bx-search'></i></button>
                 </div> */}
             </form>
-            <a href="/adminnotification" className="notification">
+            <a href="/notification" className="notification">
                 <i className='bx bxs-bell'></i>
                 <span className="num">8</span>
             </a>
