@@ -4,12 +4,12 @@ import DataTable from "react-data-table-component";
 import Sidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "../../css/ArchivePage.css";
+import Swal from 'sweetalert2';
 
 const ArchivedPage = () => {
   const [archivedItems, setArchivedItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const customStyles = {
@@ -52,13 +52,20 @@ const ArchivedPage = () => {
   };
 
   const handleRestore = async (row) => {
-    if (window.confirm("Are you sure you want to restore this item?")) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to restore this item?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, restore it!'
+    });
+
+    if (result.isConfirmed) {
       setIsLoading(true);
       try {
         const token = sessionStorage.getItem("sessionToken");
-
-        console.log("Item to restore:", row);
-
         const response = await axios.patch(
           `http://localhost:3000/items/${row.item_id}/restore`,
           {},
@@ -75,7 +82,11 @@ const ArchivedPage = () => {
             prevItems.filter((item) => item.item_id !== row.item_id)
           );
 
-          setSuccessMessage("Item restored successfully");
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Item restored successfully'
+          });
 
           const updatedResponse = await axios.get(
             "http://localhost:3000/items",
@@ -91,11 +102,14 @@ const ArchivedPage = () => {
           setArchivedItems(archivedItems);
         }
       } catch (error) {
-        setError("Failed to restore item");
         console.error("Error restoring item:", error);
-        if (error.response?.status === 401) {
-          setError("Unauthorized access. Please log in again.");
-        }
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: error.response?.status === 401 
+            ? 'Unauthorized access. Please log in again.' 
+            : 'Failed to restore item'
+        });
       } finally {
         setIsLoading(false);
       }
@@ -103,9 +117,17 @@ const ArchivedPage = () => {
   };
 
   const handleDelete = async (itemId) => {
-    if (
-      window.confirm("Are you sure you want to permanently delete this item?")
-    ) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "This action cannot be undone!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete permanently!'
+    });
+
+    if (result.isConfirmed) {
       setIsLoading(true);
       try {
         const response = await axios.delete(
@@ -115,11 +137,19 @@ const ArchivedPage = () => {
           setArchivedItems((prevItems) =>
             prevItems.filter((item) => item._id !== itemId)
           );
-          setSuccessMessage("Item deleted successfully");
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: 'Item has been permanently deleted.'
+          });
         }
       } catch (error) {
-        setError("Failed to delete item");
         console.error("Error deleting item:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Failed to delete item'
+        });
       } finally {
         setIsLoading(false);
       }
@@ -259,18 +289,21 @@ const ArchivedPage = () => {
                     <i className="bx bx-chevron-right"></i>
                   </li>
                   <li>
-                    <a className="active" href="#">
+                    <a className="active" href="/admin/archived-users">
                       Users
+                    </a>
+                  </li>
+                  <li>
+                    <i className="bx bx-chevron-right"></i>
+                  </li>
+                  <li>
+                    <a className="active" href="/admin">
+                      Home
                     </a>
                   </li>
                 </ul>
               </div>
             </div>
-
-            {successMessage && (
-              <div className="alert alert-success">{successMessage}</div>
-            )}
-            {error && <div className="alert alert-danger">{error}</div>}
 
             <div
               style={{

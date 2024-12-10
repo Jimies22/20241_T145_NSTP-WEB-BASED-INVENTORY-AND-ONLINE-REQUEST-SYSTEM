@@ -15,11 +15,11 @@ const ActivityPage = () => {
                             <h1>Activity Log</h1>
                             <ul className="breadcrumb">
                                 <li>
-                                    <a href="#">Dashboard</a>
+                                    <a href="#">Activity Log</a>
                                 </li>
                                 <li><i className="bx bx-chevron-right" /></li>
                                 <li>
-                                    <a className="active" href="#">Activity Log</a>
+                                    <a className="active" href="/admin">Home</a>
                                 </li>
                             </ul>
                         </div>

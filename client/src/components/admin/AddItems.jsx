@@ -6,6 +6,7 @@ import Sidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/AddItems.css";
+import Swal from 'sweetalert2';
 
 function AddItems({ updateItem }) {
   const [items, setItems] = useState([]);
@@ -20,7 +21,6 @@ function AddItems({ updateItem }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [editLocked, setEditLocked] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -217,34 +217,53 @@ function AddItems({ updateItem }) {
           },
         });
       }
-      setSuccessMessage(
-        isEditing ? "Item updated successfully" : "Item added successfully"
-      );
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: isEditing ? 'Item updated successfully' : 'Item added successfully',
+      });
+
       await fetchItems();
       handleCloseModal();
     } catch (error) {
       console.error("Error saving item:", error);
-      if (error.response) {
-        console.error("Error response:", error.response.data);
-        setError(
-          `Error saving item: ${error.response.data.message || "Unknown error"}`
-        );
-      } else {
-        setError("Error saving item");
-      }
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: error.response?.data?.message || 'Error saving item',
+      });
     }
   };
 
   const handleDelete = async (item_id) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
       try {
         await axios.delete(`http://localhost:3000/items/${item_id}`);
-        setSuccessMessage("Item deleted successfully");
+        Swal.fire(
+          'Deleted!',
+          'Item has been deleted.',
+          'success'
+        );
         handleCloseModal();
         fetchItems();
       } catch (error) {
         console.error("Error deleting item:", error);
-        setError("Error deleting item");
+        Swal.fire(
+          'Error!',
+          'Error deleting item',
+          'error'
+        );
         handleCloseModal();
       }
     }
@@ -333,21 +352,28 @@ function AddItems({ updateItem }) {
         isArchived: false,
       });
       setIsEditing(false);
-      setSuccessMessage("");
     } catch (error) {
       console.error("Error releasing lock:", error);
     }
   };
 
   const handleArchive = async (item) => {
-    if (window.confirm("Are you sure you want to archive this item?")) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to archive this item?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, archive it!'
+    });
+
+    if (result.isConfirmed) {
       try {
         const token = sessionStorage.getItem("sessionToken");
         const response = await axios.patch(
           `http://localhost:3000/items/${item.item_id}`,
-          {
-            isArchived: true,
-          },
+          { isArchived: true },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -357,15 +383,22 @@ function AddItems({ updateItem }) {
         );
 
         if (response.status === 200) {
-          setSuccessMessage("Item archived successfully");
-          // Remove the archived item from the current items list
+          Swal.fire(
+            'Archived!',
+            'Item has been archived successfully.',
+            'success'
+          );
           setItems((prevItems) =>
             prevItems.filter((i) => i.item_id !== item.item_id)
           );
         }
       } catch (error) {
         console.error("Error archiving item:", error);
-        setError("Error archiving item");
+        Swal.fire(
+          'Error!',
+          'Error archiving item',
+          'error'
+        );
       }
     }
   };
@@ -434,10 +467,6 @@ function AddItems({ updateItem }) {
               </ul>
             </div>
           </div>
-
-          {successMessage && (
-            <div className="alert alert-success">{successMessage}</div>
-          )}
 
           <div className="table-data">
             <div className="order">

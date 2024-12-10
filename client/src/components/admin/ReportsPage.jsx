@@ -400,14 +400,14 @@ function ReportsPage() {
               <h1>Reports</h1>
               <ul className="breadcrumb">
                 <li>
-                  <a href="#">Reports</a>
+                  <a href="#">Weekly Reports</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
                 </li>
                 <li>
-                  <a className="active" href="#">
-                    Weekly Report
+                  <a className="active" href="/admin">
+                    Home
                   </a>
                 </li>
               </ul>

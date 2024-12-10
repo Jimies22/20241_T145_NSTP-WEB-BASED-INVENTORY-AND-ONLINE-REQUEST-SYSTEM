@@ -24,6 +24,8 @@ import UserRequestPage from './components/user/UserRequestPage';
 import UserBorrowPage from './components/user/UserBorrowPage';
 import UserReportPage from './components/user/UserReportPage';
 import AddUser from './components/admin/AddUser';
+import ArchivedUsersPage from './components/admin/ArchivedUsersPage';
+
 
 function App() {
     const [items, setItems] = useState([]);
@@ -62,6 +64,7 @@ function App() {
                 <Route path="/user-report" element={<UserReportPage />} />
                 <Route path="/reports" element={<ReportsPage/>} />
                 <Route path="/archive" element={<ArchivedPage/>} />
+                <Route path="/admin/archived-users" element={<ArchivedUsersPage />} />
                 <Route path="/activity" element={<AdminActivityPage/>} />
                 <Route path="/notification" element={<AdminNotificationPage/>} />
                 <Route path="/usernotification" element={<UserNotificationPage/>} />

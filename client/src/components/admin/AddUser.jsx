@@ -5,6 +5,7 @@ import "../../css/AddUser.css";
 import AdminSidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Swal from 'sweetalert2';
 
 function AddUser() {
   const [users, setUsers] = useState([]);
@@ -19,7 +20,6 @@ function AddUser() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [editLocked, setEditLocked] = useState(false);
   const [lockTimer, setLockTimer] = useState(null);
@@ -159,52 +159,101 @@ function AddUser() {
           `http://localhost:3000/users/${formData.userID}`,
           userData
         );
-        setSuccessMessage("User updated successfully");
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'User updated successfully'
+        });
       } else {
         if (!userData.email.includes("@") && userData.role === "user") {
-          setError("Faculty email must have @");
+          Swal.fire({
+            icon: 'error',
+            title: 'Invalid Email',
+            text: 'Faculty email must have @'
+          });
           return;
         }
 
         await axios.post("http://localhost:3000/users/register", userData);
-        setSuccessMessage("User added successfully");
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'User added successfully'
+        });
       }
 
       handleCloseModal();
       await fetchUsers();
-      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (error) {
       console.error("Error:", error);
-      setError(error.response?.data?.message || "Failed to save user");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: error.response?.data?.message || 'Failed to save user'
+      });
     }
   };
 
   const handleDelete = async (userID) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
       try {
         await axios.delete(`http://localhost:3000/users/${userID}`);
-        setSuccessMessage("User deleted successfully");
+        Swal.fire(
+          'Deleted!',
+          'User has been deleted.',
+          'success'
+        );
         await fetchUsers();
-        setTimeout(() => setSuccessMessage(""), 3000);
       } catch (error) {
         console.error("Error deleting user:", error);
-        setError(error.response?.data?.message || "Error deleting user");
+        Swal.fire(
+          'Error!',
+          'Error deleting user',
+          'error'
+        );
       }
     }
   };
 
   const handleArchive = async (userID) => {
-    if (window.confirm("Are you sure you want to archive this user?")) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to archive this user?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, archive it!'
+    });
+
+    if (result.isConfirmed) {
       try {
         await axios.patch(`http://localhost:3000/users/${userID}/archive`, {
           isArchived: true,
         });
-        setSuccessMessage("User archived successfully");
-        await fetchUsers(); // Refresh the user list
-        setTimeout(() => setSuccessMessage(""), 3000);
+        Swal.fire(
+          'Archived!',
+          'User has been archived successfully.',
+          'success'
+        );
+        await fetchUsers();
       } catch (error) {
         console.error("Error archiving user:", error);
-        setError("Error archiving user");
+        Swal.fire(
+          'Error!',
+          'Error archiving user',
+          'error'
+        );
       }
     }
   };
@@ -281,7 +330,6 @@ function AddUser() {
         userID: "",
       });
       setIsEditing(false);
-      setError(null);
       document.body.style.overflow = "unset";
     } catch (error) {
       console.error("Error releasing lock:", error);
@@ -349,17 +397,6 @@ function AddUser() {
               </ul>
             </div>
           </div>
-
-          {successMessage && (
-            <div className="alert alert-success" role="alert">
-              {successMessage}
-            </div>
-          )}
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
-            </div>
-          )}
 
           <div className="table-data">
             <div className="order">
