@@ -101,7 +101,14 @@ const RequestPage = () => {
         <AdminNavbar />
         <main>
           <div className="head-title">
-            <h1>Requests</h1>
+            <div className="left">
+              <h1>Requests</h1>
+              <ul className="breadcrumb">
+                <li><a href="#">Requests</a></li>
+                <li><i className='bx bx-chevron-right'></i></li>
+                <li><a className="active" href="/admin">Home</a></li>
+              </ul>
+            </div>
           </div>
           <div className="table-data">
             <div className="pending-requests">

@@ -27,7 +27,6 @@ body {
   transition: 0.3s ease;
   margin: 0;
   padding: 0;
-  height: calc(100vh - 56px); /* Set height to fill the remaining viewport */
   overflow: hidden; /* Prevent scrolling */
 }
 
@@ -117,7 +116,7 @@ main {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px;
+  padding: 0px;
 }
 
 .calendar-section {

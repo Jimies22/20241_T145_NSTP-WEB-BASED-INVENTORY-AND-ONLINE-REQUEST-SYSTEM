@@ -51,7 +51,6 @@ body {
 	flex-grow: 1;
 	background-color: #f4f4f4; /* Content background color */
 	margin-top: 0; /* Remove margin to align with the navbar */
-	height: calc(100vh - 56px); /* Set height to fill the remaining viewport */
 	overflow: hidden; /* Prevent scrolling */
 }
 

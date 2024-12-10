@@ -262,57 +262,6 @@ function AdminDashboard() {
                             </div>
                         </div>
                     </div>
-
-                    <div className="table-data">
-                        <div className="order">
-                            <div className="head">
-                                <h3>Recent Requests</h3>
-                                <a href="/mainpage" className="view-all">View All</a>
-                            </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>User</th>
-                                        <th>Item</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Ian Dave Javier</td>
-                                        <td>LCD Projector</td>
-                                        <td>March 15, 2024</td>
-                                        <td><span className="status pending">Pending</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sern Ponce</td>
-                                        <td>HDMI Cable</td>
-                                        <td>March 14, 2024</td>
-                                        <td><span className="status completed">Approved</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="quick-actions">
-                            <h2>Quick Actions</h2>
-                            <div className="quick-actions-buttons">
-                                <button className="action-btn add-new" onClick={() => openOverlay({ title: 'Add New Item' })}>
-                                    <i className="bx bx-plus-circle"></i>
-                                    Add New Item
-                                </button>
-                                <button className="action-btn review" onClick={() => openOverlay({ title: 'Review Requests' })}>
-                                    <i className="bx bx-list-check"></i>
-                                    Review Requests
-                                </button>
-                                <button className="action-btn scanner" onClick={() => openOverlay({ title: 'Scanner' })}>
-                                    <i className="bx bx-scan"></i>
-                                    Scanner
-                                </button>
-                            </div>
-                        </div>
-                    </div>
                 </main>
             </section>
 

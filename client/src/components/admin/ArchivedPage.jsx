@@ -274,12 +274,12 @@ const ArchivedPage = () => {
 
             <div
               style={{
-                padding: "20px",
+                padding: "0px",
                 backgroundColor: "white",
                 borderRadius: "8px",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                margin: "20px",
-                height: "calc(100vh - 250px)",
+                margin: "0px",
+                height: "540px",
                 overflow: "hidden",
               }}
             >

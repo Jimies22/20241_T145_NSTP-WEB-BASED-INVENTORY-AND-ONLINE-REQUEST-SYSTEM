@@ -51,7 +51,6 @@ body {
 	transition: .3s ease;
 	margin: 0;
 	padding: 0;
-	height: calc(100vh - 56px);
 	overflow: hidden; /* Keep this for ActivityPage */
 }
 
@@ -81,7 +80,7 @@ main {
 
 /* Additional styles for the activity log */
 .activity-log-container {
-	padding: 20px; /* Keep this for ActivityPage */
+	padding: 0px; /* Keep this for ActivityPage */
 }
 .activity-log-container .table-data {
 	display: flex; /* Keep this for ActivityPage */

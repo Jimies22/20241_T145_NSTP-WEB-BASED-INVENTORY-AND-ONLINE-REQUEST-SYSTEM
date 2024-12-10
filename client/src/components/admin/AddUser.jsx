@@ -342,24 +342,12 @@ function AddUser() {
           <div className="head-title">
             <div className="left">
               <h1>Users Management</h1>
+              <ul className="breadcrumb">
+                <li><a href="#">Users</a></li>
+                <li><i className='bx bx-chevron-right'></i></li>
+                <li><a className="active" href="/admin">Home</a></li>
+              </ul>
             </div>
-            <div className="search-container" style={{ marginRight: "10px" }}>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ width: "250px" }}
-              />
-            </div>
-            <button
-              className="btn btn-primary add-button"
-              onClick={() => handleShowModal()}
-            >
-              <i className="bx bx-plus"></i>
-              Add New User
-            </button>
           </div>
 
           {successMessage && (
@@ -376,7 +364,36 @@ function AddUser() {
           <div className="table-data">
             <div className="order">
               <DataTable
-                title="Users List"
+                title={
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "100%",
+                      padding: "0 8px",
+                    }}
+                  >
+                    <div>Users List</div>
+                    <div className="search-wrapper1">
+                      <i className="bx bx-search"></i>
+                      <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search users..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      className="add-new-button"
+                      onClick={() => handleShowModal()}
+                    >
+                      <i className="bx bx-plus"></i>
+                      Add New User
+                    </button>
+                  </div>
+                }
                 columns={columns}
                 data={filteredUsers}
                 pagination
