@@ -58,7 +58,7 @@ body {
 	font-family: var(--lato);
 	transition: .3s ease;
 	overflow-x: hidden;
-	scrollbar-width: none;
+
 }
 
 #sidebar::-webkit-scrollbar {
