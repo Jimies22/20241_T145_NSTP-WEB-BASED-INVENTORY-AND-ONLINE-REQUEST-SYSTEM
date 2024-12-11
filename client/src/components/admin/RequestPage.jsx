@@ -213,19 +213,19 @@ const RequestPage = () => {
             <div className="table-data">
               <div className="pending-requests">
                 <div className="head">
-                  <h3>Pending Requests</h3>
+                  
                 </div>
                 <div className="order">
-                  <div className="table-container">
-                    <table>
-                      <thead>
+                  <div className="table-container" style={{ overflowY: 'auto', maxHeight: '490px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1 }}>
                         <tr>
                           <th>User Name</th>
                           <th>Item Name</th>
                           <th>Borrow Date</th>
                           <th>Return Date</th>
                           <th>Status</th>
-                          <th>Actions</th>
+                          <th style={{ textAlign: 'center' }}>Actions</th> {/* Center the Actions header */}
                         </tr>
                       </thead>
                       <tbody>
