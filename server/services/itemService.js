@@ -21,18 +21,21 @@ const itemService = {
 
   createItem: async (itemData) => {
     try {
-      const nextItemId = await itemService.getLastItemId();
-
+      let nextItemId = await itemService.getLastItemId();
+  
+      // Check if the generated ID already exists
+      let existingItem = await Item.findOne({ item_id: nextItemId });
+      while (existingItem) {
+        // If it exists, generate a new ID
+        nextItemId = (parseInt(nextItemId) + 1).toString();
+        existingItem = await Item.findOne({ item_id: nextItemId });
+      }
+  
       const item = new Item({
         ...itemData,
         item_id: nextItemId
       });
-
-      const existingItem = await Item.findOne({ item_id: nextItemId });
-      if (existingItem) {
-        throw new Error('Item ID already exists');
-      }
-
+  
       return await item.save();
     } catch (error) {
       console.error("Error in createItem:", error);
