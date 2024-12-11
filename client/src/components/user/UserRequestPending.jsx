@@ -5,6 +5,7 @@ import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import "../../css/RequestModal.css"; // Changed from Modal.css to RequestModal.css
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function PendingPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -82,9 +83,29 @@ function PendingPage() {
             : request
         )
       );
+
+      // Update notification count in localStorage
+      const currentCount = parseInt(localStorage.getItem('userNotificationCount') || '0');
+      localStorage.setItem('userNotificationCount', (currentCount + 1).toString());
+
+      // Dispatch event to update notification bell
+      window.dispatchEvent(new Event('notificationUpdate'));
+
+      // Show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Request cancelled successfully',
+        confirmButtonColor: '#3085d6'
+      });
     } catch (error) {
       console.error("Error cancelling request:", error);
-      alert("Failed to cancel request. Please try again.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to cancel request. Please try again.',
+        confirmButtonColor: '#3085d6'
+      });
     }
   };
 
@@ -154,7 +175,7 @@ function PendingPage() {
       setUserRequests((prevRequests) =>
         prevRequests.map((request) =>
           request._id === selectedRequest._id
-            ? { ...request, status: "cancelled" } // Changed to lowercase to match schema
+            ? { ...request, status: "cancelled" }
             : request
         )
       );
@@ -162,13 +183,34 @@ function PendingPage() {
       // Update the modal view
       setSelectedRequest((prev) => ({
         ...prev,
-        status: "cancelled", // Changed to lowercase to match schema
+        status: "cancelled",
       }));
 
-      alert("Request cancelled successfully");
+      // Update notification count in localStorage
+      const currentCount = parseInt(localStorage.getItem('userNotificationCount') || '0');
+      localStorage.setItem('userNotificationCount', (currentCount + 1).toString());
+
+      // Dispatch event to update notification bell
+      window.dispatchEvent(new Event('notificationUpdate'));
+
+      // Show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Request cancelled successfully',
+        confirmButtonColor: '#3085d6'
+      });
+
+      // Close modal after successful cancellation
+      closeModal();
     } catch (error) {
       console.error("Error cancelling request:", error);
-      alert(error.message || "Failed to cancel request. Please try again.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message || 'Failed to cancel request. Please try again.',
+        confirmButtonColor: '#3085d6'
+      });
     }
   };
 
@@ -184,12 +226,6 @@ function PendingPage() {
               <ul className="breadcrumb">
                 <li>
                   <Link to="/#">Pending</Link>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" />
-                </li>
-                <li>
-                  <Link to="/user-request" className="active">Approved</Link>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />

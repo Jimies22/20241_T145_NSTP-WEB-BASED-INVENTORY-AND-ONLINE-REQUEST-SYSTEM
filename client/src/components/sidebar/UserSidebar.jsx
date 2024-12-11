@@ -41,8 +41,8 @@ const UserSidebar = () => {
                         <span className="text">Dashboard</span>
                     </a>
                 </li>
-                <li className={location.pathname === '/user-request' ? 'active' : ''}>
-                    <a href="/user-request">
+                <li className={location.pathname === '/user-request/pending' ? 'active' : ''}>
+                    <a href="/user-request/pending">
                         <i className='bx bxs-shopping-bag-alt'></i>
                         <span className="text">Request</span>
                     </a>

@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "jwt-decode": "^4.0.0"
+    "jwt-decode": "^4.0.0",
+    "sweetalert2": "^11.14.5"
   }
 }

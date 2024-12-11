@@ -201,17 +201,6 @@ function CancelledPage() {
                 <li>
                   <a
                     className="active"
-                    href="http://localhost:3001/user-request/Approved"
-                  >
-                    Approved
-                  </a>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" />
-                </li>
-                <li>
-                  <a
-                    className="active"
                     href="http://localhost:3001/user-request/Rejected"
                   >
                     Rejected

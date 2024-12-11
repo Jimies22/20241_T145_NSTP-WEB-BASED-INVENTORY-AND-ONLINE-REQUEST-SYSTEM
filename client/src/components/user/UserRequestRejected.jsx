@@ -212,17 +212,6 @@ function RejectedPage() {
                 <li>
                   <a
                     className="active"
-                    href="/user-request"
-                  >
-                   Approved
-                  </a>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" />
-                </li>
-                <li>
-                  <a
-                    className="active"
                     href="/user"
                   >
                     Home
