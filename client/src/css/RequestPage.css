@@ -53,21 +53,81 @@ main {
 
 /* Table Styling */
 .table-data {
-  padding: 24px;
+  flex-grow: 1;
+  margin: 0 20px;
 }
 
 .pending-requests {
-  background: #fff;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px); /* Adjust based on your header height */
 }
 
 .order {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex: 1;
   overflow: hidden;
+  background: var(--light);
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  background: var(--light);
+  z-index: 1;
+}
+
+thead tr {
+  background: var(--light);
+}
+
+th {
+  padding: 15px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+td {
+  padding: 15px 10px;
+}
+
+/* Add smooth scrolling */
+.table-container {
+  scroll-behavior: smooth;
+}
+
+/* Style the scrollbar */
+.table-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 .order table {
@@ -145,24 +205,25 @@ main {
 .status {
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.9em;
+  font-size: 0.85rem;
   font-weight: 500;
+  text-transform: capitalize;
   display: inline-block;
 }
 
 .status.pending {
-  background: #fff4e5;
-  color: #ff9800;
+  background-color: #ff9800;
+  color: #ffffff;
 }
 
-.status.approved {
-  background: #e8f5e9;
-  color: #2e7d32;
+.status.approve {
+  background-color: #1c7c32;
+  color: #ffffff;
 }
 
 .status.rejected {
-  background: #ffebee;
-  color: #c62828;
+  background-color: #dc3546c1;
+  color: #ffffff;
 }
 
 /* Action Button Styling */
@@ -170,7 +231,7 @@ main {
   padding: 8px 16px;
   border: none;
   border-radius: 6px;
-  background: #3498db;
+  background: #4b86ecbb;
   color: white;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -271,4 +332,82 @@ main {
 
 .pending-requests table th {
   display: table-cell !important;
+}
+
+/* Update the button styles */
+.approve-btn, .reject-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.approve-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Add disabled state styles */
+.approve-btn.disabled, .reject-btn.disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  border: 1px solid #dee2e6;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.approve-btn.disabled:hover, .reject-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Hover effects for active buttons only */
+.approve-btn:not(.disabled):hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+}
+
+.reject-btn:not(.disabled):hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+}
+
+/* Add tooltip for disabled buttons */
+.disabled {
+  position: relative;
+}
+
+.disabled:before {
+  content: "Request already processed";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.disabled:hover:before {
+  opacity: 1;
+  visibility: visible;
 }

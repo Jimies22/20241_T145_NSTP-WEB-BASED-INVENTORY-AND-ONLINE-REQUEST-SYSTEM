@@ -168,7 +168,250 @@ body {
 }
 
 
+/* Add these styles to your existing NotificationPage.css */
 
+.table-data table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-data th,
+.table-data td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--grey);
+}
+
+.user-info .card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-details .name {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.user-details .email,
+.user-details .id {
+    font-size: 0.9em;
+    color: var(--dark-grey);
+}
+
+.item-details .item-name {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.item-details .item-category,
+.item-details .item-quantity {
+    font-size: 0.9em;
+    color: var(--dark-grey);
+}
+
+.request-info p,
+.schedule-info p {
+    margin-bottom: 4px;
+    font-size: 0.9em;
+}
+
+.pending {
+    color: var(--orange);
+    font-weight: 600;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.approve-btn,
+.reject-btn {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.approve-btn {
+    background-color: var(--light-blue);
+    color: var(--blue);
+}
+
+.reject-btn {
+    background-color: var(--light-orange);
+    color: var(--red);
+}
+
+.approve-btn:hover {
+    background-color: var(--blue);
+    color: white;
+}
+
+.reject-btn:hover {
+    background-color: var(--red);
+    color: white;
+}
+
+.loading,
+.no-notifications {
+    text-align: center;
+    padding: 20px;
+    color: var(--dark-grey);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .table-data table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .user-details .email,
+    .item-details .item-category {
+        display: none;
+    }
+}
+
+.notification-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.notification-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.notification-info h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.time-ago {
+    font-size: 12px;
+    color: #666;
+}
+
+.notification-content {
+    margin-bottom: 15px;
+}
+
+.notification-message {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.request-details {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 13px;
+}
+
+.request-details p {
+    margin: 5px 0;
+    color: #666;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.approve-btn, .reject-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.approve-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.reject-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.approve-btn:hover {
+    background-color: #218838;
+}
+
+.reject-btn:hover {
+    background-color: #c82333;
+}
+
+.loading, .error, .no-notifications {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.error {
+    color: #dc3545;
+}
+
+/* Add these styles for the view button */
+.view-btn {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.view-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+}
+
+.view-btn i {
+    font-size: 1.2rem;
+}
 
 
 

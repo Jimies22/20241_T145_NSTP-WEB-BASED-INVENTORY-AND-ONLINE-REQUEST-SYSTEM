@@ -30,7 +30,10 @@ const RequestPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setRequests(response.data);
+      const sortedRequests = response.data.sort((a, b) => 
+        new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setRequests(sortedRequests);
     } catch (error) {
       console.error("Error fetching requests:", error);
       Swal.fire({
@@ -166,6 +169,10 @@ const RequestPage = () => {
     }
   };
 
+  const isActionable = (status) => {
+    return status === "pending";
+  };
+
   // Add button hover styles
   const buttonHoverStyles = `
     .approve-btn:hover {
@@ -200,75 +207,64 @@ const RequestPage = () => {
                   <h3>Pending Requests</h3>
                 </div>
                 <div className="order">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>User Name</th>
-                        <th>Item Name</th>
-                        <th>Borrow Date</th>
-                        <th>Return Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {requests.length > 0 ? (
-                        requests.map((request) => (
-                          <tr key={request._id}>
-                            <td>{request.userId.name || "Unknown User"}</td>
-                            <td>{itemIdToNameMap[request.item._id] || "Unknown Item"}</td>
-                            <td>{request.borrowDate}</td>
-                            <td>{request.returnDate}</td>
-                            <td>{request.status}</td>
-                            <td>
-                              <div
-                                className="actions"
-                                style={{
-                                  display: "flex",
-                                  gap: "8px",
-                                  justifyContent: "center",
-                                  minWidth: "150px",
-                                }}
-                              >
-                                <button
-                                  onClick={() => handleApprove(request._id, request.item._id)}
-                                  className="approve-btn"
-                                  style={{
-                                    padding: "6px 12px",
-                                    backgroundColor: "#28a745",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  Approve
-                                </button>
-                                <button
-                                  onClick={() => handleReject(request._id)}
-                                  className="reject-btn"
-                                  style={{
-                                    padding: "6px 12px",
-                                    backgroundColor: "#dc3545",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                >
-                                  Reject
-                                </button>
-                              </div>
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>User Name</th>
+                          <th>Item Name</th>
+                          <th>Borrow Date</th>
+                          <th>Return Date</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {requests.length > 0 ? (
+                          requests.map((request) => (
+                            <tr key={request._id}>
+                              <td>{request.userId.name || "Unknown User"}</td>
+                              <td>{itemIdToNameMap[request.item._id] || "Unknown Item"}</td>
+                              <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
+                              <td>{new Date(request.returnDate).toLocaleDateString()}</td>
+                              <td>
+                                <span className={`status ${request.status.toLowerCase()}`}>
+                                  {request.status}
+                                </span>
+                              </td>
+                              <td>
+                                <div className="actions">
+                                  <button
+                                    onClick={() => handleApprove(request._id, request.item._id)}
+                                    className={`approve-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
+                                    disabled={!isActionable(request.status)}
+                                  >
+                                    <i className='bx bx-check'></i>
+                                    Approve
+                                  </button>
+                                  <button
+                                    onClick={() => handleReject(request._id)}
+                                    className={`reject-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
+                                    disabled={!isActionable(request.status)}
+                                  >
+                                    <i className='bx bx-x'></i>
+                                    Reject
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="6" className="no-requests">
+                              <i className='bx bx-package' style={{ fontSize: '2rem', marginBottom: '10px' }}></i>
+                              <p>No pending requests available</p>
                             </td>
                           </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="6">No requests available.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
