@@ -119,11 +119,11 @@ const BorrowOverlay = ({ item, onClose }) => {
       return;
     }
 
-    // Validate that return time is also within the allowed hours (5 AM to 5 PM)
-    if (returnDate.getHours() < 5 || returnDate.getHours() > 17) {
-      alert("Return time must be between 5 AM and 5 PM.");
-      return;
-    }
+    // // Validate that return time is also within the allowed hours (5 AM to 5 PM)
+    // if (returnDate.getHours() < 5 || returnDate.getHours() > 17) {
+    //   alert("Return time must be between 5 AM and 5 PM.");
+    //   return;
+    // }
 
     try {
       const response = await axios.post(

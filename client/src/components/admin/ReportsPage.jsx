@@ -43,6 +43,7 @@ function ReportsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chartData, setChartData] = useState(null);
   const [isGapiLoaded, setIsGapiLoaded] = useState(false);
+  const [view, setView] = useState("week"); // Add state for calendar view
 
   useEffect(() => {
     // First, check if we already have a token in sessionStorage
@@ -184,6 +185,71 @@ function ReportsPage() {
     } catch (error) {
       console.error("Error generating weekly report:", error);
       setError("Failed to generate weekly report");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewChange = (newView) => {
+    setView(newView);
+    if (newView === "day") {
+      generateDailyReport(new Date());
+    } else {
+      generateWeeklyReport(new Date());
+    }
+  };
+
+  const generateDailyReport = async (date) => {
+    try {
+      setLoading(true);
+      const dailyData = await fetchDailyData(date);
+      setWeeklyData(dailyData); // Reuse weeklyData state for simplicity
+    } catch (error) {
+      console.error("Error generating daily report:", error);
+      setError("Failed to generate daily report");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDailyData = async (selectedDate) => {
+    if (!isGapiLoaded) {
+      console.log("Google API not yet loaded");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const startDate = moment(selectedDate).startOf("day");
+      const endDate = moment(selectedDate).endOf("day");
+
+      const processedData = await processCalendarData(
+        startDate.toDate(),
+        endDate.toDate()
+      );
+
+      const chartData = {
+        labels: Object.keys(processedData.byDay).map((date) =>
+          moment(date).format("ddd, MMM D")
+        ),
+        datasets: [
+          {
+            label: "Items Borrowed",
+            data: Object.values(processedData.byDay).map(
+              (day) => day.totalItems
+            ),
+            backgroundColor: "rgba(54, 162, 235, 0.5)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      setWeeklyData(processedData);
+      setChartData(chartData);
+    } catch (error) {
+      setError("Failed to fetch daily data");
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
@@ -400,7 +466,7 @@ function ReportsPage() {
               <h1>Reports</h1>
               <ul className="breadcrumb">
                 <li>
-                  <a href="#">Weekly Reports</a>
+                  <a href="#">Reports</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
@@ -422,8 +488,8 @@ function ReportsPage() {
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: 500 }}
-                views={["week"]}
-                defaultView="week"
+                views={["week", "day"]} // Add "day" view
+                defaultView={view} // Use state for default view
                 onSelectSlot={({ start }) => handleDateSelect(start)}
                 selectable
               />
