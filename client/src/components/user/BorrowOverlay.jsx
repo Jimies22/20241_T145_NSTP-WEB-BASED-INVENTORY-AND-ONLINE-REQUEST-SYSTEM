@@ -107,11 +107,11 @@ const BorrowOverlay = ({ item, onClose }) => {
       return;
     }
 
-    // Validate that borrow time is between 5 AM and 5 PM
-    if (borrowDate.getHours() < 5 || borrowDate.getHours() > 17) {
-      alert("Borrow time must be between 5 AM and 5 PM.");
-      return;
-    }
+    // // Validate that borrow time is between 5 AM and 5 PM
+    // if (borrowDate.getHours() < 5 || borrowDate.getHours() > 17) {
+    //   alert("Borrow time must be between 5 AM and 5 PM.");
+    //   return;
+    // }
 
     // Validate that return time is after borrow time
     if (returnDate <= borrowDate) {
