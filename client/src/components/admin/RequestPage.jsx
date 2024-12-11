@@ -240,44 +240,86 @@ const RequestPage = () => {
   });
 
   return (
-    <div className="dashboard">
-      <Sidebar />
-      <section id="content">
-        <AdminNavbar />
-        <main>
-          <div className="head-title">
-            <div className="left">
-              <h1>Requests</h1>
-              <ul className="breadcrumb">
-                <li><a href="#">Requests</a></li>
-                <li><i className='bx bx-chevron-right'></i></li>
-                <li><a className="active" href="/admin">Home</a></li>
-              </ul>
+    <>
+      <style>{buttonHoverStyles}</style>
+      <div className="admin-dashboard">
+        <Sidebar />
+        <section id="content">
+          <AdminNavbar />
+          <main>
+            <div className="head-title">
+              <div className="left">
+                <h1>Requests</h1>
+                <ul className="breadcrumb">
+                  <li><a href="#">Requests</a></li>
+                  <li><i className='bx bx-chevron-right'></i></li>
+                  <li><a className="active" href="/admin">Home</a></li>
+                </ul>
+              </div>
             </div>
+            <div className="table-data">
+              <div className="pending-requests">
+                <div className="head">
+                  <h3>Pending Requests</h3>
+                </div>
+                <div className="order">
+                  <div className="table-container">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>User Name</th>
+                          <th>Item Name</th>
+                          <th>Borrow Date</th>
+                          <th>Return Date</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+  {requests.length > 0 ? (
+    requests.map((request) => (
+      <tr key={request._id}>
+        <td>{userIdToNameMap[request.userId] || "Unknown User"}</td>
+        <td>{itemIdToNameMap[request.item?._id] || "Unknown Item"}</td> {/* Added optional chaining */}
+        <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
+        <td>{new Date(request.returnDate).toLocaleDateString()}</td>
+        <td>
+          <span className={`status ${request.status.toLowerCase()}`}>
+            {request.status}
+          </span>
+        </td>
+        <td>
+          <div className="actions">
+            <button
+              onClick={() => handleApprove(request._id, request.item?._id)} // Added optional chaining
+              className={`approve-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
+              disabled={!isActionable(request.status)}
+            >
+              <i className='bx bx-check'></i>
+              Approve
+            </button>
+            <button
+              onClick={() => handleReject(request._id)}
+              className={`reject-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
+              disabled={!isActionable(request.status)}
+            >
+              <i className='bx bx-x'></i>
+              Reject
+            </button>
           </div>
-
-          <div className="table-data">
-            <div className="order">
-              <DataTable
-                title={
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    width: "100%",
-                    padding: "0 8px",
-                  }}>
-                    <div>Request List</div>
-                    <div className="search-wrapper1">
-                      <i className="bx bx-search"></i>
-                      <input
-                        type="text"
-                        className="search-input"
-                        placeholder="Search requests..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                    </div>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="6" className="no-requests">
+        <i className='bx bx-package' style={{ fontSize: '2rem', marginBottom: '10px' }}></i>
+        <p>No pending requests available</p>
+      </td>
+    </tr>
+  )}
+</tbody>
+                    </table>
                   </div>
                 }
                 columns={columns}

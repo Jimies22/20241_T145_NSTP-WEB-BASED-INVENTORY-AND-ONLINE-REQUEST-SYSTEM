@@ -28,14 +28,12 @@ const itemService = {
         item_id: nextItemId
       });
 
-      const existingItem = await Item.findOne({ item_id: nextItemId });
-      if (existingItem) {
-        throw new Error('Item ID already exists');
-      }
-
-      return await item.save();
+      const savedItem = await item.save();
+      return savedItem;
     } catch (error) {
-      console.error("Error in createItem:", error);
+      if (error.code === 11000) {
+        throw new Error('Item ID already exists. Please try again.');
+      }
       throw error;
     }
   },
@@ -76,8 +74,12 @@ const itemService = {
         return "1";
       }
 
-      const nextId = (parseInt(lastItem.item_id) + 1).toString();
-      return nextId;
+      const currentId = parseInt(lastItem.item_id);
+      if (isNaN(currentId)) {
+        throw new Error('Invalid item ID format');
+      }
+      
+      return (currentId + 1).toString();
     } catch (error) {
       console.error("Error in getLastItemId:", error);
       throw error;

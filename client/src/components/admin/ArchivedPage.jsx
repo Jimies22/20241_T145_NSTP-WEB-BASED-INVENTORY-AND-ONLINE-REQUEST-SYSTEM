@@ -130,12 +130,18 @@ const ArchivedPage = () => {
     if (result.isConfirmed) {
       setIsLoading(true);
       try {
+        const token = sessionStorage.getItem("sessionToken");
         const response = await axios.delete(
-          `http://localhost:3000/items/${itemId}`
+          `http://localhost:3000/items/${itemId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         if (response.status === 200) {
           setArchivedItems((prevItems) =>
-            prevItems.filter((item) => item._id !== itemId)
+            prevItems.filter((item) => item.item_id !== itemId)
           );
           Swal.fire({
             icon: 'success',
@@ -148,7 +154,9 @@ const ArchivedPage = () => {
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: 'Failed to delete item'
+          text: error.response?.status === 401 
+            ? 'Unauthorized access. Please log in again.' 
+            : 'Failed to delete item'
         });
       } finally {
         setIsLoading(false);

@@ -65,20 +65,28 @@ router.get("/:item_id", async (req, res) => {
 router.post("/additem", jwtVerifyMiddleware, upload.single('image'), async (req, res) => {
   try {
     const itemData = req.body;
+    
+    // Add image path if file was uploaded
     if (req.file) {
       itemData.image = `/uploads/${req.file.filename}`;
-      console.log('File uploaded successfully:', req.file.path);
     }
 
-    // Let the service handle the ID generation
+    // Create the item
     const newItem = await itemService.createItem(itemData);
-    res.status(201).json(newItem);
+    
+    res.status(201).json({
+      success: true,
+      message: 'Item created successfully',
+      item: newItem
+    });
   } catch (error) {
     console.error('Error in additem route:', error);
+    
+    // Send appropriate error response
     res.status(400).json({
-      message: error.message,
-      error: error.toString(),
-      stack: error.stack
+      success: false,
+      message: error.message || 'Error creating item',
+      error: process.env.NODE_ENV === 'development' ? error.toString() : undefined
     });
   }
 });
