@@ -220,49 +220,49 @@ const RequestPage = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {requests.length > 0 ? (
-                          requests.map((request) => (
-                            <tr key={request._id}>
-                              <td>{request.userId.name || "Unknown User"}</td>
-                              <td>{itemIdToNameMap[request.item._id] || "Unknown Item"}</td>
-                              <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
-                              <td>{new Date(request.returnDate).toLocaleDateString()}</td>
-                              <td>
-                                <span className={`status ${request.status.toLowerCase()}`}>
-                                  {request.status}
-                                </span>
-                              </td>
-                              <td>
-                                <div className="actions">
-                                  <button
-                                    onClick={() => handleApprove(request._id, request.item._id)}
-                                    className={`approve-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
-                                    disabled={!isActionable(request.status)}
-                                  >
-                                    <i className='bx bx-check'></i>
-                                    Approve
-                                  </button>
-                                  <button
-                                    onClick={() => handleReject(request._id)}
-                                    className={`reject-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
-                                    disabled={!isActionable(request.status)}
-                                  >
-                                    <i className='bx bx-x'></i>
-                                    Reject
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="6" className="no-requests">
-                              <i className='bx bx-package' style={{ fontSize: '2rem', marginBottom: '10px' }}></i>
-                              <p>No pending requests available</p>
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
+  {requests.length > 0 ? (
+    requests.map((request) => (
+      <tr key={request._id}>
+        <td>{userIdToNameMap[request.userId] || "Unknown User"}</td>
+        <td>{itemIdToNameMap[request.item?._id] || "Unknown Item"}</td> {/* Added optional chaining */}
+        <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
+        <td>{new Date(request.returnDate).toLocaleDateString()}</td>
+        <td>
+          <span className={`status ${request.status.toLowerCase()}`}>
+            {request.status}
+          </span>
+        </td>
+        <td>
+          <div className="actions">
+            <button
+              onClick={() => handleApprove(request._id, request.item?._id)} // Added optional chaining
+              className={`approve-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
+              disabled={!isActionable(request.status)}
+            >
+              <i className='bx bx-check'></i>
+              Approve
+            </button>
+            <button
+              onClick={() => handleReject(request._id)}
+              className={`reject-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
+              disabled={!isActionable(request.status)}
+            >
+              <i className='bx bx-x'></i>
+              Reject
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="6" className="no-requests">
+        <i className='bx bx-package' style={{ fontSize: '2rem', marginBottom: '10px' }}></i>
+        <p>No pending requests available</p>
+      </td>
+    </tr>
+  )}
+</tbody>
                     </table>
                   </div>
                 </div>
