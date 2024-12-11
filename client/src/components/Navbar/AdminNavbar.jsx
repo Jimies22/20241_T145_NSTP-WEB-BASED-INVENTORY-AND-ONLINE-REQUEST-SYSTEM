@@ -7,7 +7,7 @@ function AdminNavbar() {
     };
     return (
         <nav>
-            <a href="#" className="nav-link">Categories</a>
+            <a href="#" className="nav-link"></a>
             <form action="#">
                 {/* <div className="form-input">
                     <input type="search" placeholder="Search..." />
