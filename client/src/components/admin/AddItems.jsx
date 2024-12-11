@@ -187,45 +187,53 @@ function AddItems({ updateItem }) {
 
     try {
       const formDataToSend = new FormData();
-      if (isEditing) {
+      // Don't append item_id for new items
+      if (!isEditing) {
+        formDataToSend.append("name", formData.name);
+        formDataToSend.append("description", formData.description);
+        formDataToSend.append("category", formData.category);
+        if (selectedFile) {
+          formDataToSend.append("image", selectedFile);
+        }
+      } else {
+        // For editing, include the item_id
         formDataToSend.append("item_id", formData.item_id);
-      }
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("category", formData.category);
-      formDataToSend.append("isArchived", formData.isArchived || false);
-      if (selectedFile) {
-        formDataToSend.append("image", selectedFile);
+        formDataToSend.append("name", formData.name);
+        formDataToSend.append("description", formData.description);
+        formDataToSend.append("category", formData.category);
+        if (selectedFile) {
+          formDataToSend.append("image", selectedFile);
+        }
       }
 
-      if (isEditing) {
-        await axios.patch(
-          `http://localhost:3000/items/${formData.item_id}`,
-          formDataToSend,
-          {
+      const response = isEditing
+        ? await axios.patch(
+            `http://localhost:3000/items/${formData.item_id}`,
+            formDataToSend,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          )
+        : await axios.post("http://localhost:3000/items/additem", formDataToSend, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "multipart/form-data",
             },
-          }
-        );
-      } else {
-        await axios.post("http://localhost:3000/items/additem", formDataToSend, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+          });
+
+      if (response.data.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: isEditing ? 'Item updated successfully' : 'Item added successfully',
         });
+
+        await fetchItems();
+        handleCloseModal();
       }
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: isEditing ? 'Item updated successfully' : 'Item added successfully',
-      });
-
-      await fetchItems();
-      handleCloseModal();
     } catch (error) {
       console.error("Error saving item:", error);
       Swal.fire({
