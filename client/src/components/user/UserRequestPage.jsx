@@ -4,6 +4,7 @@ import UserNavbar from "../Navbar/UserNavbar"; // Ensure the correct path
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import "../../css/RequestModal.css"; // Changed from Modal.css to RequestModal.css
+import DataTable from 'react-data-table-component';
 
 function RequestPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -171,6 +172,96 @@ function RequestPage() {
     }
   };
 
+  // Add columns configuration
+  const columns = [
+    {
+      name: 'REQUESTED ITEM',
+      selector: row => row.item?.name,
+      sortable: true,
+      cell: row => (
+        <div className="item-details">
+          <strong>{row.item?.name || "N/A"}</strong>
+          <p>{row.item?.description || "N/A"}</p>
+          <small>Category: {row.item?.category || "N/A"}</small>
+          <small>Request Date: {formatDateTime(row.requestDate)}</small>
+        </div>
+      ),
+      grow: 2,
+      wrap: true
+    },
+    {
+      name: 'STATUS',
+      selector: row => row.status,
+      sortable: true,
+      cell: row => (
+        <span className={`status ${row.status.toLowerCase()}`}>
+          {row.status}
+        </span>
+      ),
+      width: '150px'
+    },
+    {
+      name: 'ACTIONS',
+      cell: row => (
+        <div className="action-buttons">
+          <button className="view-btn" onClick={() => handleViewClick(row)}>
+            View
+          </button>
+        </div>
+      ),
+      width: '200px',
+      center: true
+    }
+  ];
+
+  // Add DataTable styles
+  const customStyles = {
+    table: {
+      style: {
+        backgroundColor: '#fff',
+        borderRadius: '8px',
+        padding: '1rem',
+        minWidth: '100%',
+      },
+    },
+    headRow: {
+      style: {
+        backgroundColor: '#f8f9fa',
+        borderBottomWidth: '2px',
+        minHeight: '50px',
+      },
+    },
+    headCells: {
+      style: {
+        fontSize: '14px',
+        fontWeight: 'bold',
+        padding: '15px',
+      },
+    },
+    rows: {
+      style: {
+        minHeight: '72px',
+        fontSize: '14px',
+        '&:not(:last-of-type)': {
+          borderBottomStyle: 'solid',
+          borderBottomWidth: '1px',
+          borderBottomColor: '#e5e5e5',
+        },
+      },
+    },
+    cells: {
+      style: {
+        padding: '15px',
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: 'none',
+        marginTop: '10px',
+      },
+    },
+  };
+
   return (
     <div className="user-dashboard">
       <Sidebar />
@@ -237,69 +328,29 @@ function RequestPage() {
                 <h3>My Requests</h3>
                 <i className="bx bx-filter" />
               </div>
-              <div className="order">
-                <table>
-                  <thead>
-                    <tr>
-                      <th style={{ width: "50%" }}>REQUESTED ITEM</th>
-                      <th style={{ width: "25%" }}>STATUS</th>
-                      <th style={{ width: "25%" }}>ACTIONS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userRequests && userRequests.length > 0 ? (
-                      userRequests.map((request) => (
-                        <tr key={request._id}>
-                          <td>
-                            <div className="item-details">
-                              <strong>{request.item?.name || "N/A"}</strong>
-                              <p>{request.item?.description || "N/A"}</p>
-                              <small>Category: {request.item?.category || "N/A"}</small>
-                              <small>
-                                {/* Request Date:{" "}
-                                {new Date(request.createdAt).toLocaleDateString()} */}
-                                {request.requestDate}
-                              </small>
-                            </div>
-                          </td>
-                          <td>
-                            <span
-                              className={`status ${request.status.toLowerCase()}`}
-                            >
-                              {request.status}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="action-buttons">
-                              <button
-                                className="view-btn"
-                                onClick={() => {
-                                  console.log("View button clicked");
-                                  handleViewClick(request);
-                                }}
-                              >
-                                View
-                              </button>
-                              {request.status.toLowerCase() === "pending" && (
-                                <button
-                                  className="cancel-btn"
-                                  onClick={() => handleCancel(request._id)}
-                                >
-                                  Cancel
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4">No requests found</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              <DataTable
+                columns={columns}
+                data={userRequests}
+                pagination
+                paginationComponentOptions={{
+                  rowsPerPageText: 'Rows per page:',
+                  rangeSeparatorText: 'of',
+                  selectAllRowsItem: true,
+                  selectAllRowsItemText: 'All',
+                }}
+                paginationPerPage={10}
+                paginationRowsPerPageOptions={[5, 10, 15, 20, 25, 30]}
+                customStyles={customStyles}
+                noDataComponent={
+                  <div style={{ padding: '24px' }}>No requests found</div>
+                }
+                responsive
+                striped
+                highlightOnHover
+                pointerOnHover
+                persistTableHead
+                fixedHeader
+              />
             </div>
           </div>
         </main>

@@ -4,6 +4,8 @@ import UserNavbar from "../Navbar/UserNavbar"; // Ensure the correct path
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import "../../css/RequestModal.css"; // Changed from Modal.css to RequestModal.css
+import { Link } from "react-router-dom";
+import DataTable from "react-data-table-component";
 
 function RejectedPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -11,6 +13,7 @@ function RejectedPage() {
   const [userRequests, setUserRequests] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchUserRequests = async () => {
@@ -171,6 +174,108 @@ function RejectedPage() {
     }
   };
 
+  // Update the columns configuration to match AddItems.jsx style
+  const columns = [
+    {
+      name: 'REQUESTED ITEM',
+      selector: row => row.item?.name,
+      sortable: true,
+      cell: row => (
+        <div className="item-details">
+          <strong>{row.item?.name || "N/A"}</strong>
+          <p>{row.item?.description || "N/A"}</p>
+          <small>Category: {row.item?.category || "N/A"}</small>
+          <small>Request Date: {formatDateTime(row.requestDate)}</small>
+        </div>
+      ),
+      grow: 2,
+      wrap: true
+    },
+    {
+      name: 'STATUS',
+      selector: row => row.status,
+      sortable: true,
+      cell: row => (
+        <span className={`status ${row.status.toLowerCase()}`}>
+          {row.status}
+        </span>
+      ),
+      width: '150px'
+    },
+    {
+      name: 'ACTIONS',
+      cell: row => (
+        <div className="actions">
+          <button
+            className="edit-btn"
+            onClick={() => handleViewClick(row)}
+            title="View details"
+          >
+            <i className='bx bx-show'></i>
+          </button>
+        </div>
+      ),
+      width: '150px',
+      center: true
+    }
+  ];
+
+  // Add the same custom styles as AddItems.jsx
+  const customStyles = {
+    table: {
+      style: {
+        backgroundColor: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #e0e0e0',
+      },
+    },
+    headRow: {
+      style: {
+        backgroundColor: '#f8f9fa',
+        borderTopLeftRadius: '12px',
+        borderTopRightRadius: '12px',
+        borderBottom: '2px solid #e0e0e0',
+        fontWeight: '600',
+        color: '#2c3e50',
+        fontSize: '0.95rem',
+        minHeight: '52px',
+      },
+    },
+    rows: {
+      style: {
+        fontSize: '0.9rem',
+        fontWeight: '400',
+        color: '#2c3e50',
+        minHeight: '52px',
+        '&:hover': {
+          backgroundColor: '#f8f9fa',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+        },
+      },
+    },
+    subHeader: {
+      style: {
+        padding: '16px 24px',
+        backgroundColor: '#ffffff',
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: '1px solid #e0e0e0',
+        margin: '0',
+        padding: '16px',
+      },
+      pageButtonsStyle: {
+        borderRadius: '6px',
+        height: '32px',
+        padding: '0 12px',
+        margin: '0 4px',
+      },
+    },
+  };
+
   return (
     <div className="user-dashboard">
       <Sidebar />
@@ -182,113 +287,63 @@ function RejectedPage() {
               <h1>Rejected Request</h1>
               <ul className="breadcrumb">
                 <li>
-                  <a href="#">Rejected</a>
+                  <Link to="/user-request/rejected">Rejected</Link>
                 </li>
+                <li><i className="bx bx-chevron-right" /></li>
                 <li>
-                  <i className="bx bx-chevron-right" />
+                  <Link to="/user-request/pending" className="active">Pending</Link>
                 </li>
+                <li><i className="bx bx-chevron-right" /></li>
                 <li>
-                  <a
-                    className="active"
-                    href="/user-request/pending"
-                  >
-                    Pending
-                  </a>
+                  <Link to="/user-request/cancelled" className="active">Cancelled</Link>
                 </li>
+                <li><i className="bx bx-chevron-right" /></li>
                 <li>
-                  <i className="bx bx-chevron-right" />
-                </li>
-                <li>
-                  <a
-                    className="active"
-                    href="/user-request/cancelled"
-                  >
-                    Cancelled
-                  </a>
-                </li>
-                <li>
-                  <i className="bx bx-chevron-right" />
-                </li>
-                <li>
-                  <a
-                    className="active"
-                    href="/user"
-                  >
-                    Home
-                  </a>
+                  <Link to="/user" className="active">Home</Link>
                 </li>
               </ul>
             </div>
           </div>
           <div className="table-data">
             <div className="pending-requests">
-              <div className="head">
-                <h3>My Requests</h3>
-                <i className="bx bx-filter" />
-              </div>
-              <div className="order">
-                <table>
-                  <thead>
-                    <tr>
-                      <th style={{ width: "50%" }}>REQUESTED ITEM</th>
-                      <th style={{ width: "25%" }}>STATUS</th>
-                      <th style={{ width: "25%" }}>ACTIONS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userRequests && userRequests.length > 0 ? (
-                      userRequests.map((request) => (
-                        <tr key={request._id}>
-                          <td>
-                            <div className="item-details">
-                              <strong>{request.item?.name || "N/A"}</strong>
-                              <p>{request.item?.description || "N/A"}</p>
-                              <small>Category: {request.item?.category || "N/A"}</small>
-                              <small>
-                                {/* Request Date:{" "}
-                                {new Date(request.createdAt).toLocaleDateString()} */}
-                                {request.requestDate}
-                              </small>
-                            </div>
-                          </td>
-                          <td>
-                            <span
-                              className={`status ${request.status.toLowerCase()}`}
-                            >
-                              {request.status}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="action-buttons">
-                              <button
-                                className="view-btn"
-                                onClick={() => {
-                                  console.log("View button clicked");
-                                  handleViewClick(request);
-                                }}
-                              >
-                                View
-                              </button>
-                              {request.status.toLowerCase() === "pending" && (
-                                <button
-                                  className="cancel-btn"
-                                  onClick={() => handleCancel(request._id)}
-                                >
-                                  Cancel
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="4">No requests found</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              <DataTable
+                title={
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    padding: "0 8px",
+                  }}>
+                    <div>Rejected Requests</div>
+                    <div className="search-wrapper1">
+                      <i className="bx bx-search"></i>
+                      <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search requests..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                }
+                columns={columns}
+                data={userRequests}
+                pagination
+                paginationPerPage={10}
+                paginationRowsPerPageOptions={[5, 10, 15, 20, 25, 30]}
+                customStyles={customStyles}
+                noDataComponent={
+                  <div style={{ padding: '24px' }}>No rejected requests found</div>
+                }
+                responsive
+                striped
+                highlightOnHover
+                pointerOnHover
+                persistTableHead
+                fixedHeader
+              />
             </div>
           </div>
         </main>

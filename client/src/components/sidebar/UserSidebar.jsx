@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../css/UserSidebar.css';
+import Logo from '../../assets/NSTP_LOGO.png';
 
 const UserSidebar = () => {
     const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
@@ -21,8 +22,8 @@ const UserSidebar = () => {
         <section id="sidebar" className={isSidebarVisible ? '' : 'hide'}>
             <Link to="/" className="brand">
                 <img 
-                    src="src/assets/NSTP_LOGO.png" 
-                    alt="User Logo" 
+                    src={Logo} 
+                    alt="NSTP Logo" 
                     className={`brand ${!isSidebarVisible ? 'small-logo' : ''}`} 
                 />
                 <span className="text">User</span>
