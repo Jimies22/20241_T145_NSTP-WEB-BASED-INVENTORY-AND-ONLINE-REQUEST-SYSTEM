@@ -5,7 +5,7 @@ import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import "../../css/RequestModal.css"; // Changed from Modal.css to RequestModal.css
 
-function RequestPage() {
+function CancelledPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [userRequests, setUserRequests] = useState([]);
@@ -19,7 +19,7 @@ function RequestPage() {
 
       try {
         const response = await fetch(
-          "http://localhost:3000/borrow/my-requests?status=approved",
+          "http://localhost:3000/borrow/my-requests?status=cancelled",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -29,14 +29,14 @@ function RequestPage() {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Error fetching approved requests: ${errorText}`);
+          throw new Error(`Error fetching cancelled requests: ${errorText}`);
         }
 
         const data = await response.json();
-        const approvedRequests = data.filter(request => 
-          request.status.toLowerCase() === 'approved'
+        const cancelledRequests = data.filter(request => 
+          request.status.toLowerCase() === 'cancelled'
         );
-        setUserRequests(approvedRequests);
+        setUserRequests(cancelledRequests);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -179,10 +179,10 @@ function RequestPage() {
         <main>
           <div className="head-title">
             <div className="left">
-              <h1>Approved Request</h1>
+              <h1>Cancelled Request</h1>
               <ul className="breadcrumb">
                 <li>
-                  <a href="/user-request">Approved</a>
+                  <a href="/user-request/cancelled">Cancelled</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
@@ -190,7 +190,7 @@ function RequestPage() {
                 <li>
                   <a
                     className="active"
-                    href="/user-request/Pending"
+                    href="/user-request/pending"
                   >
                     Pending
                   </a>
@@ -201,9 +201,9 @@ function RequestPage() {
                 <li>
                   <a
                     className="active"
-                    href="/user-request/cancelled"
+                    href="http://localhost:3001/user-request/Approved"
                   >
-                    Cancelled
+                    Approved
                   </a>
                 </li>
                 <li>
@@ -212,7 +212,7 @@ function RequestPage() {
                 <li>
                   <a
                     className="active"
-                    href="/user-request/rejected"
+                    href="http://localhost:3001/user-request/Rejected"
                   >
                     Rejected
                   </a>
@@ -387,4 +387,4 @@ function RequestPage() {
   );
 }
 
-export default RequestPage;
+export default CancelledPage;

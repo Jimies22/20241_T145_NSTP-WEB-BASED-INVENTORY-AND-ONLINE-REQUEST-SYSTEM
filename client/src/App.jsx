@@ -25,6 +25,9 @@ import UserBorrowPage from './components/user/UserBorrowPage';
 import UserReportPage from './components/user/UserReportPage';
 import AddUser from './components/admin/AddUser';
 import ArchivedUsersPage from './components/admin/ArchivedUsersPage';
+import UserRequestPending from './components/user/UserRequestPending';
+import UserRequestCancelled from './components/user/UserRequestCancelled';
+import UserRequestRejected from './components/user/UserRequestRejected';
 
 
 function App() {
@@ -59,6 +62,9 @@ function App() {
                 <Route path="/add" element={<AddItems fetchItems={fetchItems} />} />
                 <Route path="/request" element={<RequestPage />} />
                 <Route path="/user-request" element={<UserRequestPage />} />
+                <Route path="/user-request/pending" element={<ProtectedRoute role="user"><UserRequestPending /></ProtectedRoute>} />
+                <Route path="/user-request/cancelled" element={<UserRequestCancelled />} />
+                <Route path="/user-request/rejected" element={<UserRequestRejected />} />
                 <Route path="/user-dashboard" element={<UserDashboard />} />
                 <Route path="/user-borrowed" element={<UserBorrowPage />} />
                 <Route path="/user-report" element={<UserReportPage />} />

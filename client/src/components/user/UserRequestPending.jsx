@@ -4,8 +4,9 @@ import UserNavbar from "../Navbar/UserNavbar"; // Ensure the correct path
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import "../../css/RequestModal.css"; // Changed from Modal.css to RequestModal.css
+import { Link } from 'react-router-dom';
 
-function RequestPage() {
+function PendingPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [userRequests, setUserRequests] = useState([]);
@@ -19,7 +20,7 @@ function RequestPage() {
 
       try {
         const response = await fetch(
-          "http://localhost:3000/borrow/my-requests?status=approved",
+          "http://localhost:3000/borrow/my-requests?status=pending",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -29,14 +30,14 @@ function RequestPage() {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Error fetching approved requests: ${errorText}`);
+          throw new Error(`Error fetching pending requests: ${errorText}`);
         }
 
         const data = await response.json();
-        const approvedRequests = data.filter(request => 
-          request.status.toLowerCase() === 'approved'
+        const pendingRequests = data.filter(request => 
+          request.status.toLowerCase() === 'pending'
         );
-        setUserRequests(approvedRequests);
+        setUserRequests(pendingRequests);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -179,43 +180,28 @@ function RequestPage() {
         <main>
           <div className="head-title">
             <div className="left">
-              <h1>Approved Request</h1>
+              <h1>Pending Request</h1>
               <ul className="breadcrumb">
                 <li>
-                  <a href="/user-request">Approved</a>
+                  <Link to="/#">Pending</Link>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
                 </li>
                 <li>
-                  <a
-                    className="active"
-                    href="/user-request/Pending"
-                  >
-                    Pending
-                  </a>
+                  <Link to="/user-request" className="active">Approved</Link>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
                 </li>
                 <li>
-                  <a
-                    className="active"
-                    href="/user-request/cancelled"
-                  >
-                    Cancelled
-                  </a>
+                  <Link to="/user-request/cancelled"className="active">Cancelled</Link>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
                 </li>
                 <li>
-                  <a
-                    className="active"
-                    href="/user-request/rejected"
-                  >
-                    Rejected
-                  </a>
+                  <Link to="/user-request/rejected"className="active">Rejected</Link>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
@@ -387,4 +373,4 @@ function RequestPage() {
   );
 }
 
-export default RequestPage;
+export default PendingPage;
