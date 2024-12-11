@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../../css/AdminSidebar.css';
 
 function AdminSidebar() {
@@ -8,6 +8,7 @@ function AdminSidebar() {
         return saved !== null ? JSON.parse(saved) : true;
     });
     const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         localStorage.setItem('adminSidebarState', JSON.stringify(isSidebarVisible));
@@ -15,6 +16,17 @@ function AdminSidebar() {
 
     const toggleSidebar = () => {
         setIsSidebarVisible(!isSidebarVisible);
+    };
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        const sidebarElement = document.getElementById('sidebar');
+        sidebarElement.classList.add('logout-animation');
+        
+        // Wait for animation to complete before navigating
+        setTimeout(() => {
+            navigate('/login');
+        }, 500); // Match this with animation duration
     };
 
     return (
@@ -59,10 +71,10 @@ function AdminSidebar() {
             </ul>
             <ul className="side-menu">
                 <li>
-                    <Link to="/login" className="logout">
+                    <a href="/login" className="logout" onClick={handleLogout}>
                         <i className='bx bxs-log-out-circle'></i>
                         <span className="text">Logout</span>
-                    </Link>
+                    </a>
                 </li>
             </ul>
         </section>
