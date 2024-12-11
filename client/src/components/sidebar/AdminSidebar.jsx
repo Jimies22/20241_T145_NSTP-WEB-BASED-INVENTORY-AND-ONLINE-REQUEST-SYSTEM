@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../css/AdminSidebar.css';
 
 function AdminSidebar() {
-    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+    const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
+        const saved = localStorage.getItem('adminSidebarState');
+        return saved !== null ? JSON.parse(saved) : true;
+    });
     const location = useLocation();
+
+    useEffect(() => {
+        localStorage.setItem('adminSidebarState', JSON.stringify(isSidebarVisible));
+    }, [isSidebarVisible]);
 
     const toggleSidebar = () => {
         setIsSidebarVisible(!isSidebarVisible);
@@ -12,11 +19,19 @@ function AdminSidebar() {
 
     return (
         <section id="sidebar" className={isSidebarVisible ? '' : 'hide'}>
-            <a href="#" className="brand">
-                <img src="src/assets/NSTP_LOGO.png" alt="Admin Logo" className="brand" />
+            <Link to="/Admin" className="brand">
+                <img 
+                    src="src/assets/NSTP_LOGO.png" 
+                    alt="Admin Logo" 
+                    className={`brand ${!isSidebarVisible ? 'small-logo' : ''}`} 
+                />
                 <span className="text">Admin</span>
-            </a>
-            <button onClick={toggleSidebar} className="toggle-button" style={{ zIndex: 3000 }}>
+            </Link>
+            <button 
+                onClick={toggleSidebar} 
+                className="toggle-button" 
+                style={{ zIndex: 3000 }}
+            >
                 <i className={`bx ${isSidebarVisible ? 'bx-x' : 'bx-menu'}`}></i>
             </button>
             <ul className="side-menu top">
