@@ -11,14 +11,11 @@ const documentRoutes = require("./routes/documentRoutes");
 const itemRoutes = require("./routes/itemRoutes");
 const loginRoutes = require("./routes/loginRoutes");
 const borrowRoutes = require("./routes/borrowRoutes");
-const notificationRoutes = require('./routes/notificationRoutes');
+const notificationRoutes = require("./routes/notificationRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const lockRoutes = require("./routes/lockRoutes");
-const path = require('path');
-
-
-
+const path = require("path");
 
 require("dotenv").config();
 require("./config/passport");
@@ -26,8 +23,8 @@ app.use(
   cors({
     origin: ["http://localhost:3001", "http://localhost:3000"],
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -107,9 +104,9 @@ app.use("/documents", documentRoutes);
 app.use("/items", itemRoutes);
 app.use("/login", loginRoutes);
 app.use("/borrow", borrowRoutes);
-app.use('/notify', notificationRoutes);
+app.use("/notify", notificationRoutes);
 app.use("/locks", lockRoutes);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Logout route to clear the session
 app.post("/logout", (req, res) => {
@@ -126,36 +123,41 @@ app.listen(PORT, () => {
 module.exports = { jwtVerifyMiddleware };
 
 // Add this near the top after loading dotenv
-console.log('Environment check:', {
+console.log("Environment check:", {
   hasMongoUri: !!process.env.MONGODB_URI,
   hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
   hasJwtSecret: !!process.env.JWT_SECRET,
-  hasEmailCreds: !!(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD)
+  hasEmailCreds: !!(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD),
 });
 
 // Add this test endpoint
-app.get('/test', (req, res) => {
+app.get("/test", (req, res) => {
   res.json({
-    message: 'Server is running',
+    message: "Server is running",
     environment: {
       hasMongoUri: !!process.env.MONGODB_URI,
       hasGoogleClientId: !!process.env.GOOGLE_CLIENT_ID,
       hasJwtSecret: !!process.env.JWT_SECRET,
-      hasEmailCreds: !!(process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD)
-    }
+      hasEmailCreds: !!(
+        process.env.EMAIL_USER && process.env.EMAIL_APP_PASSWORD
+      ),
+    },
   });
 });
 
 // Add this temporary route to your server.js for testing
-app.get('/check-user/:email', async (req, res) => {
+app.get("/check-user/:email", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email });
     res.json({
-      exists: !!user, user: user ? {
-        email: user.email,
-        role: user.role,
-        name: user.name
-      } : null
+      exists: !!user,
+      user: user
+        ? {
+            email: user.email,
+            role: user.role,
+            name: user.name,
+          }
+        : null,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -163,20 +165,20 @@ app.get('/check-user/:email', async (req, res) => {
 });
 
 // Add this logging
-console.log('Email configuration:', {
+console.log("Email configuration:", {
   emailUser: process.env.EMAIL_USER,
   hasAppPassword: !!process.env.EMAIL_APP_PASSWORD,
-  appPasswordLength: process.env.EMAIL_APP_PASSWORD?.length
+  appPasswordLength: process.env.EMAIL_APP_PASSWORD?.length,
 });
 
 // Add this temporary test code to your server.js
-const { sendTestEmail } = require('./services/emailService');
+const { sendTestEmail } = require("./services/emailService");
 
 // Add this test endpoint
-app.get('/test-email/:email', async (req, res) => {
+app.get("/test-email/:email", async (req, res) => {
   try {
     await sendTestEmail(req.params.email);
-    res.json({ message: 'Test email sent' });
+    res.json({ message: "Test email sent" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

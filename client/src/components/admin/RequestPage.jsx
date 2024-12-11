@@ -4,7 +4,7 @@ import AdminNavbar from "../Navbar/AdminNavbar";
 import axios from "axios";
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const RequestPage = () => {
   const [requests, setRequests] = useState([]);
@@ -30,18 +30,19 @@ const RequestPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      const sortedRequests = response.data.sort((a, b) => 
-        new Date(b.createdAt) - new Date(a.createdAt)
+      const sortedRequests = response.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
       setRequests(sortedRequests);
     } catch (error) {
       console.error("Error fetching requests:", error);
       Swal.fire({
         title: "Error!",
-        text: error.response?.status === 401 
-          ? "Unauthorized access. Please log in again." 
-          : "Error fetching request",
-        icon: "error"
+        text:
+          error.response?.status === 401
+            ? "Unauthorized access. Please log in again."
+            : "Error fetching request",
+        icon: "error",
       });
     }
   };
@@ -87,13 +88,13 @@ const RequestPage = () => {
 
   const handleApprove = async (requestId, itemId) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "Do you want to approve this request?",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, approve it!'
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, approve it!",
     });
 
     if (result.isConfirmed) {
@@ -108,20 +109,20 @@ const RequestPage = () => {
             },
           }
         );
-        
+
         Swal.fire({
           title: "Success!",
           text: "Request approved successfully",
-          icon: "success"
+          icon: "success",
         });
-        
+
         fetchRequests(); // Refresh the requests list
       } catch (error) {
         console.error("Error approving request:", error);
         Swal.fire({
           title: "Error!",
           text: error.response?.data?.message || "Failed to approve request",
-          icon: "error"
+          icon: "error",
         });
       }
     }
@@ -129,13 +130,13 @@ const RequestPage = () => {
 
   const handleReject = async (requestId) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "Do you want to reject this request?",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, reject it!'
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, reject it!",
     });
 
     if (result.isConfirmed) {
@@ -150,20 +151,20 @@ const RequestPage = () => {
             },
           }
         );
-        
+
         Swal.fire({
           title: "Success!",
           text: "Request rejected successfully",
-          icon: "success"
+          icon: "success",
         });
-        
+
         fetchRequests(); // Refresh the requests list
       } catch (error) {
         console.error("Error rejecting request:", error);
         Swal.fire({
           title: "Error!",
           text: error.response?.data?.message || "Failed to reject request",
-          icon: "error"
+          icon: "error",
         });
       }
     }
@@ -195,9 +196,17 @@ const RequestPage = () => {
               <div className="left">
                 <h1>Requests</h1>
                 <ul className="breadcrumb">
-                  <li><a href="#">Requests</a></li>
-                  <li><i className='bx bx-chevron-right'></i></li>
-                  <li><a className="active" href="/admin">Home</a></li>
+                  <li>
+                    <a href="#">Requests</a>
+                  </li>
+                  <li>
+                    <i className="bx bx-chevron-right"></i>
+                  </li>
+                  <li>
+                    <a className="active" href="/admin">
+                      Home
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -220,49 +229,82 @@ const RequestPage = () => {
                         </tr>
                       </thead>
                       <tbody>
-  {requests.length > 0 ? (
-    requests.map((request) => (
-      <tr key={request._id}>
-        <td>{userIdToNameMap[request.userId] || "Unknown User"}</td>
-        <td>{itemIdToNameMap[request.item?._id] || "Unknown Item"}</td> {/* Added optional chaining */}
-        <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
-        <td>{new Date(request.returnDate).toLocaleDateString()}</td>
-        <td>
-          <span className={`status ${request.status.toLowerCase()}`}>
-            {request.status}
-          </span>
-        </td>
-        <td>
-          <div className="actions">
-            <button
-              onClick={() => handleApprove(request._id, request.item?._id)} // Added optional chaining
-              className={`approve-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
-              disabled={!isActionable(request.status)}
-            >
-              <i className='bx bx-check'></i>
-              Approve
-            </button>
-            <button
-              onClick={() => handleReject(request._id)}
-              className={`reject-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
-              disabled={!isActionable(request.status)}
-            >
-              <i className='bx bx-x'></i>
-              Reject
-            </button>
-          </div>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="6" className="no-requests">
-        <i className='bx bx-package' style={{ fontSize: '2rem', marginBottom: '10px' }}></i>
-        <p>No pending requests available</p>
-      </td>
-    </tr>
-  )}
-</tbody>
+                        {requests.length > 0 ? (
+                          requests.map((request) => (
+                            <tr key={request._id}>
+                              <td>{request.userId.name || "Unknown User"}</td>
+                              <td>
+                                {itemIdToNameMap[request.item?._id] ||
+                                  "Unknown Item"}
+                              </td>{" "}
+                              {/* Added optional chaining */}
+                              <td>
+                                {new Date(
+                                  request.borrowDate
+                                ).toLocaleDateString()}
+                              </td>
+                              <td>
+                                {new Date(
+                                  request.returnDate
+                                ).toLocaleDateString()}
+                              </td>
+                              <td>
+                                <span
+                                  className={`status ${request.status.toLowerCase()}`}
+                                >
+                                  {request.status}
+                                </span>
+                              </td>
+                              <td>
+                                <div className="actions">
+                                  <button
+                                    onClick={() =>
+                                      handleApprove(
+                                        request._id,
+                                        request.item?._id
+                                      )
+                                    } // Added optional chaining
+                                    className={`approve-btn ${
+                                      !isActionable(request.status)
+                                        ? "disabled"
+                                        : ""
+                                    }`}
+                                    disabled={!isActionable(request.status)}
+                                  >
+                                    <i className="bx bx-check"></i>
+                                    Approve
+                                  </button>
+                                  <button
+                                    onClick={() => handleReject(request._id)}
+                                    className={`reject-btn ${
+                                      !isActionable(request.status)
+                                        ? "disabled"
+                                        : ""
+                                    }`}
+                                    disabled={!isActionable(request.status)}
+                                  >
+                                    <i className="bx bx-x"></i>
+                                    Reject
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="6" className="no-requests">
+                              <i
+                                className="bx bx-package"
+                                style={{
+                                  fontSize: "2rem",
+                                  marginBottom: "10px",
+                                }}
+                              ></i>
+                              <p>No pending requests available</p>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
                     </table>
                   </div>
                 </div>
