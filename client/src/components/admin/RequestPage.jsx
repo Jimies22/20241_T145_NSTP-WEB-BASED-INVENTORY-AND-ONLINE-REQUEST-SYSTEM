@@ -40,7 +40,7 @@ const RequestPage = () => {
         title: "Error!",
         text: error.response?.status === 401 
           ? "Unauthorized access. Please log in again." 
-          : "Error fetching requests",
+          : "Error fetching request",
         icon: "error"
       });
     }
