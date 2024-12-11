@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
+import DataTable from "react-data-table-component";
 import axios from "axios";
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
@@ -8,19 +9,12 @@ import Swal from 'sweetalert2';
 
 const RequestPage = () => {
   const [requests, setRequests] = useState([]);
-  const [userIdToNameMap, setUserIdToNameMap] = useState({});
-  const [itemIdToNameMap, setItemIdToNameMap] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchRequests();
   }, []);
-
-  useEffect(() => {
-    if (requests.length > 0) {
-      fetchUsers();
-      fetchItems();
-    }
-  }, [requests]);
 
   const fetchRequests = async () => {
     const token = sessionStorage.getItem("sessionToken");
@@ -34,6 +28,7 @@ const RequestPage = () => {
         new Date(b.createdAt) - new Date(a.createdAt)
       );
       setRequests(sortedRequests);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching requests:", error);
       Swal.fire({
@@ -43,45 +38,7 @@ const RequestPage = () => {
           : "Error fetching requests",
         icon: "error"
       });
-    }
-  };
-
-  const fetchUsers = async () => {
-    const token = sessionStorage.getItem("sessionToken");
-    try {
-      const response = await axios.get("http://localhost:3000/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Users:", response.data); // debug output
-
-      const userIdToNameMap = response.data.reduce((map, user) => {
-        map[user._id] = user.name;
-        return map;
-      }, {});
-      setUserIdToNameMap(userIdToNameMap);
-      console.log("User ID to Name Map:", userIdToNameMap); // debug output
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  const fetchItems = async () => {
-    const token = sessionStorage.getItem("sessionToken");
-    try {
-      const response = await axios.get("http://localhost:3000/items", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const itemIdToNameMap = response.data.reduce((map, item) => {
-        map[item._id] = item.name;
-        return map;
-      }, {});
-      setItemIdToNameMap(itemIdToNameMap);
-    } catch (error) {
-      console.error("Error fetching items:", error);
+      setLoading(false);
     }
   };
 
@@ -91,7 +48,7 @@ const RequestPage = () => {
       text: "Do you want to approve this request?",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#28a745',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, approve it!'
     });
@@ -99,7 +56,7 @@ const RequestPage = () => {
     if (result.isConfirmed) {
       const token = sessionStorage.getItem("sessionToken");
       try {
-        const response = await axios.patch(
+        await axios.patch(
           `http://localhost:3000/borrow/${requestId}/status`,
           { status: "approved", itemId },
           {
@@ -115,7 +72,7 @@ const RequestPage = () => {
           icon: "success"
         });
         
-        fetchRequests(); // Refresh the requests list
+        fetchRequests();
       } catch (error) {
         console.error("Error approving request:", error);
         Swal.fire({
@@ -141,7 +98,7 @@ const RequestPage = () => {
     if (result.isConfirmed) {
       const token = sessionStorage.getItem("sessionToken");
       try {
-        const response = await axios.patch(
+        await axios.patch(
           `http://localhost:3000/borrow/${requestId}/status`,
           { status: "rejected" },
           {
@@ -157,7 +114,7 @@ const RequestPage = () => {
           icon: "success"
         });
         
-        fetchRequests(); // Refresh the requests list
+        fetchRequests();
       } catch (error) {
         console.error("Error rejecting request:", error);
         Swal.fire({
@@ -173,105 +130,176 @@ const RequestPage = () => {
     return status === "pending";
   };
 
-  // Add button hover styles
-  const buttonHoverStyles = `
-    .approve-btn:hover {
-      background-color: #218838 !important;
-    }
-    .reject-btn:hover {
-      background-color: #c82333 !important;
-    }
-  `;
+  const columns = [
+    {
+      name: "User Name",
+      selector: (row) => row.userId.name || "Unknown User",
+      sortable: true,
+    },
+    {
+      name: "Item Name",
+      selector: (row) => row.item.name || "Unknown Item",
+      sortable: true,
+    },
+    {
+      name: "Borrow Date",
+      selector: (row) => new Date(row.borrowDate).toLocaleDateString(),
+      sortable: true,
+    },
+    {
+      name: "Return Date",
+      selector: (row) => new Date(row.returnDate).toLocaleDateString(),
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+      cell: (row) => (
+        <span className={`status ${row.status.toLowerCase()}`}>
+          {row.status}
+        </span>
+      ),
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div className="actions">
+          <button
+            onClick={() => handleApprove(row._id, row.item._id)}
+            className={`approve-btn ${!isActionable(row.status) ? 'disabled' : ''}`}
+            disabled={!isActionable(row.status)}
+          >
+            <i className='bx bx-check'></i>
+            Approve
+          </button>
+          <button
+            onClick={() => handleReject(row._id)}
+            className={`reject-btn ${!isActionable(row.status) ? 'disabled' : ''}`}
+            disabled={!isActionable(row.status)}
+          >
+            <i className='bx bx-x'></i>
+            Reject
+          </button>
+        </div>
+      ),
+      width: "200px",
+    },
+  ];
+
+  const customStyles = {
+    table: {
+      style: {
+        backgroundColor: "#ffffff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        border: "1px solid #e0e0e0",
+      },
+    },
+    headRow: {
+      style: {
+        backgroundColor: "#f8f9fa",
+        borderTopLeftRadius: "12px",
+        borderTopRightRadius: "12px",
+        borderBottom: "2px solid #e0e0e0",
+        fontWeight: "600",
+        color: "#2c3e50",
+        fontSize: "0.95rem",
+        minHeight: "52px",
+      },
+    },
+    rows: {
+      style: {
+        fontSize: "0.9rem",
+        fontWeight: "400",
+        color: "#2c3e50",
+        minHeight: "52px",
+        "&:hover": {
+          backgroundColor: "#f8f9fa",
+          cursor: "pointer",
+          transition: "all 0.2s ease",
+        },
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: "1px solid #e0e0e0",
+        margin: "0",
+        padding: "16px",
+      },
+    },
+  };
+
+  const filteredRequests = requests.filter(request => {
+    const searchStr = searchTerm.toLowerCase();
+    return (
+      request.userId.name?.toLowerCase().includes(searchStr) ||
+      request.item.name?.toLowerCase().includes(searchStr) ||
+      request.status.toLowerCase().includes(searchStr)
+    );
+  });
 
   return (
-    <>
-      <style>{buttonHoverStyles}</style>
-      <div className="admin-dashboard">
-        <Sidebar />
-        <section id="content">
-          <AdminNavbar />
-          <main>
-            <div className="head-title">
-              <div className="left">
-                <h1>Requests</h1>
-                <ul className="breadcrumb">
-                  <li><a href="#">Requests</a></li>
-                  <li><i className='bx bx-chevron-right'></i></li>
-                  <li><a className="active" href="/admin">Home</a></li>
-                </ul>
-              </div>
+    <div className="dashboard">
+      <Sidebar />
+      <section id="content">
+        <AdminNavbar />
+        <main>
+          <div className="head-title">
+            <div className="left">
+              <h1>Requests</h1>
+              <ul className="breadcrumb">
+                <li><a href="#">Requests</a></li>
+                <li><i className='bx bx-chevron-right'></i></li>
+                <li><a className="active" href="/admin">Home</a></li>
+              </ul>
             </div>
-            <div className="table-data">
-              <div className="pending-requests">
-                <div className="head">
-                  <h3>Pending Requests</h3>
-                </div>
-                <div className="order">
-                  <div className="table-container">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>User Name</th>
-                          <th>Item Name</th>
-                          <th>Borrow Date</th>
-                          <th>Return Date</th>
-                          <th>Status</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {requests.length > 0 ? (
-                          requests.map((request) => (
-                            <tr key={request._id}>
-                              <td>{request.userId.name || "Unknown User"}</td>
-                              <td>{itemIdToNameMap[request.item._id] || "Unknown Item"}</td>
-                              <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
-                              <td>{new Date(request.returnDate).toLocaleDateString()}</td>
-                              <td>
-                                <span className={`status ${request.status.toLowerCase()}`}>
-                                  {request.status}
-                                </span>
-                              </td>
-                              <td>
-                                <div className="actions">
-                                  <button
-                                    onClick={() => handleApprove(request._id, request.item._id)}
-                                    className={`approve-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
-                                    disabled={!isActionable(request.status)}
-                                  >
-                                    <i className='bx bx-check'></i>
-                                    Approve
-                                  </button>
-                                  <button
-                                    onClick={() => handleReject(request._id)}
-                                    className={`reject-btn ${!isActionable(request.status) ? 'disabled' : ''}`}
-                                    disabled={!isActionable(request.status)}
-                                  >
-                                    <i className='bx bx-x'></i>
-                                    Reject
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="6" className="no-requests">
-                              <i className='bx bx-package' style={{ fontSize: '2rem', marginBottom: '10px' }}></i>
-                              <p>No pending requests available</p>
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+          </div>
+
+          <div className="table-data">
+            <div className="order">
+              <DataTable
+                title={
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    padding: "0 8px",
+                  }}>
+                    <div>Request List</div>
+                    <div className="search-wrapper1">
+                      <i className="bx bx-search"></i>
+                      <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search requests..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
+                }
+                columns={columns}
+                data={filteredRequests}
+                pagination
+                responsive
+                highlightOnHover
+                pointerOnHover
+                progressPending={loading}
+                progressComponent={<div className="loading">Loading requests...</div>}
+                customStyles={customStyles}
+                noDataComponent={
+                  <div className="no-data">
+                    No requests available
+                  </div>
+                }
+              />
             </div>
-          </main>
-        </section>
-      </div>
-    </>
+          </div>
+        </main>
+      </section>
+    </div>
   );
 };
 
