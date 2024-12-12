@@ -2,517 +2,134 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
 import Sidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "../../css/ReportsPage.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
-const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-
-console.log("API Key: ", import.meta.env.VITE_GOOGLE_API_KEY);
-console.log("Client ID: ", import.meta.env.VITE_GOOGLE_CLIENT_ID);
-
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-function ReportsPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [weeklyData, setWeeklyData] = useState({});
+const ReportsPage = () => {
   const [events, setEvents] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [borrowData, setBorrowData] = useState(null);
-  const [showChart, setShowChart] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [chartData, setChartData] = useState(null);
-  const [isGapiLoaded, setIsGapiLoaded] = useState(false);
-  const [view, setView] = useState("week"); // Add state for calendar view
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const localizer = momentLocalizer(moment);
 
   useEffect(() => {
-    // Load the Google API client script
-    const loadGapiScript = () => {
-      const script = document.createElement("script");
-      script.src = "https://apis.google.com/js/api.js";
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        window.gapi.load("client", initializeGoogleAPI);
-      };
-      document.body.appendChild(script);
-    };
-
-    loadGapiScript();
-
-    return () => {
-      // Cleanup scripts on unmount
-      const scripts = document.querySelectorAll(
-        'script[src*="googleapis.com"]'
-      );
-      scripts.forEach((script) => script.remove());
-    };
+    fetchRequests();
   }, []);
 
-  const initializeGoogleAPI = async () => {
+  const fetchRequests = async () => {
     try {
-      // Load the Google Identity Services SDK
-      const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      await new Promise((resolve) => {
-        script.onload = resolve;
-        document.body.appendChild(script);
-      });
-
-      // Initialize the Google API client
-      await window.gapi.client.init({
-        apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
-        discoveryDocs: [
-          "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-        ],
-      });
-
-      // Initialize Google Identity Services
-      const tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        scope: "https://www.googleapis.com/auth/calendar.readonly",
-        callback: (response) => {
-          if (response.access_token) {
-            setIsAuthenticated(true);
-            window.gapi.client.setToken(response);
-          }
+      setLoading(true);
+      const token = sessionStorage.getItem("token");
+      const response = await fetch("http://localhost:3000/apil/borrow/all", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
-      setIsInitialized(true);
-
-      // Request token immediately if not authenticated
-      if (!isAuthenticated) {
-        tokenClient.requestAccessToken({ prompt: "consent" });
-      }
-    } catch (error) {
-      console.error("Error initializing Google API:", error);
-      setError("Failed to initialize Google Calendar API");
-    }
-  };
-
-  const loadCalendarEvents = async () => {
-    try {
-      if (!isInitialized || !isAuthenticated) {
-        throw new Error("Google API not initialized or not authenticated");
+      if (!response.ok) {
+        throw new Error("Failed to fetch requests");
       }
 
-      const response = await window.gapi.client.calendar.events.list({
-        calendarId: "primary",
-        timeMin: new Date().toISOString(),
-        maxResults: 10,
-        singleEvents: true,
-        orderBy: "startTime",
-      });
+      const data = await response.json();
 
-      const events = response.result.items;
-      // Process your events here
+      // Transform the requests data into calendar events format
+      const calendarEvents = data.map((request) => ({
+        id: request._id,
+        title: `${request.item.name} - ${request.userId.name}`,
+        start: new Date(request.borrowDate),
+        end: new Date(request.returnDate),
+        status: request.status,
+        borrowerName: request.userId.name,
+        itemName: request.item.name,
+        purpose: request.purpose,
+        condition: request.item.condition,
+        backgroundColor: getStatusColor(request.status),
+      }));
+
+      setEvents(calendarEvents);
     } catch (error) {
-      if (error.status === 401) {
-        // Token expired, request new token
-        const tokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          scope: "https://www.googleapis.com/auth/calendar.readonly",
-          callback: (response) => {
-            if (response.access_token) {
-              window.gapi.client.setToken(response);
-              loadCalendarEvents(); // Retry after getting new token
-            }
-          },
-        });
-        tokenClient.requestAccessToken();
-      } else {
-        console.error("Error loading calendar events:", error);
-      }
-    }
-  };
-
-  // Add new helper function to refresh token
-  const refreshGoogleToken = async () => {
-    setIsRefreshing(true);
-    try {
-      return new Promise((resolve, reject) => {
-        const client = google.accounts.oauth2.initTokenClient({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          scope: "https://www.googleapis.com/auth/calendar.readonly",
-          callback: (response) => {
-            if (response.access_token) {
-              // Save new token
-              sessionStorage.setItem(
-                "googleCalendarToken",
-                response.access_token
-              );
-              // Update GAPI client with new token
-              window.gapi.client.setToken({
-                access_token: response.access_token,
-              });
-              resolve(response.access_token);
-            } else {
-              reject(new Error("Failed to get new access token"));
-            }
-          },
-        });
-
-        client.requestAccessToken();
-      });
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
-  const generateReport = async (date) => {
-    try {
-      setLoading(true);
-      const reportData = await fetchReportData(date);
-      setWeeklyData(reportData);
-    } catch (error) {
-      console.error("Error generating report:", error);
-      setError("Failed to generate report");
+      console.error("Error fetching requests:", error);
+      setError("Failed to load requests. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleViewChange = (newView) => {
-    setView(newView);
-    if (newView === "day") {
-      generateDailyReport(new Date());
-    } else {
-      generateWeeklyReport(new Date());
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "approved":
+        return "#4CAF50";
+      case "pending":
+        return "#FFC107";
+      case "rejected":
+        return "#F44336";
+      case "returned":
+        return "#2196F3";
+      default:
+        return "#9E9E9E";
     }
   };
 
-  const generateDailyReport = async (date) => {
-    try {
-      setLoading(true);
-      const dailyData = await fetchDailyData(date);
-      setWeeklyData(dailyData); // Reuse weeklyData state for simplicity
-    } catch (error) {
-      console.error("Error generating daily report:", error);
-      setError("Failed to generate daily report");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchDailyData = async (selectedDate) => {
-    if (!isGapiLoaded) {
-      console.log("Google API not yet loaded");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const startDate = moment(selectedDate).startOf("day");
-      const endDate = moment(selectedDate).endOf("day");
-
-      const processedData = await processCalendarData(
-        startDate.toDate(),
-        endDate.toDate()
-      );
-
-      const chartData = {
-        labels: Object.keys(processedData.byDay).map((date) =>
-          moment(date).format("ddd, MMM D")
-        ),
-        datasets: [
-          {
-            label: "Items Borrowed",
-            data: Object.values(processedData.byDay).map(
-              (day) => day.totalItems
-            ),
-            backgroundColor: "rgba(54, 162, 235, 0.5)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-        ],
-      };
-
-      setWeeklyData(processedData);
-      setChartData(chartData);
-    } catch (error) {
-      setError("Failed to fetch daily data");
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchReportData = async (selectedDate) => {
-    if (!isGapiLoaded) {
-      console.log("Google API not yet loaded");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const startDate = moment().startOf("year");
-      const endDate = moment().endOf("year");
-
-      const processedData = await processCalendarData(
-        startDate.toDate(),
-        endDate.toDate()
-      );
-
-      const chartData = {
-        labels: Object.keys(processedData.byDay).map((date) =>
-          moment(date).format("ddd, MMM D")
-        ),
-        datasets: [
-          {
-            label: "Items Borrowed",
-            data: Object.values(processedData.byDay).map(
-              (day) => day.totalItems
-            ),
-            backgroundColor: "rgba(54, 162, 235, 0.5)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-        ],
-      };
-
-      setWeeklyData(processedData);
-      setChartData(chartData);
-    } catch (error) {
-      setError("Failed to fetch report data");
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Remove duplicate useEffect for generateWeeklyReport
-  // Instead, modify the existing useEffect that checks for GAPI
-  useEffect(() => {
-    if (window.gapi?.client) {
-      setIsGapiLoaded(true);
-      generateWeeklyReport(new Date());
-    }
-  }, []);
-
-  const handleDateClick = async (date) => {
-    try {
-      setLoading(true);
-      const weeklyData = await fetchWeeklyCalendarData(date);
-      setSelectedDate(date);
-      setIsModalOpen(true);
-
-      // Group events by category
-      const categoryGroups = weeklyData.allEvents
-        .filter((event) => moment(event.date).isSame(moment(date), "day"))
-        .reduce((acc, event) => {
-          const category = event.category || "Uncategorized";
-          if (!acc[category]) {
-            acc[category] = {
-              count: 0,
-              items: {},
-            };
-          }
-          acc[category].count++;
-          acc[category].items[event.itemName] =
-            (acc[category].items[event.itemName] || 0) + 1;
-          return acc;
-        }, {});
-
-      const chartData = {
-        labels: Object.keys(categoryGroups),
-        datasets: [
-          {
-            label: "Items Borrowed by Category",
-            data: Object.values(categoryGroups).map((group) => group.count),
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.5)",
-              "rgba(54, 162, 235, 0.5)",
-              "rgba(255, 206, 86, 0.5)",
-              "rgba(75, 192, 192, 0.5)",
-              "rgba(153, 102, 255, 0.5)",
-            ],
-            borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
-            ],
-            borderWidth: 1,
-            hoverOffset: 4,
-          },
-        ],
-      };
-
-      setBorrowData({
-        chartData,
-        dayEvents: weeklyData.allEvents.filter((event) =>
-          moment(event.date).isSame(moment(date), "day")
-        ),
-        categoryGroups,
-        totalBorrowed: weeklyData.allEvents.filter((event) =>
-          moment(event.date).isSame(moment(date), "day")
-        ).length,
-      });
-    } catch (error) {
-      console.error("Error loading date details:", error);
-      setError("Failed to load date details");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handlePrintReport = () => {
-    window.print();
-  };
-
-  // Add missing chartOptions
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Borrowing Statistics",
-      },
-    },
-  };
-
-  const processCalendarData = async (startDate, endDate) => {
-    const response = await window.gapi.client.calendar.events.list({
-      calendarId: "primary",
-      timeMin: startDate.toISOString(),
-      timeMax: endDate.toISOString(),
-      showDeleted: false,
-      singleEvents: true,
-      orderBy: "startTime",
-    });
-
-    const events = response.result.items;
-    const byDay = {};
-
-    // Initialize the days of the week
-    for (
-      let d = moment(startDate);
-      d.isSameOrBefore(endDate);
-      d.add(1, "day")
-    ) {
-      byDay[d.format("YYYY-MM-DD")] = {
-        totalItems: 0,
-        events: [],
-      };
-    }
-
-    // Process each event
-    events.forEach((event) => {
-      const eventDate = moment(event.start.dateTime || event.start.date).format(
-        "YYYY-MM-DD"
-      );
-      const extendedProps = event.extendedProperties?.private || {};
-
-      if (byDay[eventDate]) {
-        byDay[eventDate].totalItems++;
-        byDay[eventDate].events.push({
-          itemName: extendedProps.itemName || event.summary,
-          category: extendedProps.category,
-          borrower: extendedProps.borrower,
-          condition: extendedProps.condition,
-          startTime: event.start.dateTime || event.start.date,
-        });
-      }
-    });
-
+  const eventStyleGetter = (event) => {
     return {
-      byDay,
-      allEvents: events.map((event) => {
-        const extendedProps = event.extendedProperties?.private || {};
-        return {
-          itemName: extendedProps.itemName || event.summary,
-          category: extendedProps.category,
-          borrower: extendedProps.borrower,
-          condition: extendedProps.condition,
-          startTime: event.start.dateTime || event.start.date,
-          date: moment(event.start.dateTime || event.start.date).toDate(),
-        };
-      }),
+      style: {
+        backgroundColor: event.backgroundColor,
+        borderRadius: "5px",
+        opacity: 0.8,
+        color: "white",
+        border: "0px",
+        display: "block",
+      },
     };
   };
 
-  const generateWeeklyReport = async (date) => {
-    try {
-      setLoading(true);
-      const weeklyData = await fetchWeeklyData(date);
-      setWeeklyData(weeklyData);
-    } catch (error) {
-      console.error("Error generating weekly report:", error);
-      setError("Failed to generate weekly report");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const EventDetailsModal = ({ event, onClose }) => {
+    if (!event) return null;
 
-  const fetchWeeklyData = async (selectedDate) => {
-    if (!isGapiLoaded) {
-      console.log("Google API not yet loaded");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const startDate = moment(selectedDate).startOf("week");
-      const endDate = moment(selectedDate).endOf("week");
-
-      const processedData = await processCalendarData(
-        startDate.toDate(),
-        endDate.toDate()
-      );
-
-      const chartData = {
-        labels: Object.keys(processedData.byDay).map((date) =>
-          moment(date).format("ddd, MMM D")
-        ),
-        datasets: [
-          {
-            label: "Items Borrowed",
-            data: Object.values(processedData.byDay).map(
-              (day) => day.totalItems
-            ),
-            backgroundColor: "rgba(54, 162, 235, 0.5)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-        ],
-      };
-
-      setWeeklyData(processedData);
-      setChartData(chartData);
-    } catch (error) {
-      setError("Failed to fetch weekly data");
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
-    }
+    return (
+      <div className="modal">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h3>Request Details</h3>
+            <button className="close-btn" onClick={onClose}>
+              &times;
+            </button>
+          </div>
+          <div className="event-details">
+            <p>
+              <strong>Item:</strong> {event.itemName}
+            </p>
+            <p>
+              <strong>Borrower:</strong> {event.borrowerName}
+            </p>
+            <p>
+              <strong>Status:</strong>{" "}
+              <span className={`status-${event.status}`}>{event.status}</span>
+            </p>
+            <p>
+              <strong>Start Date:</strong>{" "}
+              {moment(event.start).format("MMMM Do YYYY, h:mm a")}
+            </p>
+            <p>
+              <strong>End Date:</strong>{" "}
+              {moment(event.end).format("MMMM Do YYYY, h:mm a")}
+            </p>
+            <p>
+              <strong>Purpose:</strong> {event.purpose}
+            </p>
+            <p>
+              <strong>Condition:</strong> {event.condition}
+            </p>
+          </div>
+          <div className="modal-footer">
+            <button onClick={onClose}>Close</button>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -540,140 +157,63 @@ function ReportsPage() {
             </div>
           </div>
 
-          <div className="reports-container">
-            <div className="calendar-section">
+          {error && (
+            <div className="error-message">
+              {error}
+              <button onClick={fetchRequests}>Retry</button>
+            </div>
+          )}
+
+          {loading ? (
+            <div className="loading">Loading requests...</div>
+          ) : (
+            <div className="calendar-container">
+              <div className="status-legend">
+                <div className="legend-item">
+                  <span className="status-dot approved"></span>
+                  Approved
+                </div>
+                <div className="legend-item">
+                  <span className="status-dot pending"></span>
+                  Pending
+                </div>
+                <div className="legend-item">
+                  <span className="status-dot rejected"></span>
+                  Rejected
+                </div>
+                <div className="legend-item">
+                  <span className="status-dot returned"></span>
+                  Returned
+                </div>
+              </div>
+
               <Calendar
-                localizer={momentLocalizer(moment)}
+                localizer={localizer}
                 events={events}
                 startAccessor="start"
                 endAccessor="end"
-                style={{ height: 500 }}
-                views={["week", "day"]} // Remove month view
-                defaultView={view} // Use state for default view
-                eventPropGetter={(event) => ({
-                  style: { backgroundColor: event.backgroundColor },
-                })}
-                onSelectEvent={(event) => handleDateClick(event.start)}
-                selectable
+                style={{ height: 600 }}
+                eventPropGetter={eventStyleGetter}
+                views={["month", "week", "day"]}
+                defaultView="month"
+                onSelectEvent={(event) => setSelectedEvent(event)}
+                tooltipAccessor={(event) =>
+                  `${event.itemName} - ${event.borrowerName}`
+                }
               />
             </div>
+          )}
 
-            {showChart && borrowData && (
-              <div className="report-details">
-                <div className="chart-container">
-                  <Bar data={borrowData.chartData} options={chartOptions} />
-                </div>
-                <div className="borrowers-list">
-                  <h3>
-                    Borrower Details -{" "}
-                    {moment(selectedDate).format("MMMM D, YYYY")}
-                  </h3>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Time</th>
-                        <th>Item</th>
-                        <th>Category</th>
-                        <th>Borrower</th>
-                        <th>Condition</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {borrowData.borrowers.map((borrow, index) => (
-                        <tr key={index}>
-                          <td>{borrow.time}</td>
-                          <td>{borrow.item}</td>
-                          <td>{borrow.category}</td>
-                          <td>{borrow.borrower}</td>
-                          <td>{borrow.condition}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
+          {selectedEvent && (
+            <EventDetailsModal
+              event={selectedEvent}
+              onClose={() => setSelectedEvent(null)}
+            />
+          )}
         </main>
       </section>
-
-      {isModalOpen && borrowData && (
-        <div className="modal-overlay">
-          <div className="modal-content print-content">
-            <div className="modal-header">
-              <h2>
-                Borrowing Report - {moment(selectedDate).format("MMMM D, YYYY")}
-              </h2>
-              <button
-                className="close-btn"
-                onClick={() => setIsModalOpen(false)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="modal-body">
-              <div className="summary-stats">
-                <div className="stat-item">
-                  <h3>Total Items Borrowed</h3>
-                  <p>{borrowData.totalBorrowed}</p>
-                </div>
-              </div>
-
-              <div className="chart-section">
-                <h3>Distribution by Category</h3>
-                <div className="chart-container">
-                  <Bar data={borrowData.chartData} options={chartOptions} />
-                </div>
-              </div>
-
-              <div className="details-section">
-                <h3>Detailed Borrowing List</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Item</th>
-                      <th>Category</th>
-                      <th>Borrower</th>
-                      <th>Condition</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {borrowData.dayEvents.map((event, index) => (
-                      <tr key={index}>
-                        <td>{moment(event.startTime).format("HH:mm")}</td>
-                        <td>{event.itemName}</td>
-                        <td>{event.category}</td>
-                        <td>{event.borrower}</td>
-                        <td>{event.condition}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="modal-footer">
-              <button className="print-btn" onClick={handlePrintReport}>
-                <i className="bx bx-printer"></i> Print Weekly Report
-              </button>
-              <button
-                className="close-btn"
-                onClick={() => setIsModalOpen(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {(loading || isRefreshing) && (
-        <div className="loading-spinner">Loading...</div>
-      )}
     </div>
   );
-}
+};
 
 export default ReportsPage;
