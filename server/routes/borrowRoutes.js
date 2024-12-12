@@ -100,4 +100,24 @@ router.post("/return-item", async (req, res) => {
   }
 });
 
+// Add this route to mark a notification as read
+router.put("/mark-read/:requestId", jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const request = await Request.findByIdAndUpdate(
+      req.params.requestId,
+      { isRead: true },
+      { new: true }
+    );
+
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    res.json(request);
+  } catch (error) {
+    console.error("Error marking request as read:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;
