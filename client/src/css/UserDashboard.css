@@ -63,48 +63,77 @@
 
 .user-dashboard .card {
   background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: calc(25% - 20px);
-  height: 250px;
+  min-height: 300px;
   overflow: hidden;
-  transition: transform 0.2s;
-  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #eaeaea;
 }
 
 .user-dashboard .card:hover {
-  transform: scale(1.05);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
 }
 
 .user-dashboard .card-image {
-  height: 150px;
+  height: 200px;
   overflow: hidden;
+  position: relative;
 }
 
 .user-dashboard .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 10px;
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+  transition: transform 0.5s ease;
+}
+
+.user-dashboard .card:hover .card-image img {
+  transform: scale(1.05);
 }
 
 .user-dashboard .card-content {
-  padding: 15px;
+  font-weight: 400;
+  padding: 0px;
 }
 
 .user-dashboard .card-content h3 {
-  font-size: 1.2em;
-  margin: 10px 0;
-  color: #333;
+  position: absolute;
+  padding: 0px;
+  left: 20px;
+  font-size: 1.1em;
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .user-dashboard .availability {
-  font-weight: bold;
-  color: #28a745;
-  /* Green for available */
+  position: absolute;
+  bottom: 5px;
+  left: 20px;
+  font-size:x-small;
+  font-weight: 600;
+  padding: 6px 12px;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  z-index: 10;
 }
 
-
-
+.user-dashboard .availability.unavailable {
+  background-color: #ffebee;
+  color: #c62828;
+}
 
 .item-info-card {
   flex: 1;
@@ -146,10 +175,6 @@
   min-width: 200px;
 }
 
-
-
-
-
 .head-title {
   display: flex;
   justify-content: space-between;
@@ -181,7 +206,158 @@
 /* Ensure the card container adjusts properly */
 .card-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  padding: 25px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 1000px;
+  position: relative;
+  overflow: visible;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  z-index: 1;
+}
+
+.modal-layout {
+  display: flex;
+  min-height: 500px;
+}
+
+.modal-image {
+  flex: 1;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.modal-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.modal-image img:hover {
+  transform: scale(3.3);
+  cursor: zoom-in;
+  position: absolute;
+  z-index: 1001;
+}
+
+.modal-details {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-title {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.item-info {
+  flex-grow: 1;
+}
+
+.item-info p {
+  margin: 12px 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.availability-tag {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 20px;
+}
+
+.availability-tag.available {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.availability-tag.unavailable {
+  background-color: #f44336;
+  color: white;
+}
+
+.borrow-button {
+  width: 100%;
+  padding: 14px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+.borrow-button:hover {
+  background-color: #1976d2;
+}
+
+.borrow-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-layout {
+    flex-direction: column;
+  }
+
+  .modal-image {
+    height: 300px;
+  }
+
+  .modal-details {
+    padding: 20px;
+  }
 }

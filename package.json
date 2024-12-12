@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "jwt-decode": "^4.0.0",
+    "react-data-table-component": "^7.6.2",
+    "styled-components": "^6.1.13",
     "sweetalert2": "^11.14.5"
   }
 }

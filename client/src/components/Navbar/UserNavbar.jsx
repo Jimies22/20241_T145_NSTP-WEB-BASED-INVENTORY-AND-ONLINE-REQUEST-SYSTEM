@@ -8,19 +8,33 @@ function UserNavbar() {
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
+        // Initial fetch
         fetchNotifications();
-        // Set up polling every 30 seconds
+        
+        // Set up polling
         const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
-
-        // Also listen for localStorage changes
+        
+        // Listen for notification updates
+        const handleNotificationUpdate = () => {
+            fetchNotifications();
+        };
+        
+        window.addEventListener('notificationUpdate', handleNotificationUpdate);
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('notificationUpdate', handleNotificationUpdate);
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     const handleStorageChange = (e) => {
         if (e.key === 'userNotificationCount') {
             setNotificationCount(parseInt(e.newValue) || 0);
+        } else if (e.key === 'userNotifications') {
+            const updatedNotifications = JSON.parse(e.newValue || '[]');
+            setNotifications(updatedNotifications);
         }
     };
 
@@ -33,27 +47,17 @@ function UserNavbar() {
                 },
             });
 
-            // Filter for status changes that need notifications
+            // Include pending requests in notifications
             const notificationRequests = response.data.filter(req => 
-                ['approved', 'rejected', 'cancelled'].includes(req.status.toLowerCase())
+                ['pending', 'approved', 'rejected', 'cancelled'].includes(req.status.toLowerCase())
             );
 
             setNotifications(notificationRequests);
             setNotificationCount(notificationRequests.length);
             
-            // Store in localStorage
+            // Update localStorage
             localStorage.setItem('userNotifications', JSON.stringify(notificationRequests));
             localStorage.setItem('userNotificationCount', notificationRequests.length.toString());
-
-            // Update notification messages based on status
-            const notificationMessages = notificationRequests.map(req => ({
-                id: req._id,
-                message: getNotificationMessage(req.status, req.item?.name),
-                status: req.status,
-                timestamp: new Date(req.updatedAt).toLocaleString()
-            }));
-
-            localStorage.setItem('userNotificationMessages', JSON.stringify(notificationMessages));
         } catch (error) {
             console.error("Error fetching notifications:", error);
         }

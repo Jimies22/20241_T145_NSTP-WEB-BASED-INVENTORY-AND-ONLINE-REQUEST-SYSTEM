@@ -15,6 +15,9 @@ const UserDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [showBorrowOverlay, setShowBorrowOverlay] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [availabilityFilter, setAvailabilityFilter] = useState("");
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const token = sessionStorage.getItem("sessionToken");
@@ -32,6 +35,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     fetchItems();
+    fetchCategories();
   }, []);
 
   const fetchItems = async () => {
@@ -46,6 +50,34 @@ const UserDashboard = () => {
       setLoading(false);
     }
   };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/categories");
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const filteredItems = items.filter((item) => {
+    const matchesSearch = Object.values(item)
+      .join(" ")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    
+    const matchesCategory = categoryFilter 
+      ? item.category === categoryFilter 
+      : true;
+    
+    const matchesAvailability = availabilityFilter === ''
+      ? true
+      : availabilityFilter === 'available'
+        ? item.availability === true
+        : item.availability === false;
+    
+    return matchesSearch && matchesCategory && matchesAvailability;
+  });
 
   const updateItem = (updatedItem) => {
     setItems((prevItems) =>
@@ -83,13 +115,6 @@ const UserDashboard = () => {
     setSelectedItem(null);
   };
 
-  const filteredItems = items.filter((item) =>
-    Object.values(item)
-      .join(" ")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
-
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "/path/to/default/image.jpg";
     return `http://localhost:3000${imagePath}`;
@@ -110,14 +135,28 @@ const UserDashboard = () => {
                                 <li><a className="active" href="/user-dashboard">Home</a></li>
                             </ul>
             </div>
-            <div className="search-container">
-              <input
-                type="text"
-                placeholder="Search items..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
+            <div className="search-filter-container">
+              <div className="search-container">
+                <input 
+                  type="text" 
+                  placeholder="Search items..." 
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+             
+              <div className="filter-buttons">
+                <select 
+                  className="filter-dropdown"
+                  value={availabilityFilter}
+                  onChange={(e) => setAvailabilityFilter(e.target.value)}
+                >
+                  <option value="">All Items</option>
+                  <option value="available">Available</option>
+                  <option value="unavailable">Unavailable</option>
+                </select>
+              </div>
+              </div>
             </div>
           </div>
 
@@ -145,7 +184,7 @@ const UserDashboard = () => {
                   </div>
                   <div className="card-content">
                     <h3>{item.name}</h3>
-                    <p className="availability">
+                    <p className={`availability ${!item.availability ? 'unavailable' : ''}`}>
                       {item.availability ? "AVAILABLE" : "UNAVAILABLE"}
                     </p>
                   </div>
@@ -157,38 +196,42 @@ const UserDashboard = () => {
           {showModal && selectedItem && (
             <div className="modal-overlay">
               <div className="modal-content">
-                <div className="item-info-card">
-                  <h1>{selectedItem.name}</h1>
-                  <img
-                    src={getImageUrl(selectedItem.image)}
-                    alt={selectedItem.name}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/path/to/default/image.jpg";
-                    }}
-                  />
-                  <p>
-                    <strong>Item ID:</strong> {selectedItem.item_id}
-                  </p>
-                  <p>
-                    <strong>Description:</strong> {selectedItem.description}
-                  </p>
-                  <p>
-                    <strong>Category:</strong> {selectedItem.category}
-                  </p>
-                  <p>
-                    <strong>Availability:</strong>{" "}
-                    {selectedItem.availability ? "AVAILABLE" : "UNAVAILABLE"}
-                  </p>
-                  <button onClick={handleCloseModal}>Close</button>
-                </div>
-                <div className="borrow-card">
-                  <button
-                    onClick={() => handleBorrowItem(selectedItem)}
-                    disabled={!selectedItem.availability}
-                  >
-                    Borrow
-                  </button>
+                <button className="close-btn" onClick={handleCloseModal}>×</button>
+                
+                <div className="modal-layout">
+                  {/* Left side - Image */}
+                  <div className="modal-image">
+                    <img
+                      src={getImageUrl(selectedItem.image)}
+                      alt={selectedItem.name}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/path/to/default/image.jpg";
+                      }}
+                    />
+                  </div>
+
+                  {/* Right side - Info and Button */}
+                  <div className="modal-details">
+                    <h2 className="modal-title">{selectedItem.name}</h2>
+                    
+                    <div className="item-info">
+                      <p><strong>Item ID:</strong> {selectedItem.item_id}</p>
+                      <p><strong>Description:</strong> {selectedItem.description}</p>
+                      <p><strong>Category:</strong> {selectedItem.category}</p>
+                      <p className={`availability-tag ${selectedItem.availability ? 'available' : 'unavailable'}`}>
+                        {selectedItem.availability ? "AVAILABLE" : "UNAVAILABLE"}
+                      </p>
+                    </div>
+
+                    <button
+                      className="borrow-button"
+                      onClick={() => handleBorrowItem(selectedItem)}
+                      disabled={!selectedItem.availability}
+                    >
+                      {selectedItem.availability ? "Borrow Now" : "Not Available"}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
