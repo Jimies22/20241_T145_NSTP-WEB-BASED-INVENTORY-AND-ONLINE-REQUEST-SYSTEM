@@ -46,59 +46,9 @@ function ReportsPage() {
   const [view, setView] = useState("week"); // Add state for calendar view
 
   useEffect(() => {
-    // First, check if we already have a token in sessionStorage
-    const hasToken = sessionStorage.getItem("googleCalendarToken");
-    if (hasToken) {
-      // If we have a token, initialize directly without showing popup
-      initializeGoogleAPI(hasToken);
-      return;
-    }
-
-    // Load Google Identity Services only if we don't have a token
-    const loadGoogleIdentity = () => {
-      const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      script.async = true;
-      script.defer = true;
-      script.onload = initializeGoogleAPI;
-      document.body.appendChild(script);
-    };
-
-    const initializeGoogleAPI = async (existingToken) => {
+    const loadGoogleAPI = async () => {
       try {
-        if (!existingToken) {
-          // Initialize Google Identity Services only if we don't have a token
-          const client = google.accounts.oauth2.initTokenClient({
-            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-            scope: "https://www.googleapis.com/auth/calendar.readonly",
-            callback: async (response) => {
-              if (response.access_token) {
-                // Save token to sessionStorage
-                sessionStorage.setItem(
-                  "googleCalendarToken",
-                  response.access_token
-                );
-
-                await loadGapiClient(response.access_token);
-                console.log("Access token:", response.access_token);
-              }
-            },
-          });
-
-          // Prompt for consent only if we don't have a token
-          client.requestAccessToken();
-        } else {
-          // Use existing token
-          await loadGapiClient(existingToken);
-        }
-      } catch (error) {
-        console.error("Error initializing Google API:", error);
-        setError("Failed to initialize Google Calendar");
-      }
-    };
-
-    const loadGapiClient = async (accessToken) => {
-      try {
+        // Load the Google API client library
         await new Promise((resolve) => {
           const script = document.createElement("script");
           script.src = "https://apis.google.com/js/api.js";
@@ -106,28 +56,49 @@ function ReportsPage() {
           document.body.appendChild(script);
         });
 
-        await new Promise((resolve) => window.gapi.load("client", resolve));
-
-        await window.gapi.client.init({
-          apiKey: apiKey,
-          discoveryDocs: [
-            "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-          ],
+        // Load the Google Identity Services library
+        await new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = "https://accounts.google.com/gsi/client";
+          script.onload = resolve;
+          document.body.appendChild(script);
         });
 
-        window.gapi.client.setToken({
-          access_token: accessToken,
-        });
+        // Initialize the Google API client
+        await window.gapi.load("client", async () => {
+          await window.gapi.client.init({
+            apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
+            discoveryDocs: [
+              "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+            ],
+          });
 
-        setIsGapiLoaded(true);
-        await loadCalendarEvents();
+          // Initialize Google Identity Services
+          const tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+            scope: "https://www.googleapis.com/auth/calendar.readonly",
+            callback: async (response) => {
+              if (response.access_token) {
+                // Set the access token
+                window.gapi.client.setToken({
+                  access_token: response.access_token,
+                });
+                setIsGapiLoaded(true);
+                await loadCalendarEvents();
+              }
+            },
+          });
+
+          // Prompt for consent only if we don't have a token
+          tokenClient.requestAccessToken();
+        });
       } catch (error) {
-        console.error("Error loading GAPI client:", error);
-        setError("Failed to load Google Calendar");
+        console.error("Error initializing Google API:", error);
+        setError("Failed to initialize Google Calendar");
       }
     };
 
-    loadGoogleIdentity();
+    loadGoogleAPI();
 
     // Cleanup
     return () => {
@@ -139,8 +110,6 @@ function ReportsPage() {
   }, []);
 
   const loadCalendarEvents = async () => {
-    // const token = sessionStorage.getItem("sessionToken");
-    // console.log("Token:", token);
     try {
       setLoading(true);
       const startOfYear = moment().startOf("year");
@@ -155,52 +124,32 @@ function ReportsPage() {
         orderBy: "startTime",
       });
 
-      if (response.status === 401) {
-        console.error("Unauthorized access to Google Calendar API");
-        setError("Unauthorized access to Google Calendar API");
-        // Refresh token
-        const client = google.accounts.oauth2.initTokenClient({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          scope: "https://www.googleapis.com/auth/calendar.readonly",
-          callback: async (response) => {
-            if (response.access_token) {
-              // Save token to sessionStorage
-              sessionStorage.setItem(
-                "googleCalendarToken",
-                response.access_token
-              );
-              await loadCalendarEvents();
-            }
-          },
-        });
-        client.requestAccessToken();
-        return;
-      }
-
       const events = response.result.items.map((event) => {
         const extendedProps = event.extendedProperties?.private || {};
         const status = extendedProps.status || "pending";
         let backgroundColor;
 
+        // Update color coding for better visibility
         switch (status) {
           case "rejected":
-            backgroundColor = "red";
-            break;
+            backgroundColor = "#ff4d4d"; // Brighter red
           case "cancelled":
-            backgroundColor = "grey";
+            backgroundColor = "#808080"; // Grey
             break;
           case "approved":
-            backgroundColor = "green";
+            backgroundColor = "#4CAF50"; // Material green
             break;
           case "pending":
           default:
-            backgroundColor = "yellow";
+            backgroundColor = "#FFC107"; // Material yellow
             break;
         }
 
         return {
           id: event.id,
-          title: extendedProps.itemName || event.summary,
+          title: `${extendedProps.itemName || event.summary} - ${
+            extendedProps.borrower || "Unknown"
+          }`,
           start: new Date(event.start.dateTime || event.start.date),
           end: new Date(event.end.dateTime || event.end.date),
           borrower: extendedProps.borrower || "Unknown",
@@ -211,6 +160,7 @@ function ReportsPage() {
           },
           status,
           backgroundColor,
+          allDay: !event.start.dateTime, // Handle all-day events
         };
       });
 
@@ -589,13 +539,36 @@ function ReportsPage() {
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: 500 }}
-                views={["week", "day"]} // Remove month view
-                defaultView={view} // Use state for default view
+                views={["week", "day"]}
+                defaultView={view}
                 eventPropGetter={(event) => ({
-                  style: { backgroundColor: event.backgroundColor },
+                  style: {
+                    backgroundColor: event.backgroundColor,
+                    borderRadius: "3px",
+                    opacity: 0.8,
+                    color: "#fff",
+                    border: "none",
+                    display: "block",
+                    padding: "2px 5px",
+                  },
                 })}
                 onSelectEvent={(event) => handleDateClick(event.start)}
                 selectable
+                tooltipAccessor={(event) => `
+                  Item: ${event.itemDetails.name}
+                  Borrower: ${event.borrower}
+                  Status: ${event.status}
+                  Category: ${event.itemDetails.category}
+                  Condition: ${event.itemDetails.condition}
+                `}
+                formats={{
+                  eventTimeRangeFormat: ({ start, end }, culture, localizer) =>
+                    `${localizer.format(
+                      start,
+                      "HH:mm",
+                      culture
+                    )} - ${localizer.format(end, "HH:mm", culture)}`,
+                }}
               />
             </div>
 
