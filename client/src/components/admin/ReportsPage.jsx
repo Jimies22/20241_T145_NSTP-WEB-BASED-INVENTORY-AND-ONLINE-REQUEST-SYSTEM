@@ -78,7 +78,9 @@ function ReportsPage() {
                   "googleCalendarToken",
                   response.access_token
                 );
+
                 await loadGapiClient(response.access_token);
+                console.log("Access token:", response.access_token);
               }
             },
           });
@@ -137,22 +139,65 @@ function ReportsPage() {
   }, []);
 
   const loadCalendarEvents = async () => {
+    // const token = sessionStorage.getItem("sessionToken");
+    // console.log("Token:", token);
     try {
       setLoading(true);
-      const startOfWeek = moment().startOf("week");
-      const endOfWeek = moment().endOf("week");
+      const startOfYear = moment().startOf("year");
+      const endOfYear = moment().endOf("year");
 
       const response = await window.gapi.client.calendar.events.list({
         calendarId: "primary",
-        timeMin: startOfWeek.toISOString(),
-        timeMax: endOfWeek.toISOString(),
+        timeMin: startOfYear.toISOString(),
+        timeMax: endOfYear.toISOString(),
         showDeleted: false,
         singleEvents: true,
         orderBy: "startTime",
       });
 
+      if (response.status === 401) {
+        console.error("Unauthorized access to Google Calendar API");
+        setError("Unauthorized access to Google Calendar API");
+        // Refresh token
+        const client = google.accounts.oauth2.initTokenClient({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          scope: "https://www.googleapis.com/auth/calendar.readonly",
+          callback: async (response) => {
+            if (response.access_token) {
+              // Save token to sessionStorage
+              sessionStorage.setItem(
+                "googleCalendarToken",
+                response.access_token
+              );
+              await loadCalendarEvents();
+            }
+          },
+        });
+        client.requestAccessToken();
+        return;
+      }
+
       const events = response.result.items.map((event) => {
         const extendedProps = event.extendedProperties?.private || {};
+        const status = extendedProps.status || "pending";
+        let backgroundColor;
+
+        switch (status) {
+          case "rejected":
+            backgroundColor = "red";
+            break;
+          case "cancelled":
+            backgroundColor = "grey";
+            break;
+          case "approved":
+            backgroundColor = "green";
+            break;
+          case "pending":
+          default:
+            backgroundColor = "yellow";
+            break;
+        }
+
         return {
           id: event.id,
           title: extendedProps.itemName || event.summary,
@@ -164,11 +209,13 @@ function ReportsPage() {
             category: extendedProps.category,
             condition: extendedProps.condition,
           },
+          status,
+          backgroundColor,
         };
       });
 
       setEvents(events);
-      await generateWeeklyReport(new Date());
+      await generateReport(new Date());
     } catch (error) {
       console.error("Error loading calendar events:", error);
       setError("Failed to load calendar events");
@@ -177,14 +224,14 @@ function ReportsPage() {
     }
   };
 
-  const generateWeeklyReport = async (date) => {
+  const generateReport = async (date) => {
     try {
       setLoading(true);
-      const weeklyData = await fetchWeeklyData(date);
-      setWeeklyData(weeklyData);
+      const reportData = await fetchReportData(date);
+      setWeeklyData(reportData);
     } catch (error) {
-      console.error("Error generating weekly report:", error);
-      setError("Failed to generate weekly report");
+      console.error("Error generating report:", error);
+      setError("Failed to generate report");
     } finally {
       setLoading(false);
     }
@@ -255,8 +302,7 @@ function ReportsPage() {
     }
   };
 
-  // Update your fetchWeeklyData function to check for GAPI initialization
-  const fetchWeeklyData = async (selectedDate) => {
+  const fetchReportData = async (selectedDate) => {
     if (!isGapiLoaded) {
       console.log("Google API not yet loaded");
       return;
@@ -264,15 +310,14 @@ function ReportsPage() {
 
     try {
       setLoading(true);
-      const startDate = moment(selectedDate).startOf("week");
-      const endDate = moment(selectedDate).endOf("week");
+      const startDate = moment().startOf("year");
+      const endDate = moment().endOf("year");
 
       const processedData = await processCalendarData(
         startDate.toDate(),
         endDate.toDate()
       );
 
-      // Prepare chart data
       const chartData = {
         labels: Object.keys(processedData.byDay).map((date) =>
           moment(date).format("ddd, MMM D")
@@ -293,7 +338,7 @@ function ReportsPage() {
       setWeeklyData(processedData);
       setChartData(chartData);
     } catch (error) {
-      setError("Failed to fetch weekly data");
+      setError("Failed to fetch report data");
       console.error("Error:", error);
     } finally {
       setLoading(false);
@@ -455,6 +500,62 @@ function ReportsPage() {
     };
   };
 
+  const generateWeeklyReport = async (date) => {
+    try {
+      setLoading(true);
+      const weeklyData = await fetchWeeklyData(date);
+      setWeeklyData(weeklyData);
+    } catch (error) {
+      console.error("Error generating weekly report:", error);
+      setError("Failed to generate weekly report");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchWeeklyData = async (selectedDate) => {
+    if (!isGapiLoaded) {
+      console.log("Google API not yet loaded");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const startDate = moment(selectedDate).startOf("week");
+      const endDate = moment(selectedDate).endOf("week");
+
+      const processedData = await processCalendarData(
+        startDate.toDate(),
+        endDate.toDate()
+      );
+
+      const chartData = {
+        labels: Object.keys(processedData.byDay).map((date) =>
+          moment(date).format("ddd, MMM D")
+        ),
+        datasets: [
+          {
+            label: "Items Borrowed",
+            data: Object.values(processedData.byDay).map(
+              (day) => day.totalItems
+            ),
+            backgroundColor: "rgba(54, 162, 235, 0.5)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      setWeeklyData(processedData);
+      setChartData(chartData);
+    } catch (error) {
+      setError("Failed to fetch weekly data");
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="reports-page">
       <Sidebar />
@@ -488,9 +589,12 @@ function ReportsPage() {
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: 500 }}
-                views={["week", "day"]} // Add "day" view
+                views={["week", "day"]} // Remove month view
                 defaultView={view} // Use state for default view
-                onSelectSlot={({ start }) => handleDateSelect(start)}
+                eventPropGetter={(event) => ({
+                  style: { backgroundColor: event.backgroundColor },
+                })}
+                onSelectEvent={(event) => handleDateClick(event.start)}
                 selectable
               />
             </div>
@@ -566,11 +670,11 @@ function ReportsPage() {
 
               <div className="details-section">
                 <h3>Detailed Borrowing List</h3>
-                <table className="details-table">
+                <table>
                   <thead>
                     <tr>
                       <th>Time</th>
-                      <th>Item Name</th>
+                      <th>Item</th>
                       <th>Category</th>
                       <th>Borrower</th>
                       <th>Condition</th>
