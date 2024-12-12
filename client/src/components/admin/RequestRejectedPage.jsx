@@ -6,7 +6,7 @@ import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import Swal from "sweetalert2";
 
-const RequestPage = () => {
+const RequestRejectedPage = () => {
   const [requests, setRequests] = useState([]);
   const [userIdToNameMap, setUserIdToNameMap] = useState({});
   const [itemIdToNameMap, setItemIdToNameMap] = useState({});
@@ -30,11 +30,11 @@ const RequestPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      const pendingRequests = response.data
-        .filter(request => request.status === "pending")
+      // Filter for rejected requests only
+      const rejectedRequests = response.data
+        .filter(request => request.status.toLowerCase() === 'rejected')
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      
-      setRequests(pendingRequests);
+      setRequests(rejectedRequests);
     } catch (error) {
       console.error("Error fetching requests:", error);
       Swal.fire({
@@ -87,90 +87,6 @@ const RequestPage = () => {
     }
   };
 
-  const handleApprove = async (requestId, itemId) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to approve this request?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, approve it!",
-    });
-
-    if (result.isConfirmed) {
-      const token = sessionStorage.getItem("sessionToken");
-      try {
-        const response = await axios.patch(
-          `http://localhost:3000/borrow/${requestId}/status`,
-          { status: "approved", itemId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        Swal.fire({
-          title: "Success!",
-          text: "Request approved successfully",
-          icon: "success",
-        });
-
-        fetchRequests(); // Refresh the requests list
-      } catch (error) {
-        console.error("Error approving request:", error);
-        Swal.fire({
-          title: "Error!",
-          text: error.response?.data?.message || "Failed to approve request",
-          icon: "error",
-        });
-      }
-    }
-  };
-
-  const handleReject = async (requestId) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to reject this request?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, reject it!",
-    });
-
-    if (result.isConfirmed) {
-      const token = sessionStorage.getItem("sessionToken");
-      try {
-        const response = await axios.patch(
-          `http://localhost:3000/borrow/${requestId}/status`,
-          { status: "rejected" },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        Swal.fire({
-          title: "Success!",
-          text: "Request rejected successfully",
-          icon: "success",
-        });
-
-        fetchRequests(); // Refresh the requests list
-      } catch (error) {
-        console.error("Error rejecting request:", error);
-        Swal.fire({
-          title: "Error!",
-          text: error.response?.data?.message || "Failed to reject request",
-          icon: "error",
-        });
-      }
-    }
-  };
-
   const isActionable = (status) => {
     return status === "pending";
   };
@@ -197,11 +113,11 @@ const RequestPage = () => {
               <div className="left">
                 <h1>Requests</h1>
                 <ul className="breadcrumb">
-                  <li><a href="#">Pending</a></li>
+                  <li><a href="#">Rejected</a></li>
                   <li><i className="bx bx-chevron-right"></i></li>
                   <li><a className="active" href="/request/cancelled"> Cancelled </a></li>
                   <li><i className="bx bx-chevron-right"></i></li>
-                  <li><a className="active" href="/request/rejected"> Rejected </a></li>
+                  <li><a className="active" href="/request"> Pending </a></li>
                   <li><i className="bx bx-chevron-right"></i></li>
                   <li><a className="active" href="/request/return"> Return </a></li>
                   <li><i className="bx bx-chevron-right"></i></li>
@@ -249,42 +165,14 @@ const RequestPage = () => {
                               </td>
                               <td>
                                 <span
-                                  className={`status ${request.status.toLowerCase()}`}
+                                  className={`status rejected`}
                                 >
                                   {request.status}
                                 </span>
                               </td>
                               <td>
                                 <div className="actions">
-                                  <button
-                                    onClick={() =>
-                                      handleApprove(
-                                        request._id,
-                                        request.item?._id
-                                      )
-                                    } // Added optional chaining
-                                    className={`approve-btn ${
-                                      !isActionable(request.status)
-                                        ? "disabled"
-                                        : ""
-                                    }`}
-                                    disabled={!isActionable(request.status)}
-                                  >
-                                    <i className="bx bx-check"></i>
-                                    Approve
-                                  </button>
-                                  <button
-                                    onClick={() => handleReject(request._id)}
-                                    className={`reject-btn ${
-                                      !isActionable(request.status)
-                                        ? "disabled"
-                                        : ""
-                                    }`}
-                                    disabled={!isActionable(request.status)}
-                                  >
-                                    <i className="bx bx-x"></i>
-                                    Reject
-                                  </button>
+                                  <span className="status-text">Rejected by admin</span>
                                 </div>
                               </td>
                             </tr>
@@ -299,7 +187,7 @@ const RequestPage = () => {
                                   marginBottom: "10px",
                                 }}
                               ></i>
-                              <p>No pending requests available</p>
+                              <p>No rejected requests available</p>
                             </td>
                           </tr>
                         )}
@@ -316,4 +204,4 @@ const RequestPage = () => {
   );
 };
 
-export default RequestPage;
+export default RequestRejectedPage;

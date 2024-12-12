@@ -143,3 +143,44 @@ document.getElementById('searchInput').addEventListener('search', function() {
     }
 });
 
+// Handle admin sidebar state
+const initAdminSidebar = () => {
+    const sidebarState = localStorage.getItem('adminSidebarState');
+    const sidebar = document.getElementById('sidebar');
+    const adminDashboard = document.querySelector('.admin-dashboard');
+    
+    if (sidebar && adminDashboard) {
+        if (sidebarState === 'hide') {
+            sidebar.classList.add('hide');
+            adminDashboard.classList.add('hide');
+        } else {
+            sidebar.classList.remove('hide');
+            adminDashboard.classList.remove('hide');
+        }
+    }
+};
+
+// Add event listener for sidebar toggle
+const handleSidebarToggle = () => {
+    const sidebar = document.getElementById('sidebar');
+    const adminDashboard = document.querySelector('.admin-dashboard');
+    
+    if (sidebar && adminDashboard) {
+        const isHidden = sidebar.classList.contains('hide');
+        localStorage.setItem('adminSidebarState', isHidden ? '' : 'hide');
+        
+        sidebar.classList.toggle('hide');
+        adminDashboard.classList.toggle('hide');
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    initAdminSidebar();
+    
+    // Add click listener for sidebar toggle button if it exists
+    const toggleButton = document.querySelector('.toggle-button');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', handleSidebarToggle);
+    }
+});
+

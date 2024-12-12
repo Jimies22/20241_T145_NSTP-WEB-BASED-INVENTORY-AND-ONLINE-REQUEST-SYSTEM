@@ -28,6 +28,9 @@ import ArchivedUsersPage from './components/admin/ArchivedUsersPage';
 import UserRequestPending from './components/user/UserRequestPending';
 import UserRequestCancelled from './components/user/UserRequestCancelled';
 import UserRequestRejected from './components/user/UserRequestRejected';
+import RequestReturnPage from './components/admin/RequestReturnPage';
+import RequestRejectedPage from './components/admin/RequestRejectedPage';
+import RequestCancelledPage from './components/admin/RequestCancelledPage';
 
 
 function App() {
@@ -75,6 +78,21 @@ function App() {
                 <Route path="/notification" element={<AdminNotificationPage/>} />
                 <Route path="/usernotification" element={<UserNotificationPage/>} />
                 <Route path="/users" element={<AddUser />} />
+                <Route path="/request/return" element={
+                    <ProtectedRoute role="admin">
+                        <RequestReturnPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/request/rejected" element={
+                    <ProtectedRoute role="admin">
+                        <RequestRejectedPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/request/cancelled" element={
+                    <ProtectedRoute role="admin">
+                        <RequestCancelledPage />
+                    </ProtectedRoute>
+                } />
                 {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}
                 {/* <Route path="/request" element={<ProtectedRoute role="user"><Sidebar /></ProtectedRoute>} /> */}
             </Routes>

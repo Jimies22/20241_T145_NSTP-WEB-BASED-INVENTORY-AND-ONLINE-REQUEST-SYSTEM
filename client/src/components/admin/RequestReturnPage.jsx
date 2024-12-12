@@ -6,10 +6,15 @@ import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import Swal from "sweetalert2";
 
-const RequestPage = () => {
+const RequestReturnPage = () => {
   const [requests, setRequests] = useState([]);
   const [userIdToNameMap, setUserIdToNameMap] = useState({});
   const [itemIdToNameMap, setItemIdToNameMap] = useState({});
+  const [sidebarState, setSidebarState] = useState("");
+
+  const toggleSidebar = () => {
+    setSidebarState(sidebarState === "" ? "hide" : "");
+  };
 
   useEffect(() => {
     fetchRequests();
@@ -30,19 +35,18 @@ const RequestPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      const pendingRequests = response.data
-        .filter(request => request.status === "pending")
+      // Filter for approved requests only
+      const approvedRequests = response.data
+        .filter(request => request.status.toLowerCase() === 'approved')
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      
-      setRequests(pendingRequests);
+      setRequests(approvedRequests);
     } catch (error) {
       console.error("Error fetching requests:", error);
       Swal.fire({
         title: "Error!",
-        text:
-          error.response?.status === 401
-            ? "Unauthorized access. Please log in again."
-            : "Error fetching request",
+        text: error.response?.status === 401
+          ? "Unauthorized access. Please log in again."
+          : "Error fetching request",
         icon: "error",
       });
     }
@@ -188,22 +192,22 @@ const RequestPage = () => {
   return (
     <>
       <style>{buttonHoverStyles}</style>
-      <div className="admin-dashboard">
-        <Sidebar />
+      <div className={`admin-dashboard ${sidebarState}`}>
+        <Sidebar sidebarState={sidebarState} />
         <section id="content">
-          <AdminNavbar />
+          <AdminNavbar toggleSidebar={toggleSidebar} />
           <main>
             <div className="head-title">
               <div className="left">
                 <h1>Requests</h1>
                 <ul className="breadcrumb">
-                  <li><a href="#">Pending</a></li>
+                  <li><a href="#">Return</a></li>
                   <li><i className="bx bx-chevron-right"></i></li>
                   <li><a className="active" href="/request/cancelled"> Cancelled </a></li>
                   <li><i className="bx bx-chevron-right"></i></li>
                   <li><a className="active" href="/request/rejected"> Rejected </a></li>
                   <li><i className="bx bx-chevron-right"></i></li>
-                  <li><a className="active" href="/request/return"> Return </a></li>
+                  <li><a className="active" href="/request"> Pending </a></li>
                   <li><i className="bx bx-chevron-right"></i></li>
                   <li><a className="active" href="/admin"> Home </a></li>
                 </ul>
@@ -316,4 +320,4 @@ const RequestPage = () => {
   );
 };
 
-export default RequestPage;
+export default RequestReturnPage;

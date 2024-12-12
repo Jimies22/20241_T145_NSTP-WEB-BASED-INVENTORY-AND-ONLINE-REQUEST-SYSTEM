@@ -322,3 +322,25 @@ main {
   opacity: 1;
   visibility: visible;
 }
+
+/* Add this to your CSS file */
+.status-text {
+  color: #666;
+  font-style: italic;
+}
+
+.status.cancelled {
+  background-color: #ffa500;
+  color: white;
+}
+
+.status.rejected {
+  background-color: #dc3545;
+  color: white;
+}
+
+.no-requests {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
