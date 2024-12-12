@@ -44,4 +44,11 @@ const jwtVerifyMiddleware = (req, res, next) => {
   });
 };
 
-module.exports = { authMiddleware, jwtVerifyMiddleware };
+const isAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ message: "Access denied: Admin only" });
+  }
+  next();
+};
+
+module.exports = { authMiddleware, jwtVerifyMiddleware, isAdmin };
