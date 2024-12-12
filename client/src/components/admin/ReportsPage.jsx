@@ -45,203 +45,86 @@ function ReportsPage() {
   const [isGapiLoaded, setIsGapiLoaded] = useState(false);
   const [view, setView] = useState("week"); // Add state for calendar view
 
-  // useEffect(() => {
-  //   // First, check if we already have a token in sessionStorage
-  //   const hasToken = sessionStorage.getItem("googleCalendarToken");
-  //   if (hasToken) {
-  //     // If we have a token, initialize directly without showing popup
-  //     initializeGoogleAPI(hasToken);
-  //     return;
-  //   }
-
-  //   // Load Google Identity Services only if we don't have a token
-  //   const loadGoogleIdentity = () => {
-  //     const script = document.createElement("script");
-  //     script.src = "https://accounts.google.com/gsi/client";
-  //     script.async = true;
-  //     script.defer = true;
-  //     script.onload = initializeGoogleAPI;
-  //     document.body.appendChild(script);
-  //   };
-
-  //   const initializeGoogleAPI = async (existingToken) => {
-  //     try {
-  //       if (!existingToken) {
-  //         // Initialize Google Identity Services only if we don't have a token
-  //         const client = google.accounts.oauth2.initTokenClient({
-  //           client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-  //           scope: "https://www.googleapis.com/auth/calendar.readonly",
-  //           callback: async (response) => {
-  //             if (response.access_token) {
-  //               // Save token to sessionStorage
-  //               sessionStorage.setItem(
-  //                 "googleCalendarToken",
-  //                 response.access_token
-  //               );
-
-  //               await loadGapiClient(response.access_token);
-  //               console.log("Access token:", response.access_token);
-  //             }
-  //           },
-  //         });
-
-  //         // Prompt for consent only if we don't have a token
-  //         client.requestAccessToken();
-  //       } else {
-  //         // Use existing token
-  //         await loadGapiClient(existingToken);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error initializing Google API:", error);
-  //       setError("Failed to initialize Google Calendar");
-  //     }
-  //   };
-
-  //   const loadGapiClient = async (accessToken) => {
-  //     try {
-  //       await new Promise((resolve) => {
-  //         const script = document.createElement("script");
-  //         script.src = "https://apis.google.com/js/api.js";
-  //         script.onload = resolve;
-  //         document.body.appendChild(script);
-  //       });
-
-  //       await new Promise((resolve) => window.gapi.load("client", resolve));
-
-  //       await window.gapi.client.init({
-  //         apiKey: apiKey,
-  //         discoveryDocs: [
-  //           "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-  //         ],
-  //       });
-
-  //       window.gapi.client.setToken({
-  //         access_token: accessToken,
-  //       });
-
-  //       setIsGapiLoaded(true);
-  //       await loadCalendarEvents();
-  //     } catch (error) {
-  //       console.error("Error loading GAPI client:", error);
-  //       setError("Failed to load Google Calendar");
-  //     }
-  //   };
-
-  //   loadGoogleIdentity();
-
-  //   // Cleanup
-  //   return () => {
-  //     const scripts = document.querySelectorAll(
-  //       'script[src="https://accounts.google.com/gsi/client"], script[src="https://apis.google.com/js/api.js"]'
-  //     );
-  //     scripts.forEach((script) => script.remove());
-  //   };
-  // }, []);
-
-  // const loadCalendarEvents = async () => {
-  //   // const token = sessionStorage.getItem("sessionToken");
-  //   // console.log("Token:", token);
-  //   try {
-  //     setLoading(true);
-  //     const startOfYear = moment().startOf("year");
-  //     const endOfYear = moment().endOf("year");
-
-  //     const response = await window.gapi.client.calendar.events.list({
-  //       calendarId: "primary",
-  //       timeMin: startOfYear.toISOString(),
-  //       timeMax: endOfYear.toISOString(),
-  //       showDeleted: false,
-  //       singleEvents: true,
-  //       orderBy: "startTime",
-  //     });
-
-  //     if (response.status === 401) {
-  //       console.error("Unauthorized access to Google Calendar API");
-  //       setError("Unauthorized access to Google Calendar API");
-  //       // Refresh token
-  //       const client = google.accounts.oauth2.initTokenClient({
-  //         client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-  //         scope: "https://www.googleapis.com/auth/calendar.readonly",
-  //         callback: async (response) => {
-  //           if (response.access_token) {
-  //             // Save token to sessionStorage
-  //             sessionStorage.setItem(
-  //               "googleCalendarToken",
-  //               response.access_token
-  //             );
-  //             await loadCalendarEvents();
-  //           }
-  //         },
-  //       });
-  //       client.requestAccessToken();
-  //       return;
-  //     }
-
-  //     const events = response.result.items.map((event) => {
-  //       const extendedProps = event.extendedProperties?.private || {};
-  //       const status = extendedProps.status || "pending";
-  //       let backgroundColor;
-
-  //       switch (status) {
-  //         case "rejected":
-  //           backgroundColor = "red";
-  //           break;
-  //         case "cancelled":
-  //           backgroundColor = "grey";
-  //           break;
-  //         case "approved":
-  //           backgroundColor = "green";
-  //           break;
-  //         case "pending":
-  //         default:
-  //           backgroundColor = "yellow";
-  //           break;
-  //       }
-
-  //       return {
-  //         id: event.id,
-  //         title: extendedProps.itemName || event.summary,
-  //         start: new Date(event.start.dateTime || event.start.date),
-  //         end: new Date(event.end.dateTime || event.end.date),
-  //         borrower: extendedProps.borrower || "Unknown",
-  //         itemDetails: {
-  //           name: extendedProps.itemName,
-  //           category: extendedProps.category,
-  //           condition: extendedProps.condition,
-  //         },
-  //         status,
-  //         backgroundColor,
-  //       };
-  //     });
-
-  //     setEvents(events);
-  //     await generateReport(new Date());
-  //   } catch (error) {
-  //     console.error("Error loading calendar events:", error);
-  //     setError("Failed to load calendar events");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   useEffect(() => {
+    // First, check if we already have a token in sessionStorage
+    const hasToken = sessionStorage.getItem("googleCalendarToken");
+    if (hasToken) {
+      // If we have a token, initialize directly without showing popup
+      initializeGoogleAPI(hasToken);
+      return;
+    }
+
+    // Load Google Identity Services only if we don't have a token
     const loadGoogleIdentity = () => {
-      window.gapi.load("client:auth2", async () => {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeGoogleAPI;
+      document.body.appendChild(script);
+    };
+
+    const initializeGoogleAPI = async (existingToken) => {
+      try {
+        if (!existingToken) {
+          // Initialize Google Identity Services only if we don't have a token
+          const client = google.accounts.oauth2.initTokenClient({
+            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+            scope: "https://www.googleapis.com/auth/calendar.readonly",
+            callback: async (response) => {
+              if (response.access_token) {
+                // Save token to sessionStorage
+                sessionStorage.setItem(
+                  "googleCalendarToken",
+                  response.access_token
+                );
+
+                await loadGapiClient(response.access_token);
+                console.log("Access token:", response.access_token);
+              }
+            },
+          });
+
+          // Prompt for consent only if we don't have a token
+          client.requestAccessToken();
+        } else {
+          // Use existing token
+          await loadGapiClient(existingToken);
+        }
+      } catch (error) {
+        console.error("Error initializing Google API:", error);
+        setError("Failed to initialize Google Calendar");
+      }
+    };
+
+    const loadGapiClient = async (accessToken) => {
+      try {
+        await new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = "https://apis.google.com/js/api.js";
+          script.onload = resolve;
+          document.body.appendChild(script);
+        });
+
+        await new Promise((resolve) => window.gapi.load("client", resolve));
+
         await window.gapi.client.init({
-          apiKey: "AIzaSyDJzZz35k1CALaPzMp3aWfr2x3DyN8wtCs",
-          clientId:
-            "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com",
+          apiKey: apiKey,
           discoveryDocs: [
             "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
           ],
-          scope: "https://www.googleapis.com/auth/calendar.readonly",
         });
 
-        const authInstance = window.gapi.auth2.getAuthInstance();
-        if (!authInstance.isSignedIn.get()) {
-          await authInstance.signIn();
-        }
-      });
+        window.gapi.client.setToken({
+          access_token: accessToken,
+        });
+
+        setIsGapiLoaded(true);
+        await loadCalendarEvents();
+      } catch (error) {
+        console.error("Error loading GAPI client:", error);
+        setError("Failed to load Google Calendar");
+      }
     };
 
     loadGoogleIdentity();
@@ -256,9 +139,8 @@ function ReportsPage() {
   }, []);
 
   const loadCalendarEvents = async () => {
-    const authInstance = window.gapi.auth2.getAuthInstance();
-    const token = authInstance.currentUser.get().getAuthResponse().access_token;
-    console.log("Token:", token);
+    // const token = sessionStorage.getItem("sessionToken");
+    // console.log("Token:", token);
     try {
       setLoading(true);
       const startOfYear = moment().startOf("year");
@@ -269,13 +151,74 @@ function ReportsPage() {
         timeMin: startOfYear.toISOString(),
         timeMax: endOfYear.toISOString(),
         showDeleted: false,
-        access_token: token,
+        singleEvents: true,
+        orderBy: "startTime",
       });
 
-      console.log("Events:", response.result.items);
-      // Handle the response
+      if (response.status === 401) {
+        console.error("Unauthorized access to Google Calendar API");
+        setError("Unauthorized access to Google Calendar API");
+        // Refresh token
+        const client = google.accounts.oauth2.initTokenClient({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          scope: "https://www.googleapis.com/auth/calendar.readonly",
+          callback: async (response) => {
+            if (response.access_token) {
+              // Save token to sessionStorage
+              sessionStorage.setItem(
+                "googleCalendarToken",
+                response.access_token
+              );
+              await loadCalendarEvents();
+            }
+          },
+        });
+        client.requestAccessToken();
+        return;
+      }
+
+      const events = response.result.items.map((event) => {
+        const extendedProps = event.extendedProperties?.private || {};
+        const status = extendedProps.status || "pending";
+        let backgroundColor;
+
+        switch (status) {
+          case "rejected":
+            backgroundColor = "red";
+            break;
+          case "cancelled":
+            backgroundColor = "grey";
+            break;
+          case "approved":
+            backgroundColor = "green";
+            break;
+          case "pending":
+          default:
+            backgroundColor = "yellow";
+            break;
+        }
+
+        return {
+          id: event.id,
+          title: extendedProps.itemName || event.summary,
+          start: new Date(event.start.dateTime || event.start.date),
+          end: new Date(event.end.dateTime || event.end.date),
+          borrower: extendedProps.borrower || "Unknown",
+          itemDetails: {
+            name: extendedProps.itemName,
+            category: extendedProps.category,
+            condition: extendedProps.condition,
+          },
+          status,
+          backgroundColor,
+        };
+      });
+
+      setEvents(events);
+      await generateReport(new Date());
     } catch (error) {
       console.error("Error loading calendar events:", error);
+      setError("Failed to load calendar events");
     } finally {
       setLoading(false);
     }
