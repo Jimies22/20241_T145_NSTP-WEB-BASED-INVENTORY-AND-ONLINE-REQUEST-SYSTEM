@@ -59,6 +59,22 @@ function PendingPage() {
   };
 
   const handleCancel = async (requestId) => {
+    // Add confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this cancellation!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, cancel it!'
+    });
+
+    // Only proceed if user confirmed
+    if (!result.isConfirmed) {
+      return;
+    }
+
     const token = sessionStorage.getItem("sessionToken");
 
     try {
@@ -148,6 +164,22 @@ function PendingPage() {
   };
 
   const handleCancelFromModal = async () => {
+    // Add confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this cancellation!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, cancel it!'
+    });
+
+    // Only proceed if user confirmed
+    if (!result.isConfirmed) {
+      return;
+    }
+
     const token = sessionStorage.getItem("sessionToken");
 
     try {
@@ -335,7 +367,7 @@ function PendingPage() {
   };
 
   return (
-    <div className="user-dashboard">
+    <div className="dashboard">
       <Sidebar />
       <section id="content">
         <UserNavbar />
@@ -345,36 +377,31 @@ function PendingPage() {
               <h1>Pending Request</h1>
               <ul className="breadcrumb">
                 <li>
-                  <Link to="/#">Pending</Link>
+                  <a href="/user-request/pending">Pending</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
                 </li>
                 <li>
-                  <Link to="/user-request/cancelled"className="active">Cancelled</Link>
+                  <a className="active" href="/user-request/cancelled">Cancelled</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
                 </li>
                 <li>
-                  <Link to="/user-request/rejected"className="active">Rejected</Link>
+                  <a className="active" href="/user-request/rejected">Rejected</a>
                 </li>
                 <li>
                   <i className="bx bx-chevron-right" />
                 </li>
                 <li>
-                  <a
-                    className="active"
-                    href="/user"
-                  >
-                    Home
-                  </a>
+                  <a className="active" href="/user">Home</a>
                 </li>
               </ul>
             </div>
           </div>
           <div className="table-data">
-            <div className="pending-requests">
+            <div className="order">
               <DataTable
                 title={
                   <div style={{
@@ -400,7 +427,6 @@ function PendingPage() {
                 columns={columns}
                 data={userRequests}
                 pagination
-                paginationComponentOptions={paginationComponentOptions}
                 paginationPerPage={10}
                 paginationRowsPerPageOptions={[5, 10, 15, 20, 25, 30]}
                 customStyles={customStyles}
@@ -482,17 +508,6 @@ function PendingPage() {
               </div>
             </div>
             <div className="modal-footer">
-              {selectedRequest?.status?.toLowerCase() === "pending" && (
-                <button
-                  className="cancel-modal-btn"
-                  onClick={handleCancelFromModal}
-                >
-                  Cancel Request
-                </button>
-              )}
-              <button className="close-modal-btn" onClick={closeModal}>
-                Close
-              </button>
             </div>
           </div>
         </div>

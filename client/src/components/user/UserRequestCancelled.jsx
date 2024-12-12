@@ -432,17 +432,6 @@ function CancelledPage() {
               </div>
             </div>
             <div className="modal-footer">
-              {selectedRequest?.status?.toLowerCase() === "pending" && (
-                <button
-                  className="cancel-modal-btn"
-                  onClick={handleCancelFromModal}
-                >
-                  Cancel Request
-                </button>
-              )}
-              <button className="close-modal-btn" onClick={closeModal}>
-                Close
-              </button>
             </div>
           </div>
         </div>

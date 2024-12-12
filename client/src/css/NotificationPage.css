@@ -123,7 +123,28 @@ body {
 
 .unread {
     background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
     font-weight: 500;
+}
+
+.unread-indicator {
+    color: #007bff;
+    font-size: 1.5em;
+    margin-right: 8px;
+}
+
+.notification-indicators {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-card {
+    transition: background-color 0.3s ease;
+}
+
+.notification-card.unread:hover {
+    background-color: #f0f0f0;
 }
 
 .loading, .error, .no-notifications {
@@ -473,6 +494,71 @@ body {
     text-align: center;
     padding: 40px;
     color: #666;
+}
+
+/* Add these styles for the view button */
+.notification-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.view-btn {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.view-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+}
+
+.view-btn i {
+    font-size: 1.2rem;
+}
+
+.mark-read-btn {
+    padding: 8px 16px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.mark-read-btn:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(108, 117, 125, 0.2);
+}
+
+.notification-card {
+    padding: 20px;
+    margin-bottom: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 

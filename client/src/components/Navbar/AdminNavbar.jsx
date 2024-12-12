@@ -31,11 +31,10 @@ function AdminNavbar() {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            // Filter for pending requests only
+            // Only show pending requests for admin
             const pendingRequests = response.data.filter(req => req.status === "pending");
             setNotificationCount(pendingRequests.length);
             
-            // Store in localStorage
             localStorage.setItem('notifications', JSON.stringify(pendingRequests));
             localStorage.setItem('notificationCount', pendingRequests.length.toString());
         } catch (error) {

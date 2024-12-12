@@ -47,9 +47,10 @@ function UserNavbar() {
                 },
             });
 
-            // Include pending requests in notifications
+            // Only count unread notifications that are pending or rejected
             const notificationRequests = response.data.filter(req => 
-                ['pending', 'approved', 'rejected', 'cancelled'].includes(req.status.toLowerCase())
+                ['pending', 'rejected'].includes(req.status.toLowerCase()) 
+                && !req.isRead
             );
 
             setNotifications(notificationRequests);
