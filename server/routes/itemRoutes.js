@@ -19,7 +19,6 @@ const storage = multer.diskStorage({
     cb(null, uploadDir); // Use the absolute path
   },
   filename: function (req, file, cb) {
-    // Add file extension handling
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
@@ -188,7 +187,8 @@ router.get('/debug/uploads', (req, res) => {
     res.json({
       uploadDir,
       files,
-      exists: fs.existsSync(uploadDir)
+      exists: fs.existsSync(uploadDir),
+      itemImagePath: req.query.imagePath // Pass the image path as a query parameter
     });
   } catch (error) {
     res.status(500).json({
