@@ -33,6 +33,8 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-google-token": "^0.1.2",
+    "pdfkit": "^0.15.1",
+    "pdfkit-table": "^0.1.99",
     "react-big-calendar": "^1.16.3",
     "uuid": "^11.0.2"
   },

@@ -16,6 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const lockRoutes = require("./routes/lockRoutes");
 const path = require("path");
+const pdfRoutes = require('./routes/pdfRoutes');
 
 require("dotenv").config();
 require("./config/passport");
@@ -107,6 +108,7 @@ app.use("/borrow", borrowRoutes);
 app.use("/notify", notificationRoutes);
 app.use("/locks", lockRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/pdf", pdfRoutes);
 
 // Logout route to clear the session
 app.post("/logout", (req, res) => {
@@ -183,3 +185,6 @@ app.get("/test-email/:email", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+module.exports = { 
+  jwtVerifyMiddleware 
+};
