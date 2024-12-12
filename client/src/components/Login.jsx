@@ -18,6 +18,7 @@ function Login() {
   const [isRecaptchaValid, setIsRecaptchaValid] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSuccess = (credentialResponse) => {
     if (!isRecaptchaValid) {
@@ -25,6 +26,7 @@ function Login() {
       return;
     }
 
+    setIsLoading(true);
     console.log("Google Login Attempt:", credentialResponse);
     const { credential } = credentialResponse;
 
@@ -58,6 +60,9 @@ function Login() {
       .catch((error) => {
         console.error("Login error:", error);
         alert(error.message || "Login failed. Please try again.");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -74,6 +79,7 @@ function Login() {
       return;
     }
 
+    setIsLoading(true);
     try {
       console.log("Admin Login Attempt:", email);
       const response = await fetch("http://localhost:3000/login", {
@@ -103,6 +109,8 @@ function Login() {
     } catch (error) {
       console.error("Login error:", error);
       alert(error.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -118,6 +126,15 @@ function Login() {
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
+      {isLoading && (
+        <div className="loading-screen">
+          <div className="loading-content">
+            <div className="spinner"></div>
+            <p className="loading-text">Logging In<span className="loading-dots"></span></p>
+            <p className="loading-subtext">Please wait while we verify your credentials</p>
+          </div>
+        </div>
+      )}
       <div className="logo">
         <img src={nstpLogo} alt="Logo" className="nstp_logo" />
         <div className="header-text">
@@ -168,8 +185,19 @@ function Login() {
                 <label className="checkbox" htmlFor="checkbox">
                   Keep me logged in
                 </label>
-                <button type="submit" className="btn btn-primary mt-3">
-                  Login
+                <button 
+                  type="submit" 
+                  className="btn btn-primary mt-3" 
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Logging in...
+                    </>
+                  ) : (
+                    'Login'
+                  )}
                 </button>
                 <hr className="line"></hr>
                 <div

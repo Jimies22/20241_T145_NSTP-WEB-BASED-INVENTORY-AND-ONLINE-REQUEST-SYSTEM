@@ -358,3 +358,36 @@ body {
 .side-menu li.active a {
 	color: var(--blue); /* Change text color for active item */
 }
+
+/* Add these new styles */
+.logout-animation {
+    animation: logoutPulse 0.5s ease-in-out;
+    transform-origin: center;
+}
+
+@keyframes logoutPulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Update the existing logout styles */
+#sidebar .side-menu li a.logout {
+    color: var(--dark);
+    transition: all 0.3s ease;
+}
+
+#sidebar .side-menu li a.logout:hover {
+    background-color: var(--grey);
+    color: var(--blue);
+    transform: translateX(5px);
+}
