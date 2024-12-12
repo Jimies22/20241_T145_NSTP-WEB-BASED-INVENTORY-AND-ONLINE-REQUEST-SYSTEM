@@ -22,7 +22,7 @@ function RejectedPage() {
 
       try {
         const response = await fetch(
-          "http://localhost:3000/borrow/my-requests?status=rejected",
+          "http://localhost:3000/borrow/my-requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -31,13 +31,13 @@ function RejectedPage() {
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Error fetching rejected requests: ${errorText}`);
+          throw new Error(`Error fetching requests: ${await response.text()}`);
         }
 
         const data = await response.json();
-        const rejectedRequests = data.filter(request => 
-          request.status.toLowerCase() === 'rejected'
+        // Filter rejected requests on the client side
+        const rejectedRequests = data.filter(
+          request => request.status.toLowerCase() === 'rejected'
         );
         setUserRequests(rejectedRequests);
       } catch (error) {

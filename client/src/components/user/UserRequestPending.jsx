@@ -23,7 +23,7 @@ function PendingPage() {
 
       try {
         const response = await fetch(
-          "http://localhost:3000/borrow/my-requests?status=pending",
+          "http://localhost:3000/borrow/my-requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -32,13 +32,13 @@ function PendingPage() {
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Error fetching pending requests: ${errorText}`);
+          throw new Error(`Error fetching requests: ${await response.text()}`);
         }
 
         const data = await response.json();
-        const pendingRequests = data.filter(request => 
-          request.status.toLowerCase() === 'pending'
+        // Filter pending requests on the client side
+        const pendingRequests = data.filter(
+          request => request.status.toLowerCase() === 'pending'
         );
         setUserRequests(pendingRequests);
       } catch (error) {

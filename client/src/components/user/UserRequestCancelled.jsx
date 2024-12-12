@@ -21,7 +21,7 @@ function CancelledPage() {
 
       try {
         const response = await fetch(
-          "http://localhost:3000/borrow/my-requests?status=cancelled",
+          "http://localhost:3000/borrow/my-requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -30,13 +30,13 @@ function CancelledPage() {
         );
 
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Error fetching cancelled requests: ${errorText}`);
+          throw new Error(`Error fetching requests: ${await response.text()}`);
         }
 
         const data = await response.json();
-        const cancelledRequests = data.filter(request => 
-          request.status.toLowerCase() === 'cancelled'
+        // Filter cancelled requests on the client side
+        const cancelledRequests = data.filter(
+          request => request.status.toLowerCase() === 'cancelled'
         );
         setUserRequests(cancelledRequests);
       } catch (error) {
