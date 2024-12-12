@@ -224,22 +224,20 @@ function AddItems({ updateItem }) {
             },
           });
 
-      if (response.data.success) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: isEditing ? 'Item updated successfully' : 'Item added successfully',
-        });
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: isEditing ? 'Item updated successfully' : 'Item added successfully'
+      });
 
-        await fetchItems();
-        handleCloseModal();
-      }
+      await fetchItems();
+      handleCloseModal();
     } catch (error) {
       console.error("Error saving item:", error);
       Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: error.response?.data?.message || 'Error saving item',
+        text: error.response?.data?.message || 'Error saving item'
       });
     }
   };

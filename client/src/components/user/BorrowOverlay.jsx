@@ -125,35 +125,31 @@ const BorrowOverlay = ({ item, onClose }) => {
         }
       );
 
-      // After successful booking, create a notification
+      // After successful booking, update user notifications
       try {
-        await axios.post(
-          "http://localhost:3000/borrow/notifications",
-          {
-            type: 'BOOKING_REQUEST',
-            userId,
-            itemId: item._id,
-            message: `New booking request for ${item.name}`,
-            status: 'pending',
-            requestDetails: {
-              borrowDate: borrowDate.toISOString(),
-              returnDate: returnDate.toISOString(),
-              requestDate: requestDate.toISOString()
-            }
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
         // Update localStorage to trigger notification refresh
+        const currentNotifications = JSON.parse(localStorage.getItem('userNotifications') || '[]');
+        const newNotification = {
+          id: response.data._id,
+          message: `Your request to borrow ${item.name} is pending approval`,
+          status: 'pending',
+          timestamp: new Date().toISOString(),
+          item: item
+        };
+        
+        currentNotifications.unshift(newNotification);
+        localStorage.setItem('userNotifications', JSON.stringify(currentNotifications));
+        
+        // Update notification count
         const currentCount = parseInt(localStorage.getItem('userNotificationCount') || '0');
         localStorage.setItem('userNotificationCount', (currentCount + 1).toString());
 
-        // Dispatch a custom event to notify other components
+        // Dispatch custom events to notify other components
         window.dispatchEvent(new Event('notificationUpdate'));
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'userNotificationCount',
+          newValue: (currentCount + 1).toString()
+        }));
 
         // Show success message
         Swal.fire({
@@ -168,13 +164,7 @@ const BorrowOverlay = ({ item, onClose }) => {
         });
 
       } catch (notifError) {
-        console.error("Error creating notification:", notifError);
-        Swal.fire({
-          icon: 'warning',
-          title: 'Notification Error',
-          text: 'Request submitted but there was an error creating the notification.',
-          confirmButtonColor: '#3085d6'
-        });
+        console.error("Error updating notifications:", notifError);
       }
     } catch (error) {
       console.error("Error submitting request:", error);
@@ -211,7 +201,7 @@ const BorrowOverlay = ({ item, onClose }) => {
           <button className="close-btn" onClick={onClose}>
             ×
           </button>
-          <h2 className="item-title">{item.name}</h2>
+         
         </div>
 
         <div className="booking-layout">

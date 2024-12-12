@@ -555,6 +555,7 @@ body {
 }
 
 .filter-dropdown {
+    left: 10px;
     position: relative;
     display: inline-block;
 }

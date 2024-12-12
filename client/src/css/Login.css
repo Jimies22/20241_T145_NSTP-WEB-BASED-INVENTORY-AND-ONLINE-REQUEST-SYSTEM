@@ -58,7 +58,6 @@ body, html {
     width: 80%;
     max-width: 30rem;
     margin: auto;
-    padding: 20px;
     background-color: rgba(63, 71, 153, 0.9);
     position: relative;
     text-align: center;
@@ -210,6 +209,7 @@ hr{
     align-items: center;
     z-index: 9999;
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .loading-content {
