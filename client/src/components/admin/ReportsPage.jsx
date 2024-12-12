@@ -44,133 +44,142 @@ function ReportsPage() {
   const [chartData, setChartData] = useState(null);
   const [isGapiLoaded, setIsGapiLoaded] = useState(false);
   const [view, setView] = useState("week"); // Add state for calendar view
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const loadGoogleAPI = async () => {
-      try {
-        // Load the Google API client library
-        await new Promise((resolve) => {
-          const script = document.createElement("script");
-          script.src = "https://apis.google.com/js/api.js";
-          script.onload = resolve;
-          document.body.appendChild(script);
-        });
-
-        // Load the Google Identity Services library
-        await new Promise((resolve) => {
-          const script = document.createElement("script");
-          script.src = "https://accounts.google.com/gsi/client";
-          script.onload = resolve;
-          document.body.appendChild(script);
-        });
-
-        // Initialize the Google API client
-        await window.gapi.load("client", async () => {
-          await window.gapi.client.init({
-            apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
-            discoveryDocs: [
-              "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
-            ],
-          });
-
-          // Initialize Google Identity Services
-          const tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-            scope: "https://www.googleapis.com/auth/calendar.readonly",
-            callback: async (response) => {
-              if (response.access_token) {
-                // Set the access token
-                window.gapi.client.setToken({
-                  access_token: response.access_token,
-                });
-                setIsGapiLoaded(true);
-                await loadCalendarEvents();
-              }
-            },
-          });
-
-          // Prompt for consent only if we don't have a token
-          tokenClient.requestAccessToken();
-        });
-      } catch (error) {
-        console.error("Error initializing Google API:", error);
-        setError("Failed to initialize Google Calendar");
-      }
+    // Load the Google API client script
+    const loadGapiScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://apis.google.com/js/api.js";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        window.gapi.load("client", initializeGoogleAPI);
+      };
+      document.body.appendChild(script);
     };
 
-    loadGoogleAPI();
+    loadGapiScript();
 
-    // Cleanup
     return () => {
+      // Cleanup scripts on unmount
       const scripts = document.querySelectorAll(
-        'script[src="https://accounts.google.com/gsi/client"], script[src="https://apis.google.com/js/api.js"]'
+        'script[src*="googleapis.com"]'
       );
       scripts.forEach((script) => script.remove());
     };
   }, []);
 
+  const initializeGoogleAPI = async () => {
+    try {
+      // Load the Google Identity Services SDK
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      await new Promise((resolve) => {
+        script.onload = resolve;
+        document.body.appendChild(script);
+      });
+
+      // Initialize the Google API client
+      await window.gapi.client.init({
+        apiKey: import.meta.env.VITE_GOOGLE_API_KEY,
+        discoveryDocs: [
+          "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+        ],
+      });
+
+      // Initialize Google Identity Services
+      const tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        scope: "https://www.googleapis.com/auth/calendar.readonly",
+        callback: (response) => {
+          if (response.access_token) {
+            setIsAuthenticated(true);
+            window.gapi.client.setToken(response);
+          }
+        },
+      });
+
+      setIsInitialized(true);
+
+      // Request token immediately if not authenticated
+      if (!isAuthenticated) {
+        tokenClient.requestAccessToken({ prompt: "consent" });
+      }
+    } catch (error) {
+      console.error("Error initializing Google API:", error);
+      setError("Failed to initialize Google Calendar API");
+    }
+  };
+
   const loadCalendarEvents = async () => {
     try {
-      setLoading(true);
-      const startOfYear = moment().startOf("year");
-      const endOfYear = moment().endOf("year");
+      if (!isInitialized || !isAuthenticated) {
+        throw new Error("Google API not initialized or not authenticated");
+      }
 
       const response = await window.gapi.client.calendar.events.list({
         calendarId: "primary",
-        timeMin: startOfYear.toISOString(),
-        timeMax: endOfYear.toISOString(),
-        showDeleted: false,
+        timeMin: new Date().toISOString(),
+        maxResults: 10,
         singleEvents: true,
         orderBy: "startTime",
       });
 
-      const events = response.result.items.map((event) => {
-        const extendedProps = event.extendedProperties?.private || {};
-        const status = extendedProps.status || "pending";
-        let backgroundColor;
-
-        // Update color coding for better visibility
-        switch (status) {
-          case "rejected":
-            backgroundColor = "#ff4d4d"; // Brighter red
-          case "cancelled":
-            backgroundColor = "#808080"; // Grey
-            break;
-          case "approved":
-            backgroundColor = "#4CAF50"; // Material green
-            break;
-          case "pending":
-          default:
-            backgroundColor = "#FFC107"; // Material yellow
-            break;
-        }
-
-        return {
-          id: event.id,
-          title: `${extendedProps.itemName || event.summary} - ${
-            extendedProps.borrower || "Unknown"
-          }`,
-          start: new Date(event.start.dateTime || event.start.date),
-          end: new Date(event.end.dateTime || event.end.date),
-          borrower: extendedProps.borrower || "Unknown",
-          itemDetails: {
-            name: extendedProps.itemName,
-            category: extendedProps.category,
-            condition: extendedProps.condition,
-          },
-          status,
-          backgroundColor,
-          allDay: !event.start.dateTime, // Handle all-day events
-        };
-      });
-
-      setEvents(events);
-      await generateReport(new Date());
+      const events = response.result.items;
+      // Process your events here
     } catch (error) {
-      console.error("Error loading calendar events:", error);
-      setError("Failed to load calendar events");
+      if (error.status === 401) {
+        // Token expired, request new token
+        const tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          scope: "https://www.googleapis.com/auth/calendar.readonly",
+          callback: (response) => {
+            if (response.access_token) {
+              window.gapi.client.setToken(response);
+              loadCalendarEvents(); // Retry after getting new token
+            }
+          },
+        });
+        tokenClient.requestAccessToken();
+      } else {
+        console.error("Error loading calendar events:", error);
+      }
+    }
+  };
+
+  // Add new helper function to refresh token
+  const refreshGoogleToken = async () => {
+    setIsRefreshing(true);
+    try {
+      return new Promise((resolve, reject) => {
+        const client = google.accounts.oauth2.initTokenClient({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          scope: "https://www.googleapis.com/auth/calendar.readonly",
+          callback: (response) => {
+            if (response.access_token) {
+              // Save new token
+              sessionStorage.setItem(
+                "googleCalendarToken",
+                response.access_token
+              );
+              // Update GAPI client with new token
+              window.gapi.client.setToken({
+                access_token: response.access_token,
+              });
+              resolve(response.access_token);
+            } else {
+              reject(new Error("Failed to get new access token"));
+            }
+          },
+        });
+
+        client.requestAccessToken();
+      });
     } finally {
-      setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -539,36 +548,13 @@ function ReportsPage() {
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: 500 }}
-                views={["week", "day"]}
-                defaultView={view}
+                views={["week", "day"]} // Remove month view
+                defaultView={view} // Use state for default view
                 eventPropGetter={(event) => ({
-                  style: {
-                    backgroundColor: event.backgroundColor,
-                    borderRadius: "3px",
-                    opacity: 0.8,
-                    color: "#fff",
-                    border: "none",
-                    display: "block",
-                    padding: "2px 5px",
-                  },
+                  style: { backgroundColor: event.backgroundColor },
                 })}
                 onSelectEvent={(event) => handleDateClick(event.start)}
                 selectable
-                tooltipAccessor={(event) => `
-                  Item: ${event.itemDetails.name}
-                  Borrower: ${event.borrower}
-                  Status: ${event.status}
-                  Category: ${event.itemDetails.category}
-                  Condition: ${event.itemDetails.condition}
-                `}
-                formats={{
-                  eventTimeRangeFormat: ({ start, end }, culture, localizer) =>
-                    `${localizer.format(
-                      start,
-                      "HH:mm",
-                      culture
-                    )} - ${localizer.format(end, "HH:mm", culture)}`,
-                }}
               />
             </div>
 
@@ -681,6 +667,10 @@ function ReportsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {(loading || isRefreshing) && (
+        <div className="loading-spinner">Loading...</div>
       )}
     </div>
   );
