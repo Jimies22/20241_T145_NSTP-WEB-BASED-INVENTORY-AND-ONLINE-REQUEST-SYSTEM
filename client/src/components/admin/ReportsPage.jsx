@@ -139,13 +139,13 @@ function ReportsPage() {
   const loadCalendarEvents = async () => {
     try {
       setLoading(true);
-      const startOfWeek = moment().startOf("week");
-      const endOfWeek = moment().endOf("week");
+      const startOfYear = moment().startOf("year");
+      const endOfYear = moment().endOf("year");
 
       const response = await window.gapi.client.calendar.events.list({
         calendarId: "primary",
-        timeMin: startOfWeek.toISOString(),
-        timeMax: endOfWeek.toISOString(),
+        timeMin: startOfYear.toISOString(),
+        timeMax: endOfYear.toISOString(),
         showDeleted: false,
         singleEvents: true,
         orderBy: "startTime",
@@ -168,7 +168,7 @@ function ReportsPage() {
       });
 
       setEvents(events);
-      await generateWeeklyReport(new Date());
+      await generateReport(new Date());
     } catch (error) {
       console.error("Error loading calendar events:", error);
       setError("Failed to load calendar events");
@@ -177,14 +177,14 @@ function ReportsPage() {
     }
   };
 
-  const generateWeeklyReport = async (date) => {
+  const generateReport = async (date) => {
     try {
       setLoading(true);
-      const weeklyData = await fetchWeeklyData(date);
-      setWeeklyData(weeklyData);
+      const reportData = await fetchReportData(date);
+      setWeeklyData(reportData);
     } catch (error) {
-      console.error("Error generating weekly report:", error);
-      setError("Failed to generate weekly report");
+      console.error("Error generating report:", error);
+      setError("Failed to generate report");
     } finally {
       setLoading(false);
     }
@@ -255,8 +255,7 @@ function ReportsPage() {
     }
   };
 
-  // Update your fetchWeeklyData function to check for GAPI initialization
-  const fetchWeeklyData = async (selectedDate) => {
+  const fetchReportData = async (selectedDate) => {
     if (!isGapiLoaded) {
       console.log("Google API not yet loaded");
       return;
@@ -264,15 +263,14 @@ function ReportsPage() {
 
     try {
       setLoading(true);
-      const startDate = moment(selectedDate).startOf("week");
-      const endDate = moment(selectedDate).endOf("week");
+      const startDate = moment().startOf("year");
+      const endDate = moment().endOf("year");
 
       const processedData = await processCalendarData(
         startDate.toDate(),
         endDate.toDate()
       );
 
-      // Prepare chart data
       const chartData = {
         labels: Object.keys(processedData.byDay).map((date) =>
           moment(date).format("ddd, MMM D")
@@ -293,7 +291,7 @@ function ReportsPage() {
       setWeeklyData(processedData);
       setChartData(chartData);
     } catch (error) {
-      setError("Failed to fetch weekly data");
+      setError("Failed to fetch report data");
       console.error("Error:", error);
     } finally {
       setLoading(false);
@@ -488,7 +486,7 @@ function ReportsPage() {
                 startAccessor="start"
                 endAccessor="end"
                 style={{ height: 500 }}
-                views={["week", "day"]} // Add "day" view
+                views={["month", "week", "day"]} // Add "month" view
                 defaultView={view} // Use state for default view
                 onSelectSlot={({ start }) => handleDateSelect(start)}
                 selectable
