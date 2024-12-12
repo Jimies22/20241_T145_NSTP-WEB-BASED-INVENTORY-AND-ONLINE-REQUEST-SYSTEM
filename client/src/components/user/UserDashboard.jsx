@@ -116,7 +116,14 @@ const UserDashboard = () => {
   };
 
   const getImageUrl = (imagePath) => {
-    if (!imagePath) return "/path/to/default/image.jpg";
+    if (!imagePath) return "/default-image.jpg";
+    
+    // Check if the image path is a Cloudinary URL
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    
+    // For local uploads
     return `http://localhost:3000${imagePath}`;
   };
 
@@ -136,7 +143,8 @@ const UserDashboard = () => {
                             </ul>
             </div>
             <div className="search-filter-container">
-              <div className="search-container">
+              <div className="search-box">
+                <i className='bx bx-search search-icon'></i>
                 <input 
                   type="text" 
                   placeholder="Search items..." 
@@ -144,18 +152,30 @@ const UserDashboard = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-             
-              <div className="filter-buttons">
+              </div>
+              
+              <div className="filter-section">
+                <select 
+                  className="filter-dropdown"
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                >
+                  <option value="">Filter by Category</option>
+                  <option value="TV">Television (TV)</option>
+                  <option value="Projector/DLP">Projector/DLP</option>
+                  <option value="Extension Wire">Extension Wire</option>
+                  <option value="HDMI">HDMI Cable</option>
+                </select>
+
                 <select 
                   className="filter-dropdown"
                   value={availabilityFilter}
                   onChange={(e) => setAvailabilityFilter(e.target.value)}
                 >
-                  <option value="">All Items</option>
-                  <option value="available">Available</option>
-                  <option value="unavailable">Unavailable</option>
+                  <option value="">Filter by Status</option>
+                  <option value="available">Available Items</option>
+                  <option value="unavailable">Currently Unavailable</option>
                 </select>
-              </div>
               </div>
             </div>
           </div>
@@ -178,7 +198,12 @@ const UserDashboard = () => {
                       alt={item.name}
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = "/path/to/default/image.jpg";
+                        e.target.src = "/default-image.jpg";
+                      }}
+                      style={{ opacity: 1 }}
+                      onLoad={(e) => {
+                        e.target.style.opacity = 1;
+                        e.target.parentElement.classList.add('loaded');
                       }}
                     />
                   </div>

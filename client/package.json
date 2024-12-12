@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.13.1",
+    "@cloudinary/url-gen": "^1.21.0",
     "@google-cloud/local-auth": "^3.0.1",
     "@mui/lab": "^6.0.0-beta.18",
     "@mui/material": "^6.1.10",

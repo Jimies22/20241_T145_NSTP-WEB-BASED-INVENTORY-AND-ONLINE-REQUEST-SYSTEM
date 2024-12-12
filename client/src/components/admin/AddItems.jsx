@@ -7,6 +7,14 @@ import AdminNavbar from "../Navbar/AdminNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/AddItems.css";
 import Swal from 'sweetalert2';
+import { Cloudinary } from "@cloudinary/url-gen";
+
+const CATEGORIES = [
+  "TV",
+  "Projector/DLP",
+  "Extension Wire",
+  "HDMI"
+];
 
 function AddItems({ updateItem }) {
   const [items, setItems] = useState([]);
@@ -27,6 +35,15 @@ function AddItems({ updateItem }) {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [lockTimer, setLockTimer] = useState(null);
   const LOCK_TIMEOUT = 120000; // 1 mins in milliseconds
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+
+  // Initialize Cloudinary
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: 'your-cloud-name' // Replace with your cloud name
+    }
+  });
 
   const columns = [
     {
@@ -173,12 +190,43 @@ function AddItems({ updateItem }) {
     });
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
+  const handleMediaLibrary = () => {
+    var myWidget = cloudinary.createMediaLibrary({
+      cloud_name: 'djnkkoc1k',
+      api_key: '758589637182136',
+      multiple: false,
+      max_files: 1,
+      insertion_position: 'inline',
+      default_transformations: [[]],
+      styles: {
+        palette: {
+          window: "#FFFFFF",
+          windowBorder: "#90A0B3",
+          tabIcon: "#0078FF",
+          menuIcons: "#5A616A",
+          textDark: "#000000",
+          textLight: "#FFFFFF",
+          link: "#0078FF",
+          action: "#FF620C",
+          inactiveTabIcon: "#0E2F5A",
+          error: "#F44235",
+          inProgress: "#0078FF",
+          complete: "#20B832",
+          sourceBg: "#E4EBF1"
+        }
+      }
+    }, {
+      insertHandler: function(data) {
+        if (data.assets.length > 0) {
+          const imageUrl = data.assets[0].secure_url;
+          setSelectedImageUrl(imageUrl);
+          setPreviewUrl(imageUrl);
+          console.log('Selected image URL:', imageUrl);
+        }
+      }
+    });
+
+    myWidget.show();
   };
 
   const handleSubmit = async (e) => {
@@ -187,23 +235,17 @@ function AddItems({ updateItem }) {
 
     try {
       const formDataToSend = new FormData();
-      // Don't append item_id for new items
-      if (!isEditing) {
-        formDataToSend.append("name", formData.name);
-        formDataToSend.append("description", formData.description);
-        formDataToSend.append("category", formData.category);
-        if (selectedFile) {
-          formDataToSend.append("image", selectedFile);
-        }
-      } else {
-        // For editing, include the item_id
-        formDataToSend.append("item_id", formData.item_id);
-        formDataToSend.append("name", formData.name);
-        formDataToSend.append("description", formData.description);
-        formDataToSend.append("category", formData.category);
-        if (selectedFile) {
-          formDataToSend.append("image", selectedFile);
-        }
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("category", formData.category);
+      
+      // If we have a Cloudinary URL, use that
+      if (selectedImageUrl) {
+        formDataToSend.append("imageUrl", selectedImageUrl);
+      } 
+      // Otherwise, use the locally uploaded file if it exists
+      else if (selectedFile) {
+        formDataToSend.append("image", selectedFile);
       }
 
       const response = isEditing
@@ -568,23 +610,32 @@ function AddItems({ updateItem }) {
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Category:</label>
-                      <input
-                        type="text"
+                      <select
                         className="form-control"
                         name="category"
                         value={formData.category}
                         onChange={handleInputChange}
                         required
-                      />
+                      >
+                        <option value="">Select a category</option>
+                        {CATEGORIES.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Image:</label>
-                      <input
-                        type="file"
-                        className="form-control"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                      />
+                      <div>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={handleMediaLibrary}
+                        >
+                          Choose from Cloudinary
+                        </button>
+                      </div>
                       {previewUrl && (
                         <div className="mt-2">
                           <img

@@ -634,3 +634,33 @@ tr:hover {
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
 }
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+select.form-control {
+    cursor: pointer;
+    background-color: #fff;
+    background-clip: padding-box;
+}
+
+select.form-control:invalid {
+    color: #6c757d;
+}
+
+option {
+    color: #212529;
+}

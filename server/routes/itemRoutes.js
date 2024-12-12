@@ -65,12 +65,13 @@ router.post("/additem", jwtVerifyMiddleware, upload.single('image'), async (req,
   try {
     const itemData = req.body;
     
-    // Add image path if file was uploaded
-    if (req.file) {
+    // Handle either Cloudinary URL or uploaded file
+    if (req.body.imageUrl) {
+      itemData.image = req.body.imageUrl;
+    } else if (req.file) {
       itemData.image = `/uploads/${req.file.filename}`;
     }
 
-    // Create the item
     const newItem = await itemService.createItem(itemData);
     
     res.status(201).json({
@@ -80,8 +81,6 @@ router.post("/additem", jwtVerifyMiddleware, upload.single('image'), async (req,
     });
   } catch (error) {
     console.error('Error in additem route:', error);
-    
-    // Send appropriate error response
     res.status(400).json({
       success: false,
       message: error.message || 'Error creating item',
