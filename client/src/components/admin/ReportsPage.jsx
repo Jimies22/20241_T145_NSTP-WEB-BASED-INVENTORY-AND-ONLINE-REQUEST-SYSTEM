@@ -137,6 +137,7 @@ function ReportsPage() {
   }, []);
 
   const loadCalendarEvents = async () => {
+    const token = sessionStorage.getItem("googleCalendarToken");
     try {
       setLoading(true);
       const startOfYear = moment().startOf("year");
@@ -151,8 +152,49 @@ function ReportsPage() {
         orderBy: "startTime",
       });
 
+      if (response.status === 401) {
+        console.error("Unauthorized access to Google Calendar API");
+        setError("Unauthorized access to Google Calendar API");
+        // Refresh token
+        const client = google.accounts.oauth2.initTokenClient({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          scope: "https://www.googleapis.com/auth/calendar.readonly",
+          callback: async (response) => {
+            if (response.access_token) {
+              // Save token to sessionStorage
+              sessionStorage.setItem(
+                "googleCalendarToken",
+                response.access_token
+              );
+              await loadCalendarEvents();
+            }
+          },
+        });
+        client.requestAccessToken();
+        return;
+      }
+
       const events = response.result.items.map((event) => {
         const extendedProps = event.extendedProperties?.private || {};
+        const status = extendedProps.status || "pending";
+        let backgroundColor;
+
+        switch (status) {
+          case "rejected":
+            backgroundColor = "red";
+            break;
+          case "cancelled":
+            backgroundColor = "grey";
+            break;
+          case "approved":
+            backgroundColor = "green";
+            break;
+          case "pending":
+          default:
+            backgroundColor = "yellow";
+            break;
+        }
+
         return {
           id: event.id,
           title: extendedProps.itemName || event.summary,
@@ -164,6 +206,8 @@ function ReportsPage() {
             category: extendedProps.category,
             condition: extendedProps.condition,
           },
+          status,
+          backgroundColor,
         };
       });
 
@@ -453,6 +497,62 @@ function ReportsPage() {
     };
   };
 
+  const generateWeeklyReport = async (date) => {
+    try {
+      setLoading(true);
+      const weeklyData = await fetchWeeklyData(date);
+      setWeeklyData(weeklyData);
+    } catch (error) {
+      console.error("Error generating weekly report:", error);
+      setError("Failed to generate weekly report");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchWeeklyData = async (selectedDate) => {
+    if (!isGapiLoaded) {
+      console.log("Google API not yet loaded");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const startDate = moment(selectedDate).startOf("week");
+      const endDate = moment(selectedDate).endOf("week");
+
+      const processedData = await processCalendarData(
+        startDate.toDate(),
+        endDate.toDate()
+      );
+
+      const chartData = {
+        labels: Object.keys(processedData.byDay).map((date) =>
+          moment(date).format("ddd, MMM D")
+        ),
+        datasets: [
+          {
+            label: "Items Borrowed",
+            data: Object.values(processedData.byDay).map(
+              (day) => day.totalItems
+            ),
+            backgroundColor: "rgba(54, 162, 235, 0.5)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+        ],
+      };
+
+      setWeeklyData(processedData);
+      setChartData(chartData);
+    } catch (error) {
+      setError("Failed to fetch weekly data");
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="reports-page">
       <Sidebar />
@@ -488,7 +588,10 @@ function ReportsPage() {
                 style={{ height: 500 }}
                 views={["month", "week", "day"]} // Add "month" view
                 defaultView={view} // Use state for default view
-                onSelectSlot={({ start }) => handleDateSelect(start)}
+                eventPropGetter={(event) => ({
+                  style: { backgroundColor: event.backgroundColor },
+                })}
+                onSelectEvent={(event) => handleDateClick(event.start)}
                 selectable
               />
             </div>
@@ -564,11 +667,11 @@ function ReportsPage() {
 
               <div className="details-section">
                 <h3>Detailed Borrowing List</h3>
-                <table className="details-table">
+                <table>
                   <thead>
                     <tr>
                       <th>Time</th>
-                      <th>Item Name</th>
+                      <th>Item</th>
                       <th>Category</th>
                       <th>Borrower</th>
                       <th>Condition</th>
