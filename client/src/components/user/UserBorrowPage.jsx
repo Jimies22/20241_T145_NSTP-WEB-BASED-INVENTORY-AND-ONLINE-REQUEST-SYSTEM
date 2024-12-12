@@ -60,6 +60,40 @@ function UserBorrowPage() {
     return date.toLocaleString();
   };
 
+  const handleDownloadPDF = async (request) => {
+    try {
+      const token = sessionStorage.getItem("sessionToken");
+      console.log("Requesting PDF for:", request._id);
+      
+      const response = await fetch(`http://localhost:3000/pdf/generate-pdf/${request._id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/pdf'
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server response:', response.status, errorText);
+        throw new Error(`Failed to generate PDF: ${errorText}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `borrowed-item-${request._id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+    } catch (error) {
+      console.error('Detailed error:', error);
+      alert(`Error downloading PDF: ${error.message}`);
+    }
+  };
+
   return (
     <div className="user-dashboard">
       <Sidebar />
@@ -184,6 +218,12 @@ function UserBorrowPage() {
                 </div>
               </div>
               <div className="modal-footer">
+                <button 
+                  className="download-pdf-btn" 
+                  onClick={() => handleDownloadPDF(selectedRequest)}
+                >
+                  Download PDF
+                </button>
                 <button className="close-modal-btn" onClick={closeModal}>
                   Close
                 </button>
