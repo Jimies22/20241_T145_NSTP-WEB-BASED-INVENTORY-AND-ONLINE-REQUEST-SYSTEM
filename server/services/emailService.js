@@ -7,8 +7,11 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true,
     auth: {
-        user: '2201105150@student.buksu.edu.ph', // Your email
-        pass: 'dtcadwdafnwywvqr'  // Your app password
+        user: process.env.EMAIL_USER || '2201105150@student.buksu.edu.ph', // Use environment variable
+        pass: process.env.EMAIL_APP_PASSWORD || 'dtcadwdafnwywvqr'  // Use environment variable
+    },
+    tls: {
+        rejectUnauthorized: false // Add this for development
     }
 });
 
@@ -22,23 +25,43 @@ transporter.verify(function(error, success) {
 
 const sendEmail = async ({ to, subject, html }) => {
     try {
-        // Log attempt
-        console.log(`Attempting to send email to: ${to}`);
+        console.log('Attempting to send email:', {
+            to,
+            subject,
+            transporterConfig: {
+                host: transporter.options.host,
+                port: transporter.options.port,
+                secure: transporter.options.secure,
+                auth: {
+                    user: transporter.options.auth.user,
+                    // Don't log the password
+                }
+            }
+        });
 
-        const mailOptions = {
-            from: '"NSTP Inventory System" <admin@.buksu.edu.ph>',
-            to: to,
-            subject: subject,
-            html: html,
-            text: html.replace(/<[^>]*>/g, ''), // Plain text version
+        const info = await transporter.sendMail({
+            from: '"NSTP Inventory System" <admin@buksu.edu.ph>',
+            to,
+            subject,
+            html,
+            text: html.replace(/<[^>]*>/g, ''),
             priority: 'high'
-        };
+        });
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully:', info.messageId);
+        console.log('Email sent successfully:', {
+            messageId: info.messageId,
+            response: info.response,
+            accepted: info.accepted,
+            rejected: info.rejected
+        });
         return true;
     } catch (error) {
-        console.error('Failed to send email:', error);
+        console.error('Failed to send email:', {
+            error: error.message,
+            stack: error.stack,
+            errorCode: error.code,
+            errorResponse: error.response
+        });
         throw error;
     }
 };

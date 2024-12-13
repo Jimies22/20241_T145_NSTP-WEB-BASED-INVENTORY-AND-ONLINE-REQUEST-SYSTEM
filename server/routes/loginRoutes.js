@@ -39,6 +39,19 @@ router.post('/', async (req, res) => {
         );
 
         console.log('Login successful:', email);
+
+        // After successful login, before sending response
+        try {
+            await sendEmail({
+                to: user.email,
+                ...getLoginNotificationEmail(user.name || user.email)
+            });
+            console.log('Login notification email sent to:', user.email);
+        } catch (emailError) {
+            console.error('Failed to send login notification:', emailError);
+            // Don't block login if email fails
+        }
+
         res.json({
             message: 'Login successful',
             token,
@@ -97,6 +110,19 @@ router.post('/google', async (req, res) => {
         );
 
         console.log('Google login successful:', user.email);
+
+        // After successful login, before sending response
+        try {
+            await sendEmail({
+                to: user.email,
+                ...getLoginNotificationEmail(payload.name)
+            });
+            console.log('Login notification email sent to:', user.email);
+        } catch (emailError) {
+            console.error('Failed to send login notification:', emailError);
+            // Don't block login if email fails
+        }
+
         res.json({
             message: 'Login successful',
             token: jwtToken,
