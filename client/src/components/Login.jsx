@@ -51,6 +51,16 @@ function Login() {
         console.log("Login successful:", data);
         sessionStorage.setItem("sessionToken", data.token);
         
+        // Store user info in sessionStorage
+        const userInfo = {
+            name: data.user.name,
+            email: data.user.email,
+            picture: data.user.picture,
+            role: data.user.role
+        };
+        console.log("Storing user info:", userInfo);
+        sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+        
         if (data.user.role === "admin") {
           navigate("/admin");
         } else {
@@ -99,8 +109,17 @@ function Login() {
       }
 
       sessionStorage.setItem("sessionToken", data.token);
-      console.log("Login successful:", data);
-
+      
+      // Store user info for manual login
+      const userInfo = {
+        email: email,
+        role: "admin"
+        // Note: Deliberately not including a picture property
+        // This will trigger the initial letter avatar creation
+      };
+      
+      sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+      
       if (data.user.role === "admin") {
         navigate("/admin");
       } else {
@@ -181,10 +200,12 @@ function Login() {
                     Password
                   </label>
                 </div>
-                <input type="checkbox" name="checkbox" id="checkbox" />
-                <label className="checkbox" htmlFor="checkbox">
-                  Keep me logged in
-                </label>
+                <div className="checkbox-container">
+                    <input type="checkbox" name="checkbox" id="checkbox" />
+                    <label className="checkbox" htmlFor="checkbox">
+                        Keep me logged in
+                    </label>
+                </div>
                 <button 
                   type="submit" 
                   className="btn btn-primary mt-3" 
@@ -204,7 +225,7 @@ function Login() {
                   id="google-signin-btn"
                   className="d-flex justify-content-center mt-3 mb-5"
                   style={{
-                    width: "80%",
+                    width: "70%",
                     margin: "0 auto",
                     transform: "scale(1.2)",
                   }}
@@ -212,7 +233,7 @@ function Login() {
                   <GoogleLogin
                     onSuccess={onSuccess}
                     onError={onError}
-                    width={305}
+                    width={290}
                     disabled={!isRecaptchaValid}
                   />
                 </div>

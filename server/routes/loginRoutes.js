@@ -96,18 +96,6 @@ router.post('/google', async (req, res) => {
             { expiresIn: '24h' }
         );
 
-        // Try to send email notification
-        try {
-            const emailTemplate = getLoginNotificationEmail(user.name);
-            await sendEmail({
-                to: user.email,
-                ...emailTemplate
-            });
-            console.log('Login notification email sent');
-        } catch (emailError) {
-            console.error('Email notification failed:', emailError);
-        }
-
         console.log('Google login successful:', user.email);
         res.json({
             message: 'Login successful',
@@ -115,7 +103,8 @@ router.post('/google', async (req, res) => {
             user: {
                 email: user.email,
                 role: user.role,
-                name: user.name
+                name: payload.name,
+                picture: payload.picture
             }
         });
 

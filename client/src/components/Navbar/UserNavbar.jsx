@@ -1,13 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../../css/Navbar.css';
 
 function UserNavbar() {
+    const navigate = useNavigate();
     const [notificationCount, setNotificationCount] = useState(0);
     const [notifications, setNotifications] = useState([]);
+    const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+    const [userInfo, setUserInfo] = useState({
+        name: '',
+        email: '',
+        profilePicture: 'src/assets/profile.png'
+    });
+    const [isSigningOut, setIsSigningOut] = useState(false);
 
     useEffect(() => {
+        // Get user info from session storage
+        const sessionUser = JSON.parse(sessionStorage.getItem('userInfo'));
+        if (sessionUser) {
+            console.log("Loading user info:", sessionUser); // Debug log
+            setUserInfo({
+                name: sessionUser.name,
+                email: sessionUser.email,
+                profilePicture: sessionUser.picture // Use the stored Google profile picture URL
+            });
+        }
+
         // Initial fetch
         fetchNotifications();
         
@@ -77,6 +96,35 @@ function UserNavbar() {
         }
     };
 
+    const handleSignOut = () => {
+        setIsSigningOut(true);
+        
+        // Create and append the loading screen
+        const loadingScreen = document.createElement('div');
+        loadingScreen.className = 'loading-screen';
+        loadingScreen.innerHTML = `
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p class="loading-text">Signing Out<span class="loading-dots"></span></p>
+                <p class="loading-subtext">Please wait while we log you out</p>
+            </div>
+        `;
+        document.body.appendChild(loadingScreen);
+
+        // Simulate a delay for the animation
+        setTimeout(() => {
+            // Clear all stored data
+            sessionStorage.clear();
+            localStorage.clear();
+            
+            // Navigate to login page
+            navigate('/');
+            
+            // Remove loading screen
+            loadingScreen.remove();
+        }, 1500);
+    };
+
     return (
         <nav>
             <a href="#" className="nav-link"></a>
@@ -88,15 +136,51 @@ function UserNavbar() {
                     </button>
                 </div> */}
             </form>
-            <Link to="/usernotification" className="notification">
-                <i className='bx bxs-bell'></i>
-                {notificationCount > 0 && (
-                    <span className="num">{notificationCount}</span>
-                )}
-            </Link>
-            <a className="profile">
-                <img src="src/assets/profile.png" alt="Profile" />
-            </a>
+            <div className="nav-right">
+                <Link to="/notification" className="notification">
+                    <i className='bx bxs-bell'></i>
+                    {notificationCount > 0 && (
+                        <span className="num">{notificationCount}</span>
+                    )}
+                </Link>
+                
+                <div className="profile-container">
+                    <a className="profile" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
+                        <img src={userInfo.profilePicture} alt="Profile" />
+                    </a>
+                    {showProfileDropdown && (
+                        <div className="profile-dropdown">
+                            <div className="profile-content">
+                                <div className="profile-header">
+                                    <img 
+                                        src={userInfo.profilePicture || 'src/assets/profile.png'} 
+                                        alt="Profile"
+                                        onError={(e) => {
+                                            console.error("Failed to load profile picture:", e);
+                                            e.target.src = 'src/assets/profile.png';
+                                        }}
+                                    />
+                                    <div className="profile-info">
+                                        <h4>{userInfo.name}</h4>
+                                        <p>{userInfo.email}</p>
+                                    </div>
+                                </div>
+                                <div className="profile-actions">
+                                    <button className="sign-out-btn" onClick={handleSignOut}>
+                                        <i className='bx bx-log-out'></i>
+                                        <span>Sign Out</span>
+                                    </button>
+                                </div>
+                                <div className="profile-footer">
+                                    <div className="managed-by-container">
+                                        <span className="managed-by">Managed by nstp.buksu.edu.ph</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
         </nav>
     );
 }

@@ -18,17 +18,6 @@ function AdminSidebar() {
         setIsSidebarVisible(!isSidebarVisible);
     };
 
-    const handleLogout = (e) => {
-        e.preventDefault();
-        const sidebarElement = document.getElementById('sidebar');
-        sidebarElement.classList.add('logout-animation');
-        
-        // Wait for animation to complete before navigating
-        setTimeout(() => {
-            navigate('/login');
-        }, 500); // Match this with animation duration
-    };
-
     return (
         <section id="sidebar" className={isSidebarVisible ? '' : 'hide'}>
             <Link to="/Admin" className="brand">
@@ -67,14 +56,6 @@ function AdminSidebar() {
                 </li>
                 <li className={location.pathname === '/activity' ? 'active' : ''}>
                     <a href="/activity"><i className='bx bx-history'></i><span className="text">Activity</span></a>
-                </li>
-            </ul>
-            <ul className="side-menu">
-                <li>
-                    <a href="/login" className="logout" onClick={handleLogout}>
-                        <i className='bx bxs-log-out-circle'></i>
-                        <span className="text">Logout</span>
-                    </a>
                 </li>
             </ul>
         </section>

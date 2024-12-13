@@ -19,17 +19,6 @@ const UserSidebar = () => {
         setIsSidebarVisible(!isSidebarVisible);
     };
 
-    const handleLogout = (e) => {
-        e.preventDefault();
-        const sidebarElement = document.getElementById('sidebar');
-        sidebarElement.classList.add('logout-animation');
-        
-        // Wait for animation to complete before navigating
-        setTimeout(() => {
-            navigate('/login');
-        }, 500); // Match this with animation duration
-    };
-
     return (
         <section id="sidebar" className={isSidebarVisible ? '' : 'hide'}>
             <Link to="/" className="brand">
@@ -70,14 +59,6 @@ const UserSidebar = () => {
                     <a href="/user-report">
                         <i className='bx bxs-report'></i>
                         <span className="text">Reports</span>
-                    </a>
-                </li>
-            </ul>
-            <ul className="side-menu">
-                <li>
-                    <a href="/login" className="logout" onClick={handleLogout}>
-                        <i className='bx bxs-log-out-circle'></i>
-                        <span className="text">Logout</span>
                     </a>
                 </li>
             </ul>
