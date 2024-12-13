@@ -146,6 +146,7 @@ th {
     max-height: 530px;
     height: calc(100vh - 180px);
     overflow: hidden;
+    z-index: 1;
 }
 
 .order {
@@ -663,4 +664,33 @@ select.form-control:invalid {
 
 option {
     color: #212529;
+}
+
+/* Add or update these modal styles */
+.modal {
+    z-index: 1050 !important;  /* Increase z-index */
+}
+
+.modal-backdrop {
+    z-index: 1040 !important;  /* Keep backdrop below modal but above other content */
+}
+
+.modal-dialog {
+    z-index: 1050 !important;  /* Match modal z-index */
+}
+
+.table-data {
+    z-index: 1;  /* Keep table below modal */
+}
+
+/* Add these styles for better modal visibility */
+.modal.show {
+    background-color: rgba(0, 0, 0, 0.5);
+    display: block !important;
+}
+
+.modal-content {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 8px;
 }

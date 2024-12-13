@@ -550,3 +550,30 @@
 .filter-dropdown option:checked {
   background-color: #f0f0f0;
 }
+
+.search-wrapper1 {
+  position: relative;
+  width: 700px;
+}
+
+.search-wrapper1 i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 1.2rem;
+  z-index: 1;
+}
+
+.search-input {
+  color: black;
+  background-color: whitesmoke;
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
