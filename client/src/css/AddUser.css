@@ -285,3 +285,31 @@ th {
 .add-new-button i {
   font-size: 1.2rem;
 }
+
+/* Add these modal styles */
+.modal {
+  z-index: 1050 !important;
+}
+
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal-dialog {
+  z-index: 1050 !important;
+}
+
+.table-data {
+  z-index: 1;
+}
+
+.modal.show {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: block !important;
+}
+
+.modal-content {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 8px;
+}
