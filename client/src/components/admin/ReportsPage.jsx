@@ -12,6 +12,7 @@ const ReportsPage = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
   const localizer = momentLocalizer(moment);
 
   useEffect(() => {
@@ -21,38 +22,55 @@ const ReportsPage = () => {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const token = sessionStorage.getItem("token");
-      const response = await fetch("http://localhost:3000/apil/borrow/all", {
+      setError(null);
+
+      const token = sessionStorage.getItem("sessionToken");
+
+      if (!token) {
+        setError("Please login to view reports");
+        return;
+      }
+
+      const response = await fetch("http://localhost:3000/borrow/all", {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch requests");
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || `HTTP error! status: ${response.status}`
+        );
       }
 
       const data = await response.json();
+      console.log("Fetched requests:", data);
 
-      // Transform the requests data into calendar events format
       const calendarEvents = data.map((request) => ({
         id: request._id,
-        title: `${request.item.name} - ${request.userId.name}`,
+        title: `${request.item?.name || "Unknown Item"} - ${
+          request.userId?.name || "Unknown User"
+        }`,
         start: new Date(request.borrowDate),
         end: new Date(request.returnDate),
         status: request.status,
-        borrowerName: request.userId.name,
-        itemName: request.item.name,
+        borrowerName: request.userId?.name || "Unknown User",
+        itemName: request.item?.name || "Unknown Item",
         purpose: request.purpose,
-        condition: request.item.condition,
+        condition: request.item?.condition,
         backgroundColor: getStatusColor(request.status),
       }));
 
       setEvents(calendarEvents);
     } catch (error) {
       console.error("Error fetching requests:", error);
-      setError("Failed to load requests. Please try again later.");
+      setError(
+        error.message || "Failed to load requests. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
@@ -159,8 +177,19 @@ const ReportsPage = () => {
 
           {error && (
             <div className="error-message">
-              {error}
-              <button onClick={fetchRequests}>Retry</button>
+              <div>
+                <strong>Error:</strong> {error}
+                {retryCount > 0 && <p>Retry attempt: {retryCount}</p>}
+              </div>
+              <button
+                className="retry-btn"
+                onClick={() => {
+                  setRetryCount((prev) => prev + 1);
+                  fetchRequests();
+                }}
+              >
+                Retry
+              </button>
             </div>
           )}
 

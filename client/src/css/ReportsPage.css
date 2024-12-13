@@ -484,19 +484,36 @@ button:hover {
 }
 
 .error-message {
-  background: #ffebee;
+  background-color: #ffebee;
   color: #c62828;
-  padding: 15px;
-  margin: 20px;
-  border-radius: 4px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin: 20px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.retry-btn {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.retry-btn:hover {
+  background-color: #b71c1c;
+}
+
 .loading {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 20px;
+  font-size: 1.2em;
   color: #666;
 }
 
