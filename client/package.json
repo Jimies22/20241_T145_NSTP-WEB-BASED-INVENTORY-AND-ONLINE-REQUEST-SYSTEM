@@ -22,6 +22,7 @@
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.7",
     "date-fns": "^4.1.0",
+    "dynamsoft-javascript-barcode": "^9.6.42",
     "file-saver": "^2.0.5",
     "google-auth-library": "^9.15.0",
     "googleapis": "^144.0.0",

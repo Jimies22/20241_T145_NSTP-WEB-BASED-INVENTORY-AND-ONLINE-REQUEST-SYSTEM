@@ -344,3 +344,37 @@ main {
   padding: 20px;
   color: #666;
 }
+
+/* Scanner Modal Styles */
+.scanner-modal {
+  font-family: 'Poppins', sans-serif;
+}
+
+.scanner-popup {
+  border-radius: 12px !important;
+}
+
+.scanner-title {
+  font-size: 1.2rem !important;
+  color: #333 !important;
+  margin-bottom: 10px !important;
+}
+
+/* Style the cancel button in the scanner modal */
+.swal2-cancel {
+  background-color: #6c757d !important;
+  color: white !important;
+  border-radius: 6px !important;
+  font-size: 0.9rem !important;
+  padding: 8px 16px !important;
+}
+
+/* Adjust the scanner container */
+#reader {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+#reader video {
+  object-fit: cover !important;
+}

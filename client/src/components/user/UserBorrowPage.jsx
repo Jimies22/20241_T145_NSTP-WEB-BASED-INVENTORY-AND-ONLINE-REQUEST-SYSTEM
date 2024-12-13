@@ -133,8 +133,8 @@ function UserBorrowPage() {
                         <tr key={request._id}>
                           <td>
                             <div className="item-details">
-                              <strong>{request.item?.name || "N/A"}</strong>
-                              <p>{request.item?.description || "N/A"}</p>
+                              {/* <strong>{request.item?.name || "N/A"}</strong>
+                              <p>{request.item?.description || "N/A"}</p> */}
                               <small>Category: {request.item?.category || "N/A"}</small>
                               <small>
                                 Request Date: {formatDateTime(request.requestDate)}

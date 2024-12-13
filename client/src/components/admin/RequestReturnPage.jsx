@@ -5,12 +5,16 @@ import axios from "axios";
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import Swal from "sweetalert2";
+import QRScanner from "./QRScanner";
+import { Html5QrcodeScanner } from 'html5-qrcode';
 
 const RequestReturnPage = () => {
   const [requests, setRequests] = useState([]);
   const [userIdToNameMap, setUserIdToNameMap] = useState({});
   const [itemIdToNameMap, setItemIdToNameMap] = useState({});
   const [sidebarState, setSidebarState] = useState("");
+  const [showScanner, setShowScanner] = useState(false);
+  const [currentRequest, setCurrentRequest] = useState(null);
 
   const toggleSidebar = () => {
     setSidebarState(sidebarState === "" ? "hide" : "");
@@ -91,107 +95,104 @@ const RequestReturnPage = () => {
     }
   };
 
-  const handleApprove = async (requestId, itemId) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to approve this request?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, approve it!",
-    });
-
-    if (result.isConfirmed) {
+  const handleScanSuccess = async (decodedText) => {
+    try {
       const token = sessionStorage.getItem("sessionToken");
-      try {
-        const response = await axios.patch(
-          `http://localhost:3000/borrow/${requestId}/status`,
-          { status: "approved", itemId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+      
+      // Verify the QR code matches the item being returned
+      if (decodedText !== currentRequest.item._id) {
+        throw new Error("QR code doesn't match the item being returned");
+      }
+
+      // Update the request status to 'returned'
+      await axios.put(
+        `http://localhost:3000/borrow/${currentRequest._id}/return`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setShowScanner(false);
+      Swal.fire({
+        title: 'Success!',
+        text: 'Item has been successfully returned',
+        icon: 'success',
+      });
+      
+      // Refresh the requests list
+      fetchRequests();
+    } catch (error) {
+      Swal.fire({
+        title: 'Error!',
+        text: error.message || 'Failed to process return',
+        icon: 'error',
+      });
+    }
+  };
+
+  const handleScanError = (error) => {
+    console.error(error);
+  };
+
+  const handleScanClick = (request) => {
+    setCurrentRequest(request);
+    Swal.fire({
+      title: 'Scan QR Code',
+      html: '<div id="reader"></div>',
+      showCancelButton: true,
+      showConfirmButton: false,
+      didOpen: () => {
+        const scanner = new Html5QrcodeScanner('reader', {
+          qrbox: {
+            width: 250,
+            height: 250,
+          },
+          fps: 5,
+        });
+
+        scanner.render(
+          (decodedText) => {
+            handleScanSuccess(decodedText);
+            scanner.clear();
+            Swal.close();
+          },
+          (error) => {
+            handleScanError(error);
           }
         );
-
-        Swal.fire({
-          title: "Success!",
-          text: "Request approved successfully",
-          icon: "success",
-        });
-
-        fetchRequests(); // Refresh the requests list
-      } catch (error) {
-        console.error("Error approving request:", error);
-        Swal.fire({
-          title: "Error!",
-          text: error.response?.data?.message || "Failed to approve request",
-          icon: "error",
-        });
-      }
-    }
-  };
-
-  const handleReject = async (requestId) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to reject this request?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, reject it!",
-    });
-
-    if (result.isConfirmed) {
-      const token = sessionStorage.getItem("sessionToken");
-      try {
-        const response = await axios.patch(
-          `http://localhost:3000/borrow/${requestId}/status`,
-          { status: "rejected" },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+      },
+      willClose: () => {
+        const scanner = document.getElementById('reader');
+        if (scanner) {
+          while (scanner.firstChild) {
+            scanner.removeChild(scanner.firstChild);
           }
-        );
-
-        Swal.fire({
-          title: "Success!",
-          text: "Request rejected successfully",
-          icon: "success",
-        });
-
-        fetchRequests(); // Refresh the requests list
-      } catch (error) {
-        console.error("Error rejecting request:", error);
-        Swal.fire({
-          title: "Error!",
-          text: error.response?.data?.message || "Failed to reject request",
-          icon: "error",
-        });
+        }
       }
-    }
+    });
   };
 
-  const isActionable = (status) => {
-    return status === "pending";
-  };
-
-  // Add button hover styles
-  const buttonHoverStyles = `
-    .approve-btn:hover {
-      background-color: #218838 !important;
+  const buttonStyles = `
+    .scan-return-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
     }
-    .reject-btn:hover {
-      background-color: #c82333 !important;
+    .scan-return-btn:hover {
+      background-color: #0056b3;
     }
   `;
 
   return (
     <>
-      <style>{buttonHoverStyles}</style>
+      <style>{buttonStyles}</style>
       <div className={`admin-dashboard ${sidebarState}`}>
         <Sidebar sidebarState={sidebarState} />
         <section id="content">
@@ -261,33 +262,11 @@ const RequestReturnPage = () => {
                               <td>
                                 <div className="actions">
                                   <button
-                                    onClick={() =>
-                                      handleApprove(
-                                        request._id,
-                                        request.item?._id
-                                      )
-                                    } // Added optional chaining
-                                    className={`approve-btn ${
-                                      !isActionable(request.status)
-                                        ? "disabled"
-                                        : ""
-                                    }`}
-                                    disabled={!isActionable(request.status)}
+                                    className="scan-return-btn"
+                                    onClick={() => handleScanClick(request)}
                                   >
-                                    <i className="bx bx-check"></i>
-                                    Approve
-                                  </button>
-                                  <button
-                                    onClick={() => handleReject(request._id)}
-                                    className={`reject-btn ${
-                                      !isActionable(request.status)
-                                        ? "disabled"
-                                        : ""
-                                    }`}
-                                    disabled={!isActionable(request.status)}
-                                  >
-                                    <i className="bx bx-x"></i>
-                                    Reject
+                                    <i className="bx bx-qr-scan"></i>
+                                    Scan to Return
                                   </button>
                                 </div>
                               </td>
