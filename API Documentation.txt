@@ -1,0 +1,454 @@
+NSTP Equipment Borrowing System API Documentation
+Base URLs
+Server: http://localhost:3000
+Client: http://localhost:3001
+
+Authentication
+
+The API uses JWT (JSON Web Token) authentication. Include the token in the Authorization header:
+
+Authorization: Bearer <token>
+
+Endpoints
+Items
+1. Get All Items
+
+GET /items
+
+Description: Retrieves all items in the system
+Authentication: Optional
+Reference:
+
+router.get("/", async (req, res) => {
+  try {
+    const items = await itemService.getAllItems();
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+2. Get Item by ID
+
+GET /items/:item_id
+
+Description: Retrieves a specific item by ID
+Authentication: Optional
+Reference:
+
+router.get("/:item_id", async (req, res) => {
+  try {
+    const item = await itemService.getItemById(req.params.item_id);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+3. Create New Item
+
+Description: Creates a new item
+Authentication: Required
+Content-Type: multipart/form-data
+Body Parameters:
+* name (string, required)
+* description (string, required)
+* category (string, required)
+* image (file) or imageUrl (string)
+Reference:
+
+router.post("/additem", jwtVerifyMiddleware, upload.single('image'), async (req, res) => {
+  try {
+    const itemData = req.body;
+    
+    // Handle either Cloudinary URL or uploaded file
+    if (req.body.imageUrl) {
+      itemData.image = req.body.imageUrl;
+    } else if (req.file) {
+      itemData.image = `/uploads/${req.file.filename}`;
+    }
+
+    const newItem = await itemService.createItem(itemData);
+    
+    res.status(201).json({
+      success: true,
+      message: 'Item created successfully',
+      item: newItem
+    });
+  } catch (error) {
+    console.error('Error in additem route:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Error creating item',
+      error: process.env.NODE_ENV === 'development' ? error.toString() : undefined
+    });
+  }
+});
+
+Update Item
+
+PATCH /items/:item_id
+
+Description: Updates existing item
+Authentication: Required
+Reference:
+
+router.patch("/:item_id", jwtVerifyMiddleware, upload.single('image'), async (req, res) => {
+  try {
+    const itemData = req.body;
+    if (req.file) {
+      itemData.image = `/uploads/${req.file.filename}`;
+      console.log('File uploaded successfully:', req.file.path);
+    }
+    const updatedItem = await itemService.updateItem(req.params.item_id, itemData);
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+    res.json(updatedItem);
+  } catch (error) {
+    console.error('Error in patch route:', error);
+    res.status(400).json({
+      message: error.message,
+      error: error.toString(),
+      stack: error.stack
+    });
+  }
+});
+
+
+Archive Item
+
+PATCH /items/:item_id/archive
+
+Description: Archives an item
+Authentication: Required
+Reference:
+
+router.patch("/:item_id/archive", jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const archivedItem = await itemService.archiveItem(req.params.item_id);
+    res.json(archivedItem);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+Restore Item
+
+PATCH /items/:item_id/restore
+
+Description: Restores an archived item
+Authentication: Required
+Reference:
+
+router.patch("/:item_id/restore", jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const itemId = req.params.item_id;
+
+    // Add validation for itemId
+    if (!itemId) {
+      console.error("No item ID provided");
+      return res.status(400).json({ message: "Item ID is required" });
+    }
+
+    console.log("Attempting to restore item with ID:", itemId);
+
+    // Check if item exists first
+    const item = await itemService.getItemById(itemId);
+    if (!item) {
+      console.log("Item not found with ID:", itemId);
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    const updatedItem = await itemService.updateItem(itemId, {
+      isArchived: false,
+      status: "Available",
+    });
+
+    console.log("Item restored successfully:", updatedItem);
+    res.json(updatedItem);
+  } catch (error) {
+    console.error("Error in restore route:", error);
+    res.status(400).json({
+      message: "Error restoring item",
+      error: error.message,
+    });
+  }
+});
+
+ 
+Borrowing System
+Create Borrow Request
+
+
+POST /borrow
+
+Description: Creates new borrowing request
+Authentication: Required
+Body Parameters:
+item (string, item ID)
+borrowDate (date)
+returnDate (date)
+requestDate (date)
+Reference:
+
+  createRequest: async (req, res) => {
+    try {
+      const { item, borrowDate, returnDate, requestDate } = req.body; // Added requestDate
+      const userId = req.user.userId; // Get userId from JWT middleware
+
+      console.log("Incoming request body:", req.body);
+
+      // Validate if userId exists in the database
+      const userExists = await User.findById(userId);
+      if (!userExists) {
+        return res.status(404).json({ message: `User not found: ${userId}` });
+      }
+
+      // Validate if item exists in the database
+      const itemExists = await Item.findById(item);
+      if (!itemExists) {
+        return res.status(404).json({ message: `Item not found: ${item}` });
+      }
+
+      // Convert borrowDate, returnDate, and requestDate into Date objects
+      const borrowDateObj = new Date(borrowDate);
+      const returnDateObj = new Date(returnDate);
+      const requestDateObj = new Date(requestDate); // Convert requestDate to Date object
+
+      console.log("Borrow Date from Request:", borrowDate);
+      console.log("Return Date from Request:", returnDate);
+      console.log("Request Date from Request:", requestDate);
+
+      // Validate that borrowDate and returnDate are on the same day
+      if (borrowDateObj.toDateString() !== returnDateObj.toDateString()) {
+        return res.status(400).json({
+          message: "Borrow and return dates must be on the same day.",
+        });
+
+
+Get All Requests (Admin)
+
+GET /borrow/all
+
+Description: Retrieves all borrow requests
+Authentication: Admin only
+
+Get User Requests
+
+GET /borrow/my-requests
+
+Description: Retrieves all borrow requests for the authenticated user
+Authentication: Required 
+
+Update Request Status
+
+PATCH /borrow/:requestId/status 
+
+Description: Updates the status of a borrow request
+Authentication: Required
+Body Parameters:
+status (string, required)
+Reference:
+
+router.patch(
+  "/:requestId/status",
+  jwtVerifyMiddleware,
+  isAdmin,
+  async (req, res) => {
+    console.log('Received status update request:', {
+      requestId: req.params.requestId,
+      status: req.body.status
+    });
+    borrowController.updateRequestStatus(req, res);
+  }
+);
+
+PDF Generation
+
+GET /borrow/pdf/:requestId
+
+Description: Generates a PDF for a specific borrow request
+Authentication: Required
+Reference:
+
+GET /pdf/generate/:requestId
+Description: Generates PDF receipt for borrow request
+Authentication: Required
+Response: PDF file
+Reference:
+
+const generatePdfHandler = async (req, res) => {
+  try {
+    const requestId = req.params.requestId;
+    const request = await Request.findById(requestId).populate('item');
+
+    // Color scheme
+    const colors = {
+      midnightBlue: '#191970',    // Primary color
+      lightBlue: '#E6E8FA',       // Light background
+      darkText: '#1A1A1A',        // Dark text
+      greyText: '#666666'         // Secondary text
+    };
+
+    const doc = new PDFDocument({
+      size: 'A4',
+      margins: { top: 50, bottom: 50, left: 50, right: 50 }
+    });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=borrowed-item-${requestId}.pdf`
+    );
+
+    doc.pipe(res);
+
+    // Header with Midnight Blue
+    doc
+      .rect(0, 0, doc.page.width, 100)
+      .fill(colors.midnightBlue);
+
+    // White text for header
+    doc
+      .fontSize(28)
+      .fillColor('#FFFFFF')
+      .text('NSTP Equipment Borrowing', { align: 'center', top: 40 });
+
+    // Date on top right
+    doc
+      .fontSize(10)
+      .fillColor(colors.whiteText)
+      .text(new Date().toLocaleDateString(), { align: 'right', top: 110 });
+
+    // Add item image if exists
+    if (request.item?.image) {
+      try {
+        const imagePath = path.join(__dirname, '..', 'uploads', request.item.image);
+        if (fs.existsSync(imagePath)) {
+          doc
+            .moveDown(2)
+            .image(imagePath, {
+              fit: [200, 200],
+              align: 'center'
+            })
+            .moveDown();
+        }
+      } catch (error) {
+        console.error("Error adding image to PDF:", error);
+      }
+    }
+
+
+Email Notifications
+Borrow Success Notification
+
+POST /borrow/borrow-success
+
+Description: Sends a borrow success notification email
+
+Body Parameters:
+
+* userName (string)
+* userEmail (string)
+* itemName (string)
+* dueDate (date)
+
+Reference:
+
+router.post("/borrow-success", async (req, res) => {
+  try {
+    const { userName, userEmail, itemName, dueDate } = req.body;
+
+    // Send email notification
+    await sendEmail({
+      to: userEmail,
+      ...getBorrowSuccessEmail(userName, itemName, dueDate),
+    });
+
+    res.json({ message: "Borrow success notification sent" });
+  } catch (error) {
+    console.error("Error sending borrow success notification:", error);
+    res.status(500).json({ message: "Failed to send notification" });
+  }
+});
+
+
+Return Notification
+
+Description: Sends item return confirmation email
+Body Parameters:
+* userName (string)
+* userEmail (string)
+* itemName (string)
+Reference:
+
+router.post("/return-item", async (req, res) => {
+  try {
+    const { userName, userEmail, itemName } = req.body;
+
+    // Send email notification
+    await sendEmail({
+      to: userEmail,
+      ...getItemReturnedEmail(userName, itemName, new Date()),
+    });
+
+    res.json({ message: "Return notification sent" });
+  } catch (error) {
+    console.error("Error sending return notification:", error);
+    res.status(500).json({ message: "Failed to send notification" });
+  }
+});
+
+
+Error Responses
+All endpoints follow standard HTTP status codes:
+* 200: Success
+* 201: Created
+* 400: Bad Request
+* 401: Unauthorized
+* 403: Forbidden
+* 404: Not Found
+* 500: Server Error
+
+Error Response Format:
+
+{
+  "success": false,
+  "message": "Error description",
+  "error": "Detailed error (development only)"
+}
+
+File Upload
+* Supported file types: Images only
+* Maximum file size: 5MB
+* Storage: Local uploads directory and Cloudinary
+Reference:
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir); // Use the absolute path
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    // Allow only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not an image! Please upload an image.'), false);
+    }
+  }
+});
