@@ -5,6 +5,7 @@ import UserNavbar from "../Navbar/UserNavbar";
 import "../../css/UserDashboard.css";
 import axios from "axios";
 import BorrowOverlay from "./BorrowOverlay";
+import Swal from "sweetalert2";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -112,9 +113,40 @@ const UserDashboard = () => {
     setSelectedItem(null);
   };
 
-  const handleBorrowItem = (item) => {
-    setSelectedItem(item);
-    setShowBorrowOverlay(true);
+  const handleBorrowItem = async (item) => {
+    try {
+      const token = sessionStorage.getItem("sessionToken");
+      // Check if user has pending request for this item
+      const response = await axios.get(`http://localhost:3000/borrow/my-requests`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+      const existingRequest = response.data.find(
+        request => request.item._id === item._id && 
+        (request.status === "pending" || request.status === "approved")
+      );
+
+      if (existingRequest) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Cannot Borrow',
+          text: 'You already have a pending or approved request for this item.',
+        });
+        return;
+      }
+
+      setSelectedItem(item);
+      setShowBorrowOverlay(true);
+    } catch (error) {
+      console.error("Error checking existing requests:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to process borrow request. Please try again.',
+      });
+    }
   };
 
   const handleCloseBorrowOverlay = () => {

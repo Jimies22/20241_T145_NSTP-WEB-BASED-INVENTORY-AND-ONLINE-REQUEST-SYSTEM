@@ -135,6 +135,40 @@ const UserRequest = () => {
   //   }
   // };
 
+  const checkExistingRequest = (itemId) => {
+    return userRequests.some(
+      request => request.item._id === itemId && 
+      (request.status === "pending" || request.status === "approved")
+    );
+  };
+
+  const renderActionButtons = (request) => {
+    if (request.status.toLowerCase() === "pending") {
+      return (
+        <button
+          type="button"
+          className="cancel-btn"
+          onClick={() => handleCancel(request._id)}
+        >
+          Cancel
+        </button>
+      );
+    } else if (request.status.toLowerCase() === "rejected" || 
+               request.status.toLowerCase() === "cancelled") {
+      return (
+        <button
+          type="button"
+          className="reborrow-btn"
+          onClick={() => handleReborrow(request.item)}
+          disabled={checkExistingRequest(request.item._id)}
+        >
+          Borrow Again
+        </button>
+      );
+    }
+    return null;
+  };
+
   return (
     <>
       <UserSidebar />
@@ -180,15 +214,7 @@ const UserRequest = () => {
                             >
                               View
                             </button>
-                            {request.status.toLowerCase() === "pending" && (
-                              <button
-                                type="button"
-                                className="cancel-btn"
-                                onClick={() => handleCancel(request._id)}
-                              >
-                                Cancel
-                              </button>
-                            )}
+                            {renderActionButtons(request)}
                           </div>
                         </td>
                       </tr>
