@@ -2,7 +2,9 @@
   "dependencies": {
     "@cloudinary/url-gen": "^1.21.0",
     "html5-qrcode": "^2.3.8",
+    "jsbarcode": "^3.11.6",
     "jwt-decode": "^4.0.0",
+    "qrcode": "^1.5.4",
     "react-data-table-component": "^7.6.2",
     "styled-components": "^6.1.13",
     "sweetalert2": "^11.14.5"

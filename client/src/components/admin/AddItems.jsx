@@ -8,6 +8,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/AddItems.css";
 import Swal from 'sweetalert2';
 import { Cloudinary } from "@cloudinary/url-gen";
+import JsBarcode from 'jsbarcode';
+import QRCode from 'qrcode';
 
 const CATEGORIES = [
   "TV",
@@ -80,18 +82,19 @@ function AddItems({ updateItem }) {
             <i className={`bx ${editLocked ? 'bx-lock' : 'bx-edit'}`}></i>
           </button>
           <button
+            onClick={() => handleViewCodes(row)}
+            className="codes-btn"
+            title="View Codes"
+          >
+            <i className='bx bx-qr'></i>
+          </button>
+          <button
             onClick={() => handleArchive(row)}
             className="archive-btn"
             title="Archive"
           >
             <i className="bx bx-archive-in"></i>
           </button>
-          {/* <button 
-                        onClick={() => handleDelete(row.item_id)}
-                        className="delete-btn"
-                    >
-                        <i className='bx bx-trash'></i>
-                    </button> */}
         </div>
       ),
       width: "150px",
@@ -498,6 +501,109 @@ function AddItems({ updateItem }) {
       console.error("Error checking lock status:", error);
     }
   };
+
+  const handleViewCodes = async (item) => {
+    // Create canvas for barcode
+    const barcodeCanvas = document.createElement('canvas');
+    JsBarcode(barcodeCanvas, item._id, {
+      format: "CODE128",
+      width: 2,
+      height: 100,
+      displayValue: true
+    });
+
+    // Generate QR code
+    const qrCodeUrl = await QRCode.toDataURL(item._id, {
+      width: 200,
+      margin: 2
+    });
+
+    // Show both codes in a modal
+    Swal.fire({
+      title: `Codes for ${item.name}`,
+      html: `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+          <div class="code-section">
+            <h4>Barcode</h4>
+            <img src="${barcodeCanvas.toDataURL('image/png')}" alt="barcode" />
+            <button id="downloadBarcode" class="btn btn-primary">Download Barcode</button>
+          </div>
+          <div class="code-section">
+            <h4>QR Code</h4>
+            <img src="${qrCodeUrl}" alt="qr code" />
+            <button id="downloadQR" class="btn btn-primary">Download QR Code</button>
+          </div>
+        </div>
+      `,
+      showConfirmButton: false,
+      showCloseButton: true,
+      width: '600px',
+      didOpen: () => {
+        // Barcode download handler
+        document.getElementById('downloadBarcode').addEventListener('click', () => {
+          const link = document.createElement('a');
+          link.download = `barcode-${item.name}.png`;
+          link.href = barcodeCanvas.toDataURL('image/png');
+          link.click();
+        });
+
+        // QR code download handler
+        document.getElementById('downloadQR').addEventListener('click', () => {
+          const link = document.createElement('a');
+          link.download = `qrcode-${item.name}.png`;
+          link.href = qrCodeUrl;
+          link.click();
+        });
+      }
+    });
+  };
+
+  const buttonStyles = `
+    .barcode-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin: 0 4px;
+    }
+    .barcode-btn:hover {
+      background-color: #5a6268;
+    }
+    .codes-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin: 0 4px;
+    }
+    .codes-btn:hover {
+      background-color: #5a6268;
+    }
+    .code-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 15px;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    .code-section img {
+      max-width: 100%;
+      height: auto;
+      margin: 10px 0;
+    }
+    .code-section button {
+      margin-top: 10px;
+    }
+  `;
 
   return (
     <div className="dashboard">
