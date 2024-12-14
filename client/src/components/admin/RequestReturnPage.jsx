@@ -7,6 +7,8 @@ import "../../css/RequestPage.css";
 import Swal from "sweetalert2";
 import QRScanner from "./QRScanner";
 import { Html5QrcodeScanner } from 'html5-qrcode';
+import 'animate.css';
+import '../../css/SweetAlert.css';
 
 const RequestReturnPage = () => {
   const [requests, setRequests] = useState([]);
@@ -97,38 +99,102 @@ const RequestReturnPage = () => {
 
   const handleScanSuccess = async (decodedText) => {
     try {
-      const token = sessionStorage.getItem("sessionToken");
-      
-      // Verify the QR code matches the item being returned
-      if (decodedText !== currentRequest.item._id) {
-        throw new Error("QR code doesn't match the item being returned");
+      console.log('Scanned QR Code:', decodedText);
+      console.log('Current Request:', currentRequest);
+
+      if (!currentRequest) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'No active return request selected',
+          icon: 'error'
+        });
+        return;
       }
 
-      // Update the request status to 'returned'
-      await axios.put(
-        `http://localhost:3000/borrow/${currentRequest._id}/return`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // Trim any whitespace and ensure consistent case
+      const scannedCode = decodedText.trim();
+      const itemId = currentRequest.item._id.trim();
 
-      setShowScanner(false);
-      Swal.fire({
-        title: 'Success!',
-        text: 'Item has been successfully returned',
-        icon: 'success',
-      });
-      
-      // Refresh the requests list
-      fetchRequests();
+      if (scannedCode === itemId) {
+        const token = sessionStorage.getItem("sessionToken");
+        
+        try {
+          // Update request status to returned
+          await axios.put(
+            `http://localhost:3000/borrow/${currentRequest._id}/return`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          // Update item availability
+          await axios.patch(
+            `http://localhost:3000/items/${currentRequest.item._id}/availability`,
+            { availability: true },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          // Show success message
+          await Swal.fire({
+            title: 'Return Successful!',
+            html: `
+              <div style="text-align: left;">
+                <p><strong>Item:</strong> ${currentRequest.item.name}</p>
+                <p><strong>Borrower:</strong> ${currentRequest.userId.name}</p>
+                <p><strong>Status:</strong> Returned</p>
+              </div>
+            `,
+            icon: 'success',
+            confirmButtonText: 'Done',
+            confirmButtonColor: '#28a745',
+            timer: 5000,
+            timerProgressBar: true,
+            showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+            }
+          });
+
+          // Play success sound
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2220/2220-preview.mp3');
+          await audio.play();
+
+          // Refresh the requests list
+          await fetchRequests();
+
+          // Close the scanner
+          setShowScanner(false);
+
+        } catch (error) {
+          console.error('Error updating status:', error);
+          Swal.fire({
+            title: 'Error!',
+            text: error.response?.data?.message || 'Failed to update status',
+            icon: 'error'
+          });
+        }
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: 'QR code does not match the requested item',
+          icon: 'error'
+        });
+      }
     } catch (error) {
+      console.error('Scan processing error:', error);
       Swal.fire({
         title: 'Error!',
-        text: error.message || 'Failed to process return',
-        icon: 'error',
+        text: 'Failed to process scan',
+        icon: 'error'
       });
     }
   };
@@ -165,11 +231,11 @@ const RequestReturnPage = () => {
         );
       },
       willClose: () => {
-        const scanner = document.getElementById('reader');
-        if (scanner) {
-          while (scanner.firstChild) {
-            scanner.removeChild(scanner.firstChild);
-          }
+        const html5QrCode = new Html5Qrcode("reader");
+        if (html5QrCode) {
+          html5QrCode.stop().catch(err => {
+            console.error("Error stopping scanner:", err);
+          });
         }
       }
     });

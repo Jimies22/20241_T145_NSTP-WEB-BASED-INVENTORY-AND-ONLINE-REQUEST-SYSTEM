@@ -90,6 +90,41 @@ const itemService = {
       throw error;
     }
   },
+
+  updateItemAvailability: async (itemId, availability) => {
+    try {
+      const item = await Item.findById(itemId);
+      if (!item) {
+        throw new Error('Item not found');
+      }
+      
+      item.availability = availability;
+      await item.save();
+      
+      return item;
+    } catch (error) {
+      console.error('Error updating item availability:', error);
+      throw error;
+    }
+  },
+
+  handleReturn: async (itemId) => {
+    try {
+      const item = await Item.findById(itemId);
+      if (!item) {
+        throw new Error('Item not found');
+      }
+
+      item.availability = true;
+      item.status = 'available';
+      await item.save();
+
+      return item;
+    } catch (error) {
+      console.error('Error in handleReturn:', error);
+      throw error;
+    }
+  }
 };
 
 module.exports = itemService;

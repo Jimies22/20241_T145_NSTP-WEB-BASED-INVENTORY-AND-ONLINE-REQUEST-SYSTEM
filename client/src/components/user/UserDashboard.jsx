@@ -39,6 +39,14 @@ const UserDashboard = () => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchItems();
+    }, 5000); // Refresh every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   const fetchItems = async () => {
     try {
       const token = sessionStorage.getItem("sessionToken");

@@ -97,6 +97,8 @@ router.patch("/:item_id", jwtVerifyMiddleware, upload.single('image'), async (re
       itemData.image = `/uploads/${req.file.filename}`;
       console.log('File uploaded successfully:', req.file.path);
     }
+    console.log('Item update request received for:', req.params.item_id);
+    console.log('Update data:', itemData);
     const updatedItem = await itemService.updateItem(req.params.item_id, itemData);
     if (!updatedItem) {
       return res.status(404).json({ message: "Item not found" });
@@ -204,6 +206,29 @@ router.get("/last-item-id", async (req, res) => {
     res.json({ lastItemId });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Add this route to update item availability
+router.patch("/:itemId/availability", jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const { itemId } = req.params;
+    const { availability } = req.body;
+
+    const updatedItem = await Item.findByIdAndUpdate(
+      itemId,
+      { availability },
+      { new: true }
+    );
+
+    if (!updatedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    res.json(updatedItem);
+  } catch (error) {
+    console.error('Error updating item availability:', error);
+    res.status(500).json({ message: 'Error updating item availability' });
   }
 });
 

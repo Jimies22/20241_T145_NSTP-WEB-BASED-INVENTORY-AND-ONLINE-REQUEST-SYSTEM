@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const borrowController = require("../controllers/borrowController");
+const Item = require("../models/Item");
+const Request = require("../models/borrow");
 const { jwtVerifyMiddleware } = require("../middleware/authMiddleware"); // Ensure this path is correct
 const {
   sendEmail,
@@ -117,6 +119,50 @@ router.put("/mark-read/:requestId", jwtVerifyMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Error marking request as read:", error);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Add this route to handle returns
+router.put('/:requestId/return', jwtVerifyMiddleware, async (req, res) => {
+  try {
+    console.log('Return request received for:', req.params.requestId);
+    
+    const request = await Request.findById(req.params.requestId).populate('item');
+    
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+
+    if (request.status !== 'approved') {
+      return res.status(400).json({ message: 'Request must be approved before it can be returned' });
+    }
+
+    // Update request status
+    request.status = 'returned';
+    request.actualReturnDate = new Date();
+    await request.save();
+
+    // Update item availability
+    const item = await Item.findById(request.item._id);
+    if (!item) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+
+    item.availability = true;
+    await item.save();
+
+    res.json({
+      message: 'Return processed successfully',
+      request: request,
+      item: item
+    });
+
+  } catch (error) {
+    console.error('Error processing return:', error);
+    res.status(500).json({
+      message: 'Error processing return',
+      error: error.message
+    });
   }
 });
 

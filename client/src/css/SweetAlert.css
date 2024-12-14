@@ -1,0 +1,20 @@
+.swal2-popup {
+  font-family: 'Poppins', sans-serif;
+}
+
+.swal2-title {
+  color: #28a745 !important;
+}
+
+.swal2-html-container {
+  margin: 1em 1.6em 0.3em !important;
+}
+
+.swal2-html-container p {
+  margin: 8px 0;
+  font-size: 1.1em;
+}
+
+.swal2-timer-progress-bar {
+  background: #28a745 !important;
+}
