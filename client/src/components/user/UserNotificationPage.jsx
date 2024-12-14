@@ -26,8 +26,8 @@ function UserNotificationPage() {
 
       const response = await fetch('http://localhost:3000/borrow/my-requests', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {

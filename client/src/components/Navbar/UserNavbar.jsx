@@ -137,7 +137,7 @@ function UserNavbar() {
                 </div> */}
             </form>
             <div className="nav-right">
-                <Link to="/notification" className="notification">
+                <Link to="/usernotification" className="notification">
                     <i className='bx bxs-bell'></i>
                     {notificationCount > 0 && (
                         <span className="num">{notificationCount}</span>
