@@ -40,9 +40,16 @@ const UserDashboard = () => {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/items");
-      setItems(response.data);
-      setError(null);
+      const token = sessionStorage.getItem("sessionToken");
+      const response = await axios.get("http://localhost:3000/items", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      // Filter out archived items
+      const activeItems = response.data.filter(item => !item.isArchived);
+      setItems(activeItems);
     } catch (error) {
       console.error("Error fetching items:", error);
       setError("Failed to fetch items");
