@@ -287,3 +287,88 @@ hr{
   height: 1rem;
   border-width: 0.15em;
 }
+
+/* Add to Login.css */
+.password-container {
+  position: relative;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 10;
+  color: #3f4699; /* Match your theme color */
+  transition: all 0.3s ease;
+  border-radius: 50%;
+}
+
+.password-toggle-btn:hover {
+  background-color: rgba(63, 70, 153, 0.1); /* Subtle background on hover */
+  transform: translateY(-50%) scale(1.1); /* Slight scale effect */
+}
+
+.password-toggle-btn:active {
+  transform: translateY(-50%) scale(0.95); /* Click effect */
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(63, 70, 153, 0.2); /* Subtle focus ring */
+}
+
+.password-toggle-btn i {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+/* Smooth icon transition */
+.bi-eye, .bi-eye-slash {
+  transition: all 0.3s ease;
+}
+
+/* Add a subtle glow effect on hover */
+.password-toggle-btn:hover i {
+  filter: drop-shadow(0 0 2px rgba(63, 70, 153, 0.3));
+}
+
+/* Adjust the padding of the password input */
+#floatingPassword {
+  padding-right: 45px;
+}
+
+/* Optional: Add animation for icon change */
+@keyframes iconRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.password-toggle-btn i {
+  animation: iconRotate 0.3s ease;
+}
+
+/* Style the input field to match */
+.form-floating .form-control:focus {
+  border-color: #3f4699;
+  box-shadow: 0 0 0 0.2rem rgba(63, 70, 153, 0.25);
+}
+
+/* Add a subtle transition to the input field */
+.form-floating .form-control {
+  transition: all 0.3s ease;
+}
+
+/* Optional: Add a custom style for when password is visible */
+.password-toggle-btn.visible {
+  color: #7b96d4; /* Different color when password is visible */
+}
+
+/* Style for something specific */

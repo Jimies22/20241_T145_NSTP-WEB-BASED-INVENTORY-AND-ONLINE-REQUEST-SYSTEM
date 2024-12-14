@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../css/Login.css"; // Ensure this path is correct
 import nstpLogo from "../assets/NSTP_LOGO.png";
+import Swal from "sweetalert2";
 
 const clientId =
   "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com";
@@ -19,10 +20,16 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSuccess = (credentialResponse) => {
     if (!isRecaptchaValid) {
-      alert("Please complete the reCAPTCHA");
+      Swal.fire({
+        title: "Verification Required",
+        text: "Please complete the reCAPTCHA verification",
+        icon: "warning",
+        confirmButtonColor: "#3085d6",
+      });
       return;
     }
 
@@ -51,7 +58,6 @@ function Login() {
         console.log("Login successful:", data);
         sessionStorage.setItem("sessionToken", data.token);
         
-        // Store user info in sessionStorage
         const userInfo = {
             name: data.user.name,
             email: data.user.email,
@@ -61,15 +67,28 @@ function Login() {
         console.log("Storing user info:", userInfo);
         sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
         
-        if (data.user.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/user");
-        }
+        Swal.fire({
+          title: "Success!",
+          text: "Login successful",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+          if (data.user.role === "admin") {
+            navigate("/admin");
+          } else {
+            navigate("/user");
+          }
+        });
       })
       .catch((error) => {
         console.error("Login error:", error);
-        alert(error.message || "Login failed. Please try again.");
+        Swal.fire({
+          title: "Login Failed",
+          text: error.message || "Invalid credentials. Please try again.",
+          icon: "error",
+          confirmButtonColor: "#d33",
+        });
       })
       .finally(() => {
         setIsLoading(false);
@@ -80,12 +99,22 @@ function Login() {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Please enter both email and password");
+      Swal.fire({
+        title: "Missing Information",
+        text: "Please enter both email and password",
+        icon: "warning",
+        confirmButtonColor: "#3085d6",
+      });
       return;
     }
 
     if (!isRecaptchaValid) {
-      alert("Please complete the reCAPTCHA");
+      Swal.fire({
+        title: "Verification Required",
+        text: "Please complete the reCAPTCHA verification",
+        icon: "warning",
+        confirmButtonColor: "#3085d6",
+      });
       return;
     }
 
@@ -110,16 +139,21 @@ function Login() {
 
       sessionStorage.setItem("sessionToken", data.token);
       
-      // Store user info for manual login
       const userInfo = {
         email: email,
         role: "admin"
-        // Note: Deliberately not including a picture property
-        // This will trigger the initial letter avatar creation
       };
       
       sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
       
+      await Swal.fire({
+        title: "Success!",
+        text: "Login successful",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+      });
+
       if (data.user.role === "admin") {
         navigate("/admin");
       } else {
@@ -127,7 +161,12 @@ function Login() {
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert(error.message || "Login failed. Please try again.");
+      Swal.fire({
+        title: "Login Failed",
+        text: error.message || "Invalid credentials. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#d33",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -135,7 +174,12 @@ function Login() {
 
   const onError = () => {
     console.log("Login Failed");
-    alert("Login failed. Please try again.");
+    Swal.fire({
+      title: "Google Login Failed",
+      text: "Unable to login with Google. Please try again.",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
   };
 
   const onRecaptchaChange = (value) => {
@@ -185,9 +229,9 @@ function Login() {
                     Email address
                   </label>
                 </div>
-                <div className="form-floating mb-4">
+                <div className="form-floating mb-4 password-container">
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     className="form-control"
                     id="floatingPassword"
                     placeholder="Password"
@@ -199,6 +243,14 @@ function Login() {
                     <i className="bi bi-key" />
                     Password
                   </label>
+                  <button
+                    type="button"
+                    className={`password-toggle-btn ${showPassword ? 'visible' : ''}`}
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`} />
+                  </button>
                 </div>
                 <div className="checkbox-container">
                     <input type="checkbox" name="checkbox" id="checkbox" />
