@@ -5,6 +5,7 @@ import Sidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "../../css/ArchivePage.css";
 import Swal from 'sweetalert2';
+import { logActivity } from '../../utils/activityLogger';
 
 const ArchivedUsersPage = () => {
   const [archivedUsers, setArchivedUsers] = useState([]);
@@ -91,12 +92,23 @@ const ArchivedUsersPage = () => {
   const fetchArchivedUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3000/users");
+      const token = sessionStorage.getItem('sessionToken');
+      const response = await axios.get("http://localhost:3000/users", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       const archived = response.data.filter((user) => user.isArchived);
       setArchivedUsers(archived);
+      setError(null);
     } catch (error) {
       console.error("Error fetching archived users:", error);
       setError("Failed to fetch archived users");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to fetch archived users'
+      });
     } finally {
       setLoading(false);
     }
@@ -115,19 +127,38 @@ const ArchivedUsersPage = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.patch(`http://localhost:3000/users/${user.userID}/restore`);
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: 'User restored successfully'
-        });
-        fetchArchivedUsers();
+        const token = sessionStorage.getItem('sessionToken');
+        const response = await axios.patch(
+          `http://localhost:3000/users/${user.userID}/unarchive`,
+          { isArchived: false },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+
+        if (response.status === 200) {
+          await logActivity(
+            'RESTORE_USER',
+            `Restored user: ${user.name} (${user.email})`
+          );
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'User restored successfully'
+          });
+          
+          await fetchArchivedUsers();
+        }
       } catch (error) {
         console.error("Error restoring user:", error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: 'Failed to restore user'
+          text: error.response?.data?.message || 'Failed to restore user'
         });
       }
     }
@@ -146,19 +177,34 @@ const ArchivedUsersPage = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/users/${userID}`);
+        const token = sessionStorage.getItem('sessionToken');
+        await axios.delete(
+          `http://localhost:3000/users/${userID}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
+        await logActivity(
+          'DELETE_USER',
+          `Permanently deleted user ID: ${userID}`
+        );
+
         Swal.fire({
           icon: 'success',
           title: 'Deleted!',
           text: 'User has been permanently deleted.'
         });
-        fetchArchivedUsers();
+        
+        await fetchArchivedUsers();
       } catch (error) {
         console.error("Error deleting user:", error);
         Swal.fire({
           icon: 'error',
           title: 'Error!',
-          text: 'Failed to delete user'
+          text: error.response?.data?.message || 'Failed to delete user'
         });
       }
     }

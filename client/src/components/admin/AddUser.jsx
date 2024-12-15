@@ -120,18 +120,28 @@ function AddUser() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3000/users");
-      console.log("Fetched users:", response.data);
+      const token = sessionStorage.getItem('sessionToken');
+      const response = await axios.get("http://localhost:3000/users", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
       if (Array.isArray(response.data)) {
         const activeUsers = response.data.filter((user) => !user.isArchived);
         setUsers(activeUsers);
         setError(null);
       } else {
-        setError("Invalid data format received");
+        throw new Error('Invalid data format received');
       }
     } catch (error) {
       console.error("Error fetching users:", error);
       setError(error.response?.data?.message || "Failed to fetch users");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: error.response?.data?.message || "Failed to fetch users"
+      });
     } finally {
       setLoading(false);
     }
@@ -148,6 +158,7 @@ function AddUser() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const token = sessionStorage.getItem('sessionToken');
       const userData = {
         name: formData.name.trim(),
         email: formData.email.trim(),
@@ -156,43 +167,73 @@ function AddUser() {
       };
 
       if (isEditing) {
-        await axios.patch(
+        const response = await axios.patch(
           `http://localhost:3000/users/${formData.userID}`,
-          userData
+          userData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
         );
-        await logActivity('UPDATE_USER', `Updated user: ${userData.name}`);
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: 'User updated successfully'
-        });
-      } else {
-        if (!userData.email.includes("@") && userData.role === "user") {
+        
+        if (response.status === 200) {
+          await logActivity(
+            'UPDATE_USER',
+            `Updated user: ${userData.name} (${userData.email})`
+          );
+          
           Swal.fire({
-            icon: 'error',
-            title: 'Invalid Email',
-            text: 'Faculty email must have @'
+            icon: 'success',
+            title: 'Success!',
+            text: 'User updated successfully'
           });
-          return;
         }
-
-        await axios.post("http://localhost:3000/users/register", userData);
-        await logActivity('CREATE_USER', `Created new user: ${userData.name}`);
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: 'User added successfully'
-        });
+      } else {
+        const response = await axios.post(
+          "http://localhost:3000/users/register", 
+          userData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if (response.status === 201 || response.status === 200) {
+          await logActivity(
+            'CREATE_USER',
+            `Created new user: ${userData.name} (${userData.email}) - Role: ${userData.role}`
+          );
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'User added successfully'
+          });
+          
+          handleCloseModal();
+          await fetchUsers();
+        }
       }
-
-      handleCloseModal();
-      await fetchUsers();
     } catch (error) {
       console.error("Error:", error);
+      let errorMessage = 'Failed to save user';
+      
+      if (error.response?.status === 400) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status === 409) {
+        errorMessage = 'Email already exists';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Unauthorized. Please log in again.';
+      }
+
       Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: error.response?.data?.message || 'Failed to save user'
+        text: errorMessage
       });
     }
   };
@@ -210,14 +251,20 @@ function AddUser() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/users/${userID}`);
-        await logActivity('DELETE_USER', `Deleted user ID: ${userID}`);
-        Swal.fire(
-          'Deleted!',
-          'User has been deleted.',
-          'success'
-        );
-        await fetchUsers();
+        const response = await axios.delete(`http://localhost:3000/users/${userID}`);
+        if (response.status === 200) {
+          await logActivity(
+            'DELETE_USER',
+            `Deleted user ID: ${userID}`
+          );
+          
+          Swal.fire(
+            'Deleted!',
+            'User has been deleted.',
+            'success'
+          );
+          await fetchUsers();
+        }
       } catch (error) {
         console.error("Error deleting user:", error);
         Swal.fire(
@@ -242,19 +289,36 @@ function AddUser() {
 
     if (result.isConfirmed) {
       try {
-        await axios.patch(`http://localhost:3000/users/${userID}/archive`);
-        await logActivity('ARCHIVE_USER', `Archived user ID: ${userID}`);
-        Swal.fire(
-          'Archived!',
-          'User has been archived successfully.',
-          'success'
+        const token = sessionStorage.getItem('sessionToken');
+        const response = await axios.patch(
+          `http://localhost:3000/users/${userID}/archive`,
+          { isArchived: true },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
         );
-        await fetchUsers();
+
+        if (response.status === 200) {
+          await logActivity(
+            'ARCHIVE_USER',
+            `Archived user ID: ${userID}`
+          );
+          
+          Swal.fire(
+            'Archived!',
+            'User has been archived successfully.',
+            'success'
+          );
+          await fetchUsers();
+        }
       } catch (error) {
         console.error("Error archiving user:", error);
         Swal.fire(
           'Error!',
-          'Error archiving user',
+          error.response?.data?.message || 'Error archiving user',
           'error'
         );
       }
