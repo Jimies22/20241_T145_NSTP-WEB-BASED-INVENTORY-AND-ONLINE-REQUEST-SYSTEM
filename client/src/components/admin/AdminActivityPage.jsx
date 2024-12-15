@@ -10,6 +10,9 @@ const ActivityPage = () => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [filterText, setFilterText] = useState('');
+    const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
+    const [dateRange, setDateRange] = useState({ start: null, end: null });
 
     const customStyles = {
         table: {
@@ -128,6 +131,78 @@ const ActivityPage = () => {
         };
     }, []);
 
+    const exportToCSV = () => {
+        const csvData = activities.map(item => ({
+            Timestamp: new Date(item.timestamp).toLocaleString(),
+            User: item.userName,
+            Role: item.userRole,
+            Action: item.action,
+            Details: item.details
+        }));
+
+        const csvString = [
+            Object.keys(csvData[0]).join(','),
+            ...csvData.map(row => Object.values(row).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvString], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `activity_log_${new Date().toISOString()}.csv`;
+        a.click();
+    };
+
+    const filteredItems = activities.filter(
+        item => {
+            return (
+                (item.userName && item.userName.toLowerCase().includes(filterText.toLowerCase())) ||
+                (item.action && item.action.toLowerCase().includes(filterText.toLowerCase())) ||
+                (item.details && item.details.toLowerCase().includes(filterText.toLowerCase())) ||
+                (item.userRole && item.userRole.toLowerCase().includes(filterText.toLowerCase()))
+            );
+        }
+    );
+
+    const subHeaderComponent = (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <input
+                type="text"
+                placeholder="Search Activities..."
+                value={filterText}
+                onChange={e => setFilterText(e.target.value)}
+                style={{
+                    padding: '6px 12px',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                    fontSize: '14px'
+                }}
+            />
+            {filterText && (
+                <button
+                    onClick={() => {
+                        setResetPaginationToggle(!resetPaginationToggle);
+                        setFilterText('');
+                    }}
+                    style={{
+                        padding: '6px 12px',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        backgroundColor: '#fff'
+                    }}
+                >
+                    Clear
+                </button>
+            )}
+        </div>
+    );
+
+    const filteredByDate = activities.filter(item => {
+        if (!dateRange.start || !dateRange.end) return true;
+        const activityDate = new Date(item.timestamp);
+        return activityDate >= dateRange.start && activityDate <= dateRange.end;
+    });
+
     return (
         <>
             <div className="user-dashboard">
@@ -150,6 +225,23 @@ const ActivityPage = () => {
                                     </li>
                                 </ul>
                             </div>
+                            <div className="right">
+                                <button 
+                                    className="export-btn"
+                                    onClick={exportToCSV}
+                                    style={{
+                                        padding: '8px 16px',
+                                        backgroundColor: '#3C91E6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <i className='bx bx-download'></i>
+                                    Export to CSV
+                                </button>
+                            </div>
                         </div>
 
                         <div style={{
@@ -163,8 +255,12 @@ const ActivityPage = () => {
                         }}>
                             <DataTable
                                 columns={columns}
-                                data={activities}
+                                data={filteredItems}
                                 pagination
+                                paginationResetDefaultPage={resetPaginationToggle}
+                                subHeader
+                                subHeaderComponent={subHeaderComponent}
+                                persistTableHead
                                 responsive
                                 highlightOnHover
                                 pointerOnHover
