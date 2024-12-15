@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { Cloudinary } from "@cloudinary/url-gen";
 import JsBarcode from 'jsbarcode';
 import QRCode from 'qrcode';
+import { logActivity } from "../../utils/activityLogger";
 
 const CATEGORIES = [
   "TV",
@@ -277,6 +278,11 @@ function AddItems({ updateItem }) {
 
       await fetchItems();
       handleCloseModal();
+      if (isEditing) {
+        await logActivity('update_item', `Updated item: ${formData.name}`);
+      } else {
+        await logActivity('add_item', `Added new item: ${formData.name}`);
+      }
     } catch (error) {
       console.error("Error saving item:", error);
       Swal.fire({
@@ -308,6 +314,7 @@ function AddItems({ updateItem }) {
         );
         handleCloseModal();
         fetchItems();
+        await logActivity('DELETE_ITEM', `Deleted item ID: ${item_id}`);
       } catch (error) {
         console.error("Error deleting item:", error);
         Swal.fire(
@@ -443,6 +450,7 @@ function AddItems({ updateItem }) {
             prevItems.filter((i) => i.item_id !== item.item_id)
           );
         }
+        await logActivity('archive_item', `Archived item: ${item.name}`);
       } catch (error) {
         console.error("Error archiving item:", error);
         Swal.fire(

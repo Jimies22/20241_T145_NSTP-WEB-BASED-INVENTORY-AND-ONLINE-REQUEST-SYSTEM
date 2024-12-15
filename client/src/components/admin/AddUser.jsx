@@ -6,6 +6,7 @@ import AdminSidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Swal from 'sweetalert2';
+import { logActivity } from "../../utils/activityLogger";
 
 function AddUser() {
   const [users, setUsers] = useState([]);
@@ -159,6 +160,7 @@ function AddUser() {
           `http://localhost:3000/users/${formData.userID}`,
           userData
         );
+        await logActivity('UPDATE_USER', `Updated user: ${userData.name}`);
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -175,6 +177,7 @@ function AddUser() {
         }
 
         await axios.post("http://localhost:3000/users/register", userData);
+        await logActivity('CREATE_USER', `Created new user: ${userData.name}`);
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -208,6 +211,7 @@ function AddUser() {
     if (result.isConfirmed) {
       try {
         await axios.delete(`http://localhost:3000/users/${userID}`);
+        await logActivity('DELETE_USER', `Deleted user ID: ${userID}`);
         Swal.fire(
           'Deleted!',
           'User has been deleted.',
@@ -238,9 +242,8 @@ function AddUser() {
 
     if (result.isConfirmed) {
       try {
-        await axios.patch(`http://localhost:3000/users/${userID}/archive`, {
-          isArchived: true,
-        });
+        await axios.patch(`http://localhost:3000/users/${userID}/archive`);
+        await logActivity('ARCHIVE_USER', `Archived user ID: ${userID}`);
         Swal.fire(
           'Archived!',
           'User has been archived successfully.',

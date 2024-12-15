@@ -26,20 +26,26 @@ const authMiddleware = (req, res, next) => {
 
 // Middleware to verify JWT on protected routes
 const jwtVerifyMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1]; // Extract token from Authorization header
+  const token = req.headers.authorization?.split(" ")[1];
+  
+  console.log('Received token:', token);
 
   if (!token) {
+    console.log('No token provided');
     return res.status(401).json({ message: "No token provided" });
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: Invalid or expired token" });
+      console.log('Token verification failed:', err.message);
+      return res.status(401).json({ 
+        message: "Unauthorized: Invalid or expired token",
+        error: err.message 
+      });
     }
 
-    req.user = decoded; // Attach decoded user info to request
+    console.log('Decoded token:', decoded);
+    req.user = decoded;
     next();
   });
 };

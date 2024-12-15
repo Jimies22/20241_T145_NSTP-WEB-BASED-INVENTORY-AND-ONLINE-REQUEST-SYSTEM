@@ -74,7 +74,11 @@ function App() {
                 <Route path="/reports" element={<ReportsPage/>} />
                 <Route path="/archive" element={<ArchivedPage/>} />
                 <Route path="/admin/archived-users" element={<ArchivedUsersPage />} />
-                <Route path="/activity" element={<AdminActivityPage/>} />
+                <Route path="/activity" element={
+                    <ProtectedRoute role="admin">
+                        <AdminActivityPage/>
+                    </ProtectedRoute>
+                } />
                 <Route path="/notification" element={<AdminNotificationPage/>} />
                 <Route path="/usernotification" element={<UserNotificationPage/>} />
                 <Route path="/users" element={<AddUser />} />
@@ -91,6 +95,11 @@ function App() {
                 <Route path="/request/cancelled" element={
                     <ProtectedRoute role="admin">
                         <RequestCancelledPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/activities" element={
+                    <ProtectedRoute role="admin">
+                        <AdminActivityPage />
                     </ProtectedRoute>
                 } />
                 {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}

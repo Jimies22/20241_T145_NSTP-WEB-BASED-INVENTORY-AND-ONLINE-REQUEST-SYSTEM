@@ -1,115 +1,84 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
-
-/* Removed global styles that conflict with sidebars */
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+.table-data table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
-a {
-	text-decoration: none; /* This is already defined in AdminSidebar.css */
+.table-data th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 600;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #dee2e6;
 }
 
-li {
-	list-style: none; /* This is already defined in AdminSidebar.css */
+.table-data td {
+    padding: 12px;
+    border-bottom: 1px solid #dee2e6;
 }
 
-/* Removed duplicate CSS variables */
-:root {
-	--poppins: 'Poppins', sans-serif;
-	--lato: 'Lato', sans-serif;
-
-	--light: #F9F9F9; /* Already defined in UserSidebar.css */
-	--blue: #3C91E6; /* Already defined in UserSidebar.css */
-	--light-blue: #CFE8FF; /* Already defined in UserSidebar.css */
-	--grey: #eee; /* Already defined in UserSidebar.css */
-	--dark-grey: #AAAAAA; /* Already defined in UserSidebar.css */
-	--dark: #342E37; /* Already defined in UserSidebar.css */
-	--red: #DB504A; /* Already defined in UserSidebar.css */
-	--yellow: #FFCE26; /* Already defined in UserSidebar.css */
-	--light-yellow: #FFF2C6; /* Already defined in UserSidebar.css */
-	--orange: #FD7238; /* Already defined in UserSidebar.css */
-	--light-orange: #FFE0D3; /* Already defined in UserSidebar.css */
+.table-data tr:hover {
+    background-color: #f5f5f5;
 }
 
-html {
-	overflow-x: hidden; /* Keep this for ActivityPage */
+.table-data .action {
+    text-transform: capitalize;
 }
 
-body {
-	background: var(--grey); /* Keep this for ActivityPage */
-	overflow-x: hidden; /* Keep this for ActivityPage */
+.table-data .userRole {
+    text-transform: uppercase;
+    font-size: 0.9em;
 }
 
-/* CONTENT */
-#content {
-	position: absolute;
-	width: calc(100% - 280px);
-	left: 280px;
-	top: 0;
-	transition: .3s ease;
-	margin: 0;
-	padding: 0;
-	overflow: hidden; /* Keep this for ActivityPage */
+.table-data .details {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* MAIN */
-main {
-	padding: 10px; /* Keep this for ActivityPage */
-	font-family: var(--poppins); /* Keep this for ActivityPage */
-	min-height: calc(100vh - 56px); /* Keep this for ActivityPage */
-	overflow-y: auto; /* Keep this for ActivityPage */
-	background-color: #eee; /* Keep this for ActivityPage */
+.activity-table-container {
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Removed sidebar specific styles to avoid conflicts */
-#content nav {
-	height: 56px; /* Keep this for ActivityPage */
-	background: var(--light); /* Keep this for ActivityPage */
-	padding: 0 24px; /* Keep this for ActivityPage */
-	display: flex; /* Keep this for ActivityPage */
-	align-items: center; /* Keep this for ActivityPage */
-	grid-gap: 24px; /* Keep this for ActivityPage */
-	font-family: var(--lato); /* Keep this for ActivityPage */
-	position: sticky; /* Keep this for ActivityPage */
-	top: 0; /* Keep this for ActivityPage */
-	left: 0; /* Keep this for ActivityPage */
-	z-index: 1000; /* Keep this for ActivityPage */
+.activity-table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-/* Additional styles for the activity log */
-.activity-log-container {
-	padding: 0px; /* Keep this for ActivityPage */
-}
-.activity-log-container .table-data {
-	display: flex; /* Keep this for ActivityPage */
-	flex-wrap: wrap; /* Keep this for ActivityPage */
-	grid-gap: 24px; /* Keep this for ActivityPage */
-	width: 100%; /* Keep this for ActivityPage */
-	color: var(--dark); /* Keep this for ActivityPage */
-}
-.activity-log-container .table-data .order {
-	flex-grow: 1; /* Keep this for ActivityPage */
-	flex-basis: 300px; /* Keep this for ActivityPage */
-}
-.activity-log-container .table-data .order table {
-	width: 100%; /* Keep this for ActivityPage */
-	border-collapse: collapse; /* Keep this for ActivityPage */
-}
-.activity-log-container .table-data .order table th {
-	padding-bottom: 12px; /* Keep this for ActivityPage */
-	font-size: 13px; /* Keep this for ActivityPage */
-	text-align: left; /* Keep this for ActivityPage */
-	border-bottom: 1px solid var(--grey); /* Keep this for ActivityPage */
-}
-.activity-log-container .table-data .order table td {
-	padding: 16px 0; /* Keep this for ActivityPage */
-}
-.activity-log-container .table-data .order table tbody tr:hover {
-	background: var(--grey); /* Keep this for ActivityPage */
+.activity-table th,
+.activity-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
-/* ... other existing styles ... */
+.activity-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
 
+.activity-table tr:hover {
+    background-color: #f5f5f5;
+}
 
+.no-activities {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.loading,
+.error {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.error {
+    color: #dc3545;
+}

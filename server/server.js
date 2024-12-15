@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3000;
 const lockRoutes = require("./routes/lockRoutes");
 const path = require("path");
 const pdfRoutes = require('./routes/pdfRoutes');
+const activityRoutes = require('./routes/ActivityRoutes');
 
 require("dotenv").config();
 require("./config/passport");
@@ -109,6 +110,7 @@ app.use("/notify", notificationRoutes);
 app.use("/locks", lockRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/pdf", pdfRoutes);
+app.use('/activity', activityRoutes);
 
 // Logout route to clear the session
 app.post("/logout", (req, res) => {
@@ -185,16 +187,6 @@ app.get("/test-email/:email", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-// Add global error handler
-app.use((err, req, res, next) => {
-  console.error('Global error:', err);
-  res.status(500).json({
-    message: 'Internal server error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
-
 module.exports = { 
   jwtVerifyMiddleware 
 };

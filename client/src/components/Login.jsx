@@ -8,6 +8,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import "../css/Login.css"; // Ensure this path is correct
 import nstpLogo from "../assets/NSTP_LOGO.png";
 import Swal from "sweetalert2";
+import { logActivity } from '../utils/activityLogger';
 
 const clientId =
   "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com";
@@ -80,6 +81,8 @@ function Login() {
             navigate("/user");
           }
         });
+
+        logActivity('login', `User logged in: ${data.user.email}`);
       })
       .catch((error) => {
         console.error("Login error:", error);
@@ -159,6 +162,8 @@ function Login() {
       } else {
         navigate("/user");
       }
+
+      logActivity('login', `User logged in: ${email}`);
     } catch (error) {
       console.error("Login error:", error);
       Swal.fire({

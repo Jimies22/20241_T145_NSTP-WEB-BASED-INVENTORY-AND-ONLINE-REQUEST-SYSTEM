@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Admin = require("../models/Admin");
 const bcrypt = require("bcryptjs");
+const activityService = require("../services/activityService");
+const { logUserActivity } = require('./activityLogger');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -42,6 +44,38 @@ const loginUser = async (req, res) => {
     // User exists, log their role
     console.log(
       `User ${email} logged in. Role: ${user.role}. JWT Token: ${sessionToken}`
+    );
+
+    // Log the activity
+    console.log('Attempting to log activity...');
+    try {
+      const activityResult = await activityService.logActivity(
+        user._id,
+        user.name,
+        user.role,
+        'login',
+        `${user.name} logged in successfully`
+      );
+      console.log('Activity logged successfully:', activityResult);
+    } catch (error) {
+      console.error('Failed to log activity:', error);
+    }
+
+    await logUserActivity(
+      user._id,
+      user.name,
+      user.role,
+      'login',
+      `${user.name} logged in successfully`
+    );
+
+    console.log('Logging activity for user:', user);
+    await activityService.logActivity(
+      user._id,
+      user.name,
+      user.role,
+      'login',
+      `${user.name} logged in at ${new Date().toLocaleString()}`
     );
 
     res.json({
@@ -99,6 +133,15 @@ const loginAdmin = async (req, res) => {
 
     console.log("Admin login successful:", email);
     console.log("Admin token:", token);
+
+    await logUserActivity(
+      admin._id,
+      admin.name,
+      admin.role,
+      'login',
+      `${admin.name} logged in successfully`
+    );
+
     // Send success response
     res.status(200).json({
       message: "Login successful",
