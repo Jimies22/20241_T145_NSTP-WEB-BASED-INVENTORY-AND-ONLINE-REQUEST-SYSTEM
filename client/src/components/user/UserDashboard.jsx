@@ -124,6 +124,10 @@ const UserDashboard = () => {
   const handleBorrowItem = async (item) => {
     try {
       const token = sessionStorage.getItem("sessionToken");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
       // Check if user has pending request for this item
       const response = await axios.get(`http://localhost:3000/borrow/my-requests`, {
         headers: {
@@ -131,10 +135,19 @@ const UserDashboard = () => {
         }
       });
 
-      const existingRequest = response.data.find(
-        request => request.item._id === item._id && 
-        (request.status === "pending" || request.status === "approved")
-      );
+      console.log("Current item:", item); // Debug log
+      console.log("Existing requests:", response.data); // Debug log
+
+      const existingRequest = response.data.find(request => {
+        // Add null checks and logging
+        if (!request || !request.item) {
+          console.log("Invalid request found:", request);
+          return false;
+        }
+        
+        return request.item._id === item._id && 
+               (request.status === "pending" || request.status === "approved");
+      });
 
       if (existingRequest) {
         Swal.fire({
@@ -145,6 +158,11 @@ const UserDashboard = () => {
         return;
       }
 
+      console.log("Setting selected item:", {
+        itemId: item._id,
+        itemDetails: item
+      });
+      
       setSelectedItem(item);
       setShowBorrowOverlay(true);
     } catch (error) {

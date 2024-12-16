@@ -84,10 +84,15 @@ const borrowController = {
   // Get user's requests
   getUserRequests: async (req, res) => {
     try {
-      const userId = req.user.userId; // From JWT middleware
-      const requests = await Request.find({ userId }).populate("item"); // Populate item details
+      const userId = req.user.userId;
+      const requests = await Request.find({ userId })
+        .populate('item')
+        .lean(); // Add lean() for better performance
+      
+      console.log('Fetched requests:', requests); // Debug log
       res.status(200).json(requests);
     } catch (error) {
+      console.error('Error in getUserRequests:', error);
       res.status(500).json({
         message: "Error fetching user requests",
         error: error.message,
