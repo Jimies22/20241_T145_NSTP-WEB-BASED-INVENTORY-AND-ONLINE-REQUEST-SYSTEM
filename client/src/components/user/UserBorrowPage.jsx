@@ -17,7 +17,7 @@ function UserBorrowPage() {
 
       try {
         const response = await fetch(
-          "http://localhost:3000/borrow/my-requests?status=approved",
+          "http://localhost:3000/borrow/my-requests",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -27,14 +27,17 @@ function UserBorrowPage() {
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Error fetching approved requests: ${errorText}`);
+          throw new Error(`Error fetching requests: ${errorText}`);
         }
 
         const data = await response.json();
-        const approvedRequests = data.filter(request => 
-          request.status.toLowerCase() === 'approved'
+        const filteredRequests = data.filter(request => 
+          ['approved', 'returned'].includes(request.status.toLowerCase())
         );
-        setUserRequests(approvedRequests);
+        const sortedRequests = filteredRequests.sort((a, b) => 
+          new Date(b.requestDate) - new Date(a.requestDate)
+        );
+        setUserRequests(sortedRequests);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -122,7 +125,10 @@ function UserBorrowPage() {
                 <table>
                   <thead>
                     <tr>
+                      <th>Item Name</th>
                       <th>Item Description</th>
+                      <th>Borrow Date</th>
+                      <th>Return Date</th>
                       <th>Status</th>
                       <th>Actions</th>
                     </tr>
@@ -131,15 +137,20 @@ function UserBorrowPage() {
                     {userRequests && userRequests.length > 0 ? (
                       userRequests.map((request) => (
                         <tr key={request._id}>
+                          <td>{request.item?.name || "N/A"}</td>
                           <td>
                             <div className="item-details">
-                              {/* <strong>{request.item?.name || "N/A"}</strong>
-                              <p>{request.item?.description || "N/A"}</p> */}
                               <small>Category: {request.item?.category || "N/A"}</small>
                               <small>
-                                Request Date: {formatDateTime(request.requestDate)}
+                                Description: {request.item?.description || "N/A"}
                               </small>
                             </div>
+                          </td>
+                          <td>{formatDateTime(request.borrowDate)}</td>
+                          <td>
+                            {request.status.toLowerCase() === 'returned' 
+                              ? formatDateTime(request.returnDate) 
+                              : 'Not returned yet'}
                           </td>
                           <td>
                             <span className={`status ${request.status.toLowerCase()}`}>
@@ -149,10 +160,10 @@ function UserBorrowPage() {
                           <td>
                             <div className="action-buttons">
                               <button
-                                className="view-btn"
+                                className={`view-btn ${request.status.toLowerCase()}`}
                                 onClick={() => handleViewClick(request)}
                               >
-                                View
+                                View Details
                               </button>
                             </div>
                           </td>
@@ -160,7 +171,7 @@ function UserBorrowPage() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="3">No borrowed items found</td>
+                        <td colSpan="6">No borrowed items found</td>
                       </tr>
                     )}
                   </tbody>
@@ -180,18 +191,9 @@ function UserBorrowPage() {
               <div className="modal-body">
                 <div className="request-info">
                   <div className="details-section">
-                    <p>
-                      <strong>Item Name:</strong>{" "}
-                      {selectedRequest.item?.name || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Description:</strong>{" "}
-                      {selectedRequest.item?.description || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Category:</strong>{" "}
-                      {selectedRequest.item?.category || "N/A"}
-                    </p>
+                    <p><strong>Item Name:</strong> {selectedRequest.item?.name || "N/A"}</p>
+                    <p><strong>Description:</strong> {selectedRequest.item?.description || "N/A"}</p>
+                    <p><strong>Category:</strong> {selectedRequest.item?.category || "N/A"}</p>
                   </div>
                   <div className="status-section">
                     <p>
@@ -200,19 +202,21 @@ function UserBorrowPage() {
                         {selectedRequest.status}
                       </span>
                     </p>
+                    {selectedRequest.status.toLowerCase() === 'returned' && (
+                      <p>
+                        <strong>Return Notes:</strong>{" "}
+                        {selectedRequest.returnNotes || "No notes provided"}
+                      </p>
+                    )}
                   </div>
                   <div className="dates-section">
-                    <p>
-                      <strong>Request Date:</strong>{" "}
-                      {formatDateTime(selectedRequest.requestDate)}
-                    </p>
-                    <p>
-                      <strong>Borrow Date:</strong>{" "}
-                      {formatDateTime(selectedRequest.borrowDate)}
-                    </p>
+                    <p><strong>Request Date:</strong> {formatDateTime(selectedRequest.requestDate)}</p>
+                    <p><strong>Borrow Date:</strong> {formatDateTime(selectedRequest.borrowDate)}</p>
                     <p>
                       <strong>Return Date:</strong>{" "}
-                      {formatDateTime(selectedRequest.returnDate)}
+                      {selectedRequest.status.toLowerCase() === 'returned' 
+                        ? formatDateTime(selectedRequest.returnDate)
+                        : 'Not returned yet'}
                     </p>
                   </div>
                 </div>

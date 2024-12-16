@@ -166,4 +166,40 @@ router.put('/:requestId/return', jwtVerifyMiddleware, async (req, res) => {
   }
 });
 
+// Get user's returned items
+router.get('/user/:userId', jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    console.log('Fetching returned items for user:', userId);
+
+    const requests = await Request.find({ 
+      userId: userId,
+      status: 'returned'
+    })
+    .populate('item')
+    .sort({ updatedAt: -1 });
+
+    console.log('Found returned items:', requests);
+    res.status(200).json(requests);
+  } catch (error) {
+    console.error('Error fetching user returned items:', error);
+    res.status(500).json({
+      message: 'Error fetching returned items',
+      error: error.message
+    });
+  }
+});
+
+// Fetch only returned items for a specific user
+router.get('/user/:userId/returned', jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const returnedItems = await Request.find({ userId, status: 'returned' }).populate('item');
+    res.json(returnedItems);
+  } catch (error) {
+    console.error('Error fetching returned items:', error);
+    res.status(500).json({ message: 'Failed to fetch returned items', error: error.message });
+  }
+});
+
 module.exports = router;

@@ -41,11 +41,14 @@ const RequestReturnPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      // Filter for approved requests only
-      const approvedRequests = response.data
-        .filter(request => request.status.toLowerCase() === 'approved')
+      // Show both approved and returned requests
+      const filteredRequests = response.data
+        .filter(request => 
+          request.status.toLowerCase() === 'approved' || 
+          request.status.toLowerCase() === 'returned'
+        )
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setRequests(approvedRequests);
+      setRequests(filteredRequests);
     } catch (error) {
       console.error("Error fetching requests:", error);
       Swal.fire({
@@ -106,7 +109,8 @@ const RequestReturnPage = () => {
         Swal.fire({
           title: 'Error!',
           text: 'No active return request selected',
-          icon: 'error'
+          icon: 'error',
+          confirmButtonColor: '#d33',
         });
         return;
       }
@@ -120,15 +124,20 @@ const RequestReturnPage = () => {
         
         try {
           // Update request status to returned
-          await axios.put(
+          const updateResponse = await axios.put(
             `http://localhost:3000/borrow/${currentRequest._id}/return`,
-            {},
+            {
+              returnDate: new Date(),
+              status: 'RETURNED'
+            },
             {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             }
           );
+
+          console.log('Update response:', updateResponse.data);
 
           // Update item availability
           await axios.patch(
@@ -179,14 +188,57 @@ const RequestReturnPage = () => {
           Swal.fire({
             title: 'Error!',
             text: error.response?.data?.message || 'Failed to update status',
-            icon: 'error'
+            icon: 'error',
+            confirmButtonColor: '#d33',
           });
         }
       } else {
+        // Enhanced mismatch error message
         Swal.fire({
-          title: 'Error!',
-          text: 'QR code does not match the requested item',
-          icon: 'error'
+          title: 'QR Code Mismatch!',
+          html: `
+            <div style="text-align: left;">
+              <p><strong>Expected Item:</strong> ${currentRequest.item.name}</p>
+              <p><strong>Scanned QR Code:</strong> does not match the requested item</p>
+              <p style="color: #d33; margin-top: 10px;">Please ensure you are scanning the correct item's QR code.</p>
+            </div>
+          `,
+          icon: 'error',
+          confirmButtonText: 'Try Again',
+          confirmButtonColor: '#d33',
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          showClass: {
+            popup: 'animate__animated animate__shakeX'
+          },
+          hideClass: {
+            popup: 'animate__animated animate__fadeOut'
+          },
+          timer: null,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          footer: '<i class="bx bx-info-circle"></i> Make sure the QR code belongs to the selected item',
+          didOpen: (popup) => {
+            popup.querySelector('.swal2-icon').classList.add('animate__animated', 'animate__pulse', 'animate__infinite')
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Restart scanning process
+            handleScanClick(currentRequest);
+          } else {
+            // Close scanner and reset current request
+            setShowScanner(false);
+            setCurrentRequest(null);
+            // Show confirmation of cancellation
+            Swal.fire({
+              title: 'Scanning Cancelled',
+              text: 'The scanning process has been cancelled due to wrong QR code.',
+              icon: 'info',
+              timer: 3000,
+              timerProgressBar: true,
+              showConfirmButton: false
+            });
+          }
         });
       }
     } catch (error) {
@@ -194,7 +246,8 @@ const RequestReturnPage = () => {
       Swal.fire({
         title: 'Error!',
         text: 'Failed to process scan',
-        icon: 'error'
+        icon: 'error',
+        confirmButtonColor: '#d33',
       });
     }
   };
@@ -328,11 +381,16 @@ const RequestReturnPage = () => {
                               <td>
                                 <div className="actions">
                                   <button
-                                    className="scan-return-btn"
+                                    className={`scan-return-btn ${request.status.toLowerCase() === 'returned' ? 'disabled' : ''}`}
                                     onClick={() => handleScanClick(request)}
+                                    disabled={request.status.toLowerCase() === 'returned'}
+                                    style={{
+                                      opacity: request.status.toLowerCase() === 'returned' ? '0.5' : '1',
+                                      cursor: request.status.toLowerCase() === 'returned' ? 'not-allowed' : 'pointer'
+                                    }}
                                   >
                                     <i className="bx bx-qr-scan"></i>
-                                    Scan to Return
+                                    {request.status.toLowerCase() === 'returned' ? 'Already Returned' : 'Scan to Return'}
                                   </button>
                                 </div>
                               </td>

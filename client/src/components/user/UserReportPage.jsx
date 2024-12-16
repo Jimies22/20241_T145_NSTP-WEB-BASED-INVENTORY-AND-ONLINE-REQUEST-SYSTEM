@@ -1,90 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import Sidebar from '../sidebar/UserSidebar'; // Ensure the correct path
-import UserNavbar from '../Navbar/UserNavbar'; // Ensure the correct path
+import Sidebar from '../sidebar/UserSidebar';
+import UserNavbar from '../Navbar/UserNavbar';
+import axios from 'axios';
 import '../../css/Navbar.css';
 import '../../css/RequestPage.css';
 
-function UserBorrowPage() {
-    const [overlayVisible, setOverlayVisible] = useState(false);
-    const [selectedItem, setSelectedItem] = useState({ title: '', image: '', status: '' });
-    const [borrowTime, setBorrowTime] = useState('');
-    const [isBookButtonActive, setIsBookButtonActive] = useState(false);
+function UserReportPage() {
+  const [returnedItems, setReturnedItems] = useState([]);
 
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.src = "https://apis.google.com/js/api.js";
-        script.async = true;
-        document.body.appendChild(script);
+  useEffect(() => {
+    console.log('Component mounted');
+    fetchReturnedItems();
+  }, []);
 
-        return () => {
-            document.body.removeChild(script);
-        };
-    }, []);
+  useEffect(() => {
+    console.log('Returned items updated:', returnedItems);
+  }, [returnedItems]);
 
-    useEffect(() => {
-        setIsBookButtonActive(!!borrowTime);
-    }, [borrowTime]);
+  const fetchReturnedItems = async () => {
+    const token = sessionStorage.getItem('sessionToken');
+    const userId = sessionStorage.getItem('userId');
+    
+    if (!token || !userId) {
+      console.error('Missing token or userId');
+      return;
+    }
 
-    const openOverlay = (item) => {
-        setSelectedItem(item);
-        setOverlayVisible(true);
-        setBorrowTime('');
-    };
+    try {
+      const response = await axios.get(`http://localhost:3000/borrow/user/${userId}/returned`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReturnedItems(response.data);
+    } catch (error) {
+      console.error('Error fetching returned items:', error);
+    }
+  };
 
-    const closeOverlay = () => {
-        setOverlayVisible(false);
-    };
-
-    return (
-        <div className="user-dashboard">
-            <Sidebar />
-            <section id="content">
-                <UserNavbar />
-                <main>
-      <div className="head-title">
-        <div className="left">
-          <h1>Reports</h1>
-          <ul className="breadcrumb">
-            <li>
-              <a href="#">Reports</a>
-            </li>
-            {/* <li><i className="bx bx-chevron-right" /></li> */}
-            {/* <li>
-              <a className="active" href="Canceled.html"></a>
-            </li> */}
-          </ul>
-        </div>
-        {/* <a href="#" class="btn-download">
-						<i class='bx bxs-cloud-download' ></i>
-						<span class="text">Download PDF</span>
-					</a> */}
-      </div>
-      <div className="table-data">
-        <div className="pending-requests">
-          <div className="head">
-            <h3>Generated Reports</h3>
-            <i className="bx bx-filter" />
+  return (
+    <div className="user-dashboard">
+      <Sidebar />
+      <section id="content">
+        <UserNavbar />
+        <main>
+          <div className="head-title">
+            <div className="left">
+              <h1>Reports</h1>
+              <ul className="breadcrumb">
+                <li>
+                  <a href="#">Reports</a>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div className="order">
-            <table>
-              <thead>
-                <tr>
-                  <th>Item Description</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="requested-items-list">
-                {/* Items will be inserted here dynamically */}
-              </tbody>
-            </table>
+          <div className="table-data">
+            <div className="pending-requests">
+              <div className="head">
+                <h3>Returned Items History</h3>
+                <i className="bx bx-filter" />
+              </div>
+              <div className="order">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Item Name</th>
+                      <th>Borrow Date</th>
+                      <th>Return Date</th>
+                      <th>Status</th>
+                      <th>Return Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {returnedItems.length > 0 ? (
+                      returnedItems.map((item, index) => (
+                        <tr key={index}>
+                          <td>{item.item?.name}</td>
+                          <td>{new Date(item.borrowDate).toLocaleDateString()}</td>
+                          <td>{new Date(item.returnDate).toLocaleDateString()}</td>
+                          <td>{item.status}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="no-requests">
+                          <i className="bx bx-package" style={{ fontSize: "2rem", marginBottom: "10px" }}></i>
+                          <p>No returned items history</p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>			
-      </div>
-    </main>
-            </section>
-        </div>
-    );
+        </main>
+      </section>
+    </div>
+  );
 }
 
-export default UserBorrowPage;
+export default UserReportPage;

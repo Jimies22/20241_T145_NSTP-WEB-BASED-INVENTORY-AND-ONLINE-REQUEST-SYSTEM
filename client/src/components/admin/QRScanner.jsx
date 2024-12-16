@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import Swal from 'sweetalert2';
+import '../../css/Scanner.css';
 
 const QRScanner = ({ onScanSuccess, onScanError }) => {
   const [scanner, setScanner] = useState(null);
@@ -59,8 +60,8 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
             showConfirmButton: true,
             confirmButtonText: 'Close',
             confirmButtonColor: '#28a745',
-            timer: 5000, // Stays for 5 seconds if not closed
-            timerProgressBar: true, // Shows a progress bar
+            timer: 10000,
+            timerProgressBar: true,
             toast: true,
             background: '#a5dc86',
             color: '#fff',
@@ -71,7 +72,8 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
             didOpen: (toast) => {
               toast.addEventListener('mouseenter', Swal.stopTimer)
               toast.addEventListener('mouseleave', Swal.resumeTimer)
-            }
+            },
+            allowOutsideClick: false
           });
 
           console.log('Cleaned QR Code:', cleanedText);

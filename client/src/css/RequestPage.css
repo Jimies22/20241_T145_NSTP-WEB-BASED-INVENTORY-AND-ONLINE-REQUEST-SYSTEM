@@ -378,3 +378,15 @@ main {
 #reader video {
   object-fit: cover !important;
 }
+
+.scan-return-btn.disabled {
+  background-color: #cccccc !important;
+  color: #666666 !important;
+  border: none !important;
+  pointer-events: none;
+}
+
+.status.returned {
+  background-color: #28a745;
+  color: white;
+}

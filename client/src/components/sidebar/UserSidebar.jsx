@@ -55,12 +55,12 @@ const UserSidebar = () => {
                         <span className="text">Borrowed Items</span>
                     </a>
                 </li>
-                <li className={location.pathname === '/user-report' ? 'active' : ''}>
+                {/* <li className={location.pathname === '/user-report' ? 'active' : ''}>
                     <a href="/user-report">
                         <i className='bx bxs-report'></i>
                         <span className="text">Reports</span>
                     </a>
-                </li>
+                </li> */}
             </ul>
         </section>
     );
