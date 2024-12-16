@@ -26,7 +26,7 @@ function AdminSidebar() {
                     alt="Admin Logo" 
                     className={`brand ${!isSidebarVisible ? 'small-logo' : ''}`} 
                 />
-                <span className="text">Admin</span>
+                <span className="text">NSTP</span>
             </Link>
             <button 
                 onClick={toggleSidebar} 

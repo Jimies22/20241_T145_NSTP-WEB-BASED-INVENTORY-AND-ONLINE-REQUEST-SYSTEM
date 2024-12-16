@@ -55,6 +55,13 @@ th {
   color: #981b1b;
 }
 
+.status.returned {
+  background-color: #4CAF50;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -98,4 +105,130 @@ th {
   text-align: center;
   padding: 40px;
   color: #dc2626;
+}
+
+.view-btn.returned {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.view-btn.approved {
+  background-color: #2196F3;
+  color: white;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-details p {
+  font-weight: 500;
+  color: #2b2b2b;
+  margin: 0;
+}
+
+.item-details small {
+  color: #666;
+  display: block;
+}
+
+.pending-requests table td {
+  padding: 12px 20px;
+  vertical-align: middle;
+}
+
+.pending-requests table td img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 12px;
+  vertical-align: middle;
+}
+
+.pending-requests table td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.view-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.view-btn.approved {
+  background-color: #2196F3;
+  color: white;
+}
+
+.view-btn.returned {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.view-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.no-requests {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.no-requests i {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.head h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2b2b2b;
+  margin-bottom: 16px;
+}
+
+.table-data {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.order {
+  overflow-x: auto;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.actions {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
 }

@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from "react";
+import DataTable from "react-data-table-component";
 import Sidebar from "../sidebar/UserSidebar";
 import UserNavbar from "../Navbar/UserNavbar";
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import "../../css/RequestModal.css";
+import "../../css/AddItems.css";
+import Swal from 'sweetalert2';
 
 function UserBorrowPage() {
   const [userRequests, setUserRequests] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchApprovedRequests = async () => {
+      setLoading(true);
       const token = sessionStorage.getItem("sessionToken");
-      if (!token) return;
+      if (!token) {
+        setError("No authentication token found");
+        return;
+      }
 
       try {
         const response = await fetch(
@@ -34,12 +44,13 @@ function UserBorrowPage() {
         const filteredRequests = data.filter(request => 
           ['approved', 'returned'].includes(request.status.toLowerCase())
         );
-        const sortedRequests = filteredRequests.sort((a, b) => 
-          new Date(b.requestDate) - new Date(a.requestDate)
-        );
-        setUserRequests(sortedRequests);
+        setUserRequests(filteredRequests);
+        setError(null);
       } catch (error) {
         console.error("Error:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -65,6 +76,32 @@ function UserBorrowPage() {
 
   const handleDownloadPDF = async (request) => {
     try {
+      // Show confirmation dialog
+      const result = await Swal.fire({
+        title: 'Download PDF',
+        text: "Do you want to download the PDF for this borrowed item?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, download it!'
+      });
+
+      // Only proceed if user confirmed
+      if (!result.isConfirmed) {
+        return;
+      }
+
+      // Show loading state
+      Swal.fire({
+        title: 'Generating PDF...',
+        text: 'Please wait...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       const token = sessionStorage.getItem("sessionToken");
       console.log("Requesting PDF for:", request._id);
       
@@ -91,11 +128,84 @@ function UserBorrowPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
 
+      // Show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'PDF has been downloaded successfully.',
+        confirmButtonColor: '#3085d6'
+      });
+
     } catch (error) {
       console.error('Detailed error:', error);
       alert(`Error downloading PDF: ${error.message}`);
     }
   };
+
+  const customStyles = {
+    table: {
+      style: {
+        backgroundColor: '#ffffff',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        border: '1px solid #e0e0e0',
+      },
+    },
+    headRow: {
+      style: {
+        backgroundColor: '#f8f9fa',
+        borderTopLeftRadius: '12px',
+        borderTopRightRadius: '12px',
+        borderBottom: '2px solid #e0e0e0',
+        fontWeight: '600',
+        color: '#2c3e50',
+        fontSize: '0.95rem',
+        minHeight: '52px',
+      },
+    },
+    rows: {
+      style: {
+        fontSize: '0.9rem',
+        fontWeight: '400',
+        color: '#2c3e50',
+        minHeight: '52px',
+        '&:hover': {
+          backgroundColor: '#f8f9fa',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+        },
+      },
+    },
+    subHeader: {
+      style: {
+        padding: '16px 24px',
+        backgroundColor: '#ffffff',
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: '1px solid #e0e0e0',
+        margin: '0',
+        padding: '16px',
+      },
+      pageButtonsStyle: {
+        borderRadius: '6px',
+        height: '32px',
+        padding: '0 12px',
+        margin: '0 4px',
+      },
+    },
+  };
+
+  const filteredItems = userRequests.filter(request => {
+    const searchString = searchTerm.toLowerCase();
+    return (
+      request.item?.name?.toLowerCase().includes(searchString) ||
+      request.item?.description?.toLowerCase().includes(searchString) ||
+      request.item?.category?.toLowerCase().includes(searchString) ||
+      request.status?.toLowerCase().includes(searchString)
+    );
+  });
 
   return (
     <div className="user-dashboard">
@@ -116,67 +226,95 @@ function UserBorrowPage() {
             </div>
           </div>
           <div className="table-data">
-            <div className="pending-requests">
-              <div className="head">
-                <h3>Borrowed Items</h3>
-                <i className="bx bx-filter" />
-              </div>
-              <div className="order">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Item Name</th>
-                      <th>Item Description</th>
-                      <th>Borrow Date</th>
-                      <th>Return Date</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="requested-items-list">
-                    {userRequests && userRequests.length > 0 ? (
-                      userRequests.map((request) => (
-                        <tr key={request._id}>
-                          <td>{request.item?.name || "N/A"}</td>
-                          <td>
-                            <div className="item-details">
-                              <small>Category: {request.item?.category || "N/A"}</small>
-                              <small>
-                                Description: {request.item?.description || "N/A"}
-                              </small>
-                            </div>
-                          </td>
-                          <td>{formatDateTime(request.borrowDate)}</td>
-                          <td>
-                            {request.status.toLowerCase() === 'returned' 
-                              ? formatDateTime(request.returnDate) 
-                              : 'Not returned yet'}
-                          </td>
-                          <td>
-                            <span className={`status ${request.status.toLowerCase()}`}>
-                              {request.status}
-                            </span>
-                          </td>
-                          <td>
-                            <div className="action-buttons">
-                              <button
-                                className={`view-btn ${request.status.toLowerCase()}`}
-                                onClick={() => handleViewClick(request)}
-                              >
-                                View Details
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6">No borrowed items found</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+            <div className="order">
+              <DataTable
+                title={
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "100%",
+                    padding: "0 8px",
+                  }}>
+                    <div>Borrowed Items List</div>
+                    <div className="search-wrapper1">
+                      <i className="bx bx-search"></i>
+                      <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search borrowed items..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                }
+                columns={[
+                  {
+                    name: 'REQUESTED ITEM',
+                    selector: row => row.item?.name,
+                    sortable: true,
+                    cell: row => (
+                      <div className="item-details">
+                        <strong>{row.item?.name || "N/A"}</strong>
+                        <p>{row.item?.description || "N/A"}</p>
+                        <small>Category: {row.item?.category || "N/A"}</small>
+                        <small>Request Date: {formatDateTime(row.requestDate)}</small>
+                      </div>
+                    ),
+                    grow: 2,
+                    wrap: true
+                  },
+                  {
+                    name: 'STATUS',
+                    selector: row => row.status,
+                    sortable: true,
+                    cell: row => (
+                      <span className={`status ${row.status.toLowerCase()}`}>
+                        {row.status}
+                      </span>
+                    ),
+                    width: '150px'
+                  },
+                  {
+                    name: 'ACTIONS',
+                    cell: row => (
+                      <div className="actions">
+                        <button
+                          onClick={() => handleViewClick(row)}
+                          className="edit-btn"
+                          title="View details"
+                        >
+                          <i className='bx bx-show'></i>
+                        </button>
+                        <button
+                          onClick={() => handleDownloadPDF(row)}
+                          className="download-btn"
+                          title="Download PDF"
+                        >
+                          <i className='bx bx-download'></i>
+                        </button>
+                      </div>
+                    ),
+                    width: '150px',
+                    center: true
+                  }
+                ]}
+                data={filteredItems}
+                pagination
+                paginationPerPage={10}
+                paginationRowsPerPageOptions={[5, 10, 15, 20, 25, 30]}
+                customStyles={customStyles}
+                noDataComponent={
+                  <div style={{ padding: '24px' }}>No borrowed items found</div>
+                }
+                responsive
+                striped
+                highlightOnHover
+                pointerOnHover
+                persistTableHead
+                fixedHeader
+              />
             </div>
           </div>
         </main>

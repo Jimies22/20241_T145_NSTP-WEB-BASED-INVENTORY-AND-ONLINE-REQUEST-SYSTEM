@@ -27,7 +27,7 @@ const UserSidebar = () => {
                     alt="NSTP Logo" 
                     className={`brand ${!isSidebarVisible ? 'small-logo' : ''}`} 
                 />
-                <span className="text">User</span>
+                <span className="text">NSTP</span>
             </Link>
             <button 
                 onClick={toggleSidebar} 
