@@ -1,6 +1,6 @@
 node_modules/
 # Sensitive files
-package-lock.json
+
 .env
 .env.local
 .env.*.local
