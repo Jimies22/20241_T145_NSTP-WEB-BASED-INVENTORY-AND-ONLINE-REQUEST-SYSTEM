@@ -18,6 +18,7 @@ const lockRoutes = require("./routes/lockRoutes");
 const path = require("path");
 const pdfRoutes = require('./routes/pdfRoutes');
 const activityRoutes = require('./routes/ActivityRoutes');
+const sheetsRoutes = require('./routes/sheetsRoutes');
 
 require("dotenv").config();
 require("./config/passport");
@@ -111,6 +112,7 @@ app.use("/locks", lockRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/pdf", pdfRoutes);
 app.use('/activity', activityRoutes);
+app.use('/api', sheetsRoutes);
 
 // Logout route to clear the session
 app.post("/logout", (req, res) => {

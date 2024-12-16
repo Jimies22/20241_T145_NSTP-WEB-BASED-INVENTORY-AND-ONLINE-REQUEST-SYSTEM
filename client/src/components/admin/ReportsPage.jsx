@@ -6,6 +6,7 @@ import Sidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "../../css/ReportsPage.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import Swal from "sweetalert2";
 
 const ReportsPage = () => {
   const [events, setEvents] = useState([]);
@@ -14,6 +15,46 @@ const ReportsPage = () => {
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const localizer = momentLocalizer(moment);
+
+  const SPREADSHEET_ID = "1robOVUE6k3a3BcyCj8o25W8f6p2422VbfyvcW9NyxCE";
+
+  const handleGoToSheets = async () => {
+    try {
+      const token = sessionStorage.getItem("sessionToken");
+      
+      // First update the sheet
+      const response = await fetch("http://localhost:3000/api/update-sheets", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update sheet');
+      }
+
+      // Then open the sheet
+      const sheetsUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit#gid=0`;
+      window.open(sheetsUrl, '_blank');
+
+      Swal.fire({
+        title: 'Success!',
+        text: 'Sheet updated and opened in new tab',
+        icon: 'success',
+        timer: 2000
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire({
+        title: 'Error!',
+        text: error.message || 'Failed to update Google Sheet',
+        icon: 'error'
+      });
+    }
+  };
 
   useEffect(() => {
     fetchRequests();
@@ -86,6 +127,8 @@ const ReportsPage = () => {
         return "#F44336";
       case "returned":
         return "#2196F3";
+      case "cancelled":
+        return "#9E9E9E";
       default:
         return "#9E9E9E";
     }
@@ -173,6 +216,14 @@ const ReportsPage = () => {
                 </li>
               </ul>
             </div>
+            <button 
+              className="export-sheets-btn" 
+              onClick={handleGoToSheets}
+              title="Open in Google Sheets"
+            >
+              <i className="bx bxs-spreadsheet"></i>
+              <span>View in Google Sheets</span>
+            </button>
           </div>
 
           {error && (
@@ -213,6 +264,10 @@ const ReportsPage = () => {
                 <div className="legend-item">
                   <span className="status-dot returned"></span>
                   Returned
+                </div>
+                <div className="legend-item">
+                  <span className="status-dot cancelled"></span>
+                  Cancelled
                 </div>
               </div>
 
