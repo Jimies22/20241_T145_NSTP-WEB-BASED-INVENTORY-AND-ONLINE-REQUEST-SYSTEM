@@ -1,1 +1,20 @@
 node_modules/
+# Sensitive files
+package-lock.json
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+.env.staging
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+*.password
+*.secret
+credentials.json
+config.json
