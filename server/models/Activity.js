@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
-const activitySchema = new mongoose.Schema({
+// Check if the model already exists before defining it
+const Activity = mongoose.models.Activity || mongoose.model('Activity', new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
     },
     userName: {
         type: String,
@@ -12,25 +12,11 @@ const activitySchema = new mongoose.Schema({
     },
     userRole: {
         type: String,
-        required: true,
-        enum: ['admin', 'user']
+        required: true
     },
     action: {
         type: String,
-        required: true,
-        enum: [
-            'login',
-            'logout',
-            'add_item',
-            'update_item',
-            'archive_item',
-            'delete_item',
-            'borrow_item',
-            'return_item',
-            'add_user',
-            'update_user',
-            'archive_user'
-        ]
+        required: true
     },
     details: {
         type: String,
@@ -40,6 +26,6 @@ const activitySchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-});
+}));
 
-module.exports = mongoose.model('Activity', activitySchema);
+module.exports = Activity;

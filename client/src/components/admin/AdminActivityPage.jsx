@@ -131,26 +131,42 @@ const ActivityPage = () => {
         };
     }, []);
 
-    const exportToCSV = () => {
-        const csvData = activities.map(item => ({
-            Timestamp: new Date(item.timestamp).toLocaleString(),
-            User: item.userName,
-            Role: item.userRole,
-            Action: item.action,
-            Details: item.details
-        }));
+    const SPREADSHEET_ID = "1robOVUE6k3a3BcyCj8o25W8f6p2422VbfyvcW9NyxCE";
 
-        const csvString = [
-            Object.keys(csvData[0]).join(','),
-            ...csvData.map(row => Object.values(row).join(','))
-        ].join('\n');
+    const handleGoToSheets = async () => {
+        try {
+            const token = sessionStorage.getItem("sessionToken");
+            
+            // First update the sheet
+            const response = await axios.post(
+                "http://localhost:3000/api/update-activity-logs",
+                {}, // empty body
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    }
+                }
+            );
 
-        const blob = new Blob([csvString], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `activity_log_${new Date().toISOString()}.csv`;
-        a.click();
+            // Then open the sheet
+            const sheetsUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit#gid=1`;
+            window.open(sheetsUrl, '_blank');
+
+            Swal.fire({
+                title: 'Success!',
+                text: 'Activity logs updated and opened in new tab',
+                icon: 'success',
+                timer: 2000
+            });
+        } catch (error) {
+            console.error("Error:", error);
+            Swal.fire({
+                title: 'Error!',
+                text: error.response?.data?.error || 'Failed to update Google Sheet',
+                icon: 'error'
+            });
+        }
     };
 
     const filteredItems = activities.filter(
@@ -227,19 +243,12 @@ const ActivityPage = () => {
                             </div>
                             <div className="right">
                                 <button 
-                                    className="export-btn"
-                                    onClick={exportToCSV}
-                                    style={{
-                                        padding: '8px 16px',
-                                        backgroundColor: '#3C91E6',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="export-sheets-btn" 
+                                    onClick={handleGoToSheets}
+                                    title="Open in Google Sheets"
                                 >
-                                    <i className='bx bx-download'></i>
-                                    Export to CSV
+                                    <i className="bx bxs-spreadsheet"></i>
+                                    <span>View in Google Sheets</span>
                                 </button>
                             </div>
                         </div>
