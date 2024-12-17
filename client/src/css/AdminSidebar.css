@@ -18,6 +18,8 @@ li {
 	--poppins: 'Poppins', sans-serif;
 	--lato: 'Lato', sans-serif;
 
+	--midnight-blue: #13325b;  /* Change from #1a447e */
+	--lighter-blue: #1e4f94;  /* Keep this or optionally adjust to complement new midnight blue */
 	--light: #F9F9F9;
 	--blue: #3C91E6;
 	--light-blue: #CFE8FF;
@@ -317,22 +319,29 @@ body {
 	background: none;
 	border: none;
 	cursor: pointer;
-	color: var(--dark);
-	font-size: 24px; /* Adjust size as needed */
-	position: absolute; /* Position it appropriately */
-	top: -2px; /* Adjust top position */
-	right: -15px; /* Adjust right position */
-	z-index: 1001; /* Ensure it is above other elements */
+	color: var(--light);
+	font-size: 24px;
+	position: absolute;
+	top: -2px;
+	right: -15px;
+	z-index: 1001;
 }
+
+/* Optional: Add hover effect */
+.toggle-button:hover {
+	opacity: 0.8;
+	transition: opacity 0.3s ease;
+}
+
 #sidebar .brand {
 	height: 56px;
 	display: flex;
 	align-items: center;
-	color: var(--blue);
+	color: var(--light);
 	position: relative;
 	top: 20px;
 	left: 0;
-	background: var(--light);
+	background: var(--midnight-blue);
 	z-index: 500;
 	padding-bottom: 20px;
 	box-sizing: content-box;
@@ -349,14 +358,15 @@ body {
 	left: 130px;
 	font-size: 24px;
 	font-weight: 700;
+	color: var(--light);
 }
 .side-menu li.active {
-	background: var(--grey); /* Change background for active item */
+	background: var(--light);
 	position: relative;
 }
 
 .side-menu li.active a {
-	color: var(--blue); /* Change text color for active item */
+	color: var(--midnight-blue);
 }
 
 /* Add these new styles */
@@ -389,5 +399,84 @@ body {
 #sidebar .side-menu li a.logout:hover {
     background-color: var(--grey);
     color: var(--blue);
+    transform: translateX(5px);
+}
+
+/* Update sidebar background */
+#sidebar {
+    background: var(--midnight-blue);
+}
+
+/* Update menu items background */
+#sidebar .side-menu li a {
+    background: var(--midnight-blue);
+    color: var(--light);
+}
+
+/* Update brand section */
+#sidebar .brand {
+    background: var(--midnight-blue);
+}
+
+/* Update active state background */
+#sidebar .side-menu li.active {
+    background: var(--light);
+}
+
+#sidebar .side-menu li.active::before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    top: -40px;
+    right: 0;
+    box-shadow: 20px 20px 0 var(--light);
+    z-index: -1;
+}
+
+#sidebar .side-menu li.active::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    bottom: -40px;
+    right: 0;
+    box-shadow: 20px -20px 0 var(--light);
+    z-index: -1;
+}
+
+/* Update active menu item text color */
+#sidebar .side-menu li.active a {
+    background: var(--light);
+    color: var(--midnight-blue);
+}
+
+/* Keep hover effect on non-active items */
+#sidebar .side-menu li a:hover:not(.active) {
+    background: var(--lighter-blue);
+    color: var(--light);
+}
+
+/* Update hover colors for sidebar menu items */
+#sidebar .side-menu.top li a:hover {
+    color: var(--midnight-blue);  /* Change from var(--light) */
+}
+
+#sidebar .side-menu li a:hover:not(.active) {
+    background: var(--light);  /* Change from var(--lighter-blue) */
+    color: var(--midnight-blue);  /* Change from var(--light) */
+}
+
+/* Update icon hover color */
+#sidebar .side-menu li a:hover i {
+    color: var(--midnight-blue);
+}
+
+/* Keep logout hover styles separate */
+#sidebar .side-menu li a.logout:hover {
+    background-color: var(--light);
+    color: var(--midnight-blue);  /* Change from var(--blue) */
     transform: translateX(5px);
 }

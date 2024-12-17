@@ -694,3 +694,18 @@ option {
     border: none;
     border-radius: 8px;
 }
+
+/* Update QR code icon color */
+.codes-btn i {
+  color: #000000;  /* Change to black */
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+.codes-btn:hover {
+  background-color: #5a6268;
+}
+
+.codes-btn:hover i {
+  color: #ffffff;  /* Keep white color on hover */
+}

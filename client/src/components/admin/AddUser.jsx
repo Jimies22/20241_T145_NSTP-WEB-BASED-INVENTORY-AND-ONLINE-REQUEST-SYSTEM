@@ -59,18 +59,20 @@ function AddUser() {
           >
             <i className={`bx ${editLocked ? 'bx-lock' : 'bx-edit'}`}></i>
           </button>
+          {/* Delete button removed/commented out
           <button
             onClick={() => handleDelete(row.userID)}
             className="delete-btn"
           >
-            <i className="bx bx-trash addButton"></i>
+            <i className="bx bx-trash"></i>
           </button>
+          */}
           <button
-            onClick={() => handleArchive(row.userID)}
+            onClick={() => handleArchive(row)}
             className="archive-btn"
             title="Archive"
           >
-            <i className="bx bx-archive-in addButton"></i>
+            <i className="bx bx-archive-in"></i>
           </button>
         </div>
       ),
@@ -567,14 +569,16 @@ function AddUser() {
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Department:</label>
-                      <input
-                        type="text"
+                      <select
                         className="form-control"
                         name="department"
                         value={formData.department}
                         onChange={handleInputChange}
                         required
-                      />
+                      >
+                        <option value="">Select Department</option>
+                        <option value="NSTP">NSTP</option>
+                      </select>
                     </div>
                   </div>
                   <div className="modal-footer">
