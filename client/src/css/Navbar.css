@@ -1,3 +1,5 @@
+
+
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 * {
@@ -1213,4 +1215,25 @@ body {
     position: relative;
     display: flex;
     align-items: center;
+}
+
+/* Pagination Styles - UserDashboard.css */
+.user-dashboard .pagination {
+    color: #333; /* Set a specific color for pagination */
+    background-color: #fff; /* Ensure background is distinct */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Example of pagination item styles */
+.user-dashboard .pagination a {
+    color: #007bff; /* Link color for pagination */
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+.user-dashboard .pagination a:hover {
+    background-color: #f0f0f0; /* Hover effect for pagination links */
 }
