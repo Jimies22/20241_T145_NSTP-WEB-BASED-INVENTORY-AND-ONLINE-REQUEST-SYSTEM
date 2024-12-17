@@ -62,18 +62,18 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard items={items} fetchItems={fetchItems} loading={loading} error={error} /></ProtectedRoute>} />
-                <Route path="/add" element={<AddItems fetchItems={fetchItems} />} />
-                <Route path="/request" element={<RequestPage />} />
-                <Route path="/user-request" element={<UserRequestPage />} />
+                <Route path="/add" element={<ProtectedRoute role="admin"><AddItems fetchItems={fetchItems} /></ProtectedRoute>} />
+                <Route path="/request" element={<ProtectedRoute role="admin"><RequestPage /></ProtectedRoute>} />
+                <Route path="/user-request" element={<ProtectedRoute role="user"><UserRequestPage /></ProtectedRoute>} />
                 <Route path="/user-request/pending" element={<ProtectedRoute role="user"><UserRequestPending /></ProtectedRoute>} />
                 <Route path="/user-request/cancelled" element={<UserRequestCancelled />} />
                 <Route path="/user-request/rejected" element={<UserRequestRejected />} />
                 <Route path="/user-dashboard" element={<UserDashboard />} />
-                <Route path="/user-borrowed" element={<UserBorrowPage />} />
-                <Route path="/user-report" element={<UserReportPage />} />
-                <Route path="/reports" element={<ReportsPage/>} />
-                <Route path="/archive" element={<ArchivedPage/>} />
-                <Route path="/admin/archived-users" element={<ArchivedUsersPage />} />
+                <Route path="/user-borrowed" element={<ProtectedRoute role="user"><UserBorrowPage /></ProtectedRoute>} />
+                <Route path="/user-report" element={<ProtectedRoute role="user"><UserReportPage /></ProtectedRoute>} />
+                <Route path="/reports" element={<ProtectedRoute role="admin"><ReportsPage/></ProtectedRoute>} />
+                <Route path="/archive" element={<ProtectedRoute role="admin"><ArchivedPage/></ProtectedRoute>} />
+                <Route path="/admin/archived-users" element={<ProtectedRoute role="admin"><ArchivedUsersPage /></ProtectedRoute>} />
                 <Route path="/activity" element={
                     <ProtectedRoute role="admin">
                         <AdminActivityPage/>
