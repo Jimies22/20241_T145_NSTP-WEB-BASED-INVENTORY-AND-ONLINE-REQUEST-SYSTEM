@@ -278,7 +278,7 @@ function AddUser() {
     }
   };
 
-  const handleArchive = async (userID) => {
+  const handleArchive = async (user) => {
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to archive this user?",
@@ -293,7 +293,7 @@ function AddUser() {
       try {
         const token = sessionStorage.getItem('sessionToken');
         const response = await axios.patch(
-          `http://localhost:3000/users/${userID}/archive`,
+          `http://localhost:3000/users/${user.userID}/archive`,
           { isArchived: true },
           {
             headers: {
@@ -306,7 +306,7 @@ function AddUser() {
         if (response.status === 200) {
           await logActivity(
             'ARCHIVE_USER',
-            `Archived user ID: ${userID}`
+            `Archived user: ${user.name} (ID: ${user.userID})`
           );
           
           Swal.fire(

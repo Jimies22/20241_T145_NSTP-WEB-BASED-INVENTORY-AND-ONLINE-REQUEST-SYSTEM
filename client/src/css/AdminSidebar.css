@@ -361,7 +361,7 @@ body {
 	color: var(--light);
 }
 .side-menu li.active {
-	background: var(--light);
+	background: var(--grey);
 	position: relative;
 }
 
@@ -420,7 +420,7 @@ body {
 
 /* Update active state background */
 #sidebar .side-menu li.active {
-    background: var(--light);
+    background: var(--grey);
 }
 
 #sidebar .side-menu li.active::before {
@@ -431,7 +431,7 @@ body {
     border-radius: 50%;
     top: -40px;
     right: 0;
-    box-shadow: 20px 20px 0 var(--light);
+    box-shadow: 20px 20px 0 var(--grey);
     z-index: -1;
 }
 
@@ -443,20 +443,20 @@ body {
     border-radius: 50%;
     bottom: -40px;
     right: 0;
-    box-shadow: 20px -20px 0 var(--light);
+    box-shadow: 20px -20px 0 var(--grey);
     z-index: -1;
 }
 
 /* Update active menu item text color */
 #sidebar .side-menu li.active a {
-    background: var(--light);
+    background: var(--grey);
     color: var(--midnight-blue);
 }
 
 /* Keep hover effect on non-active items */
 #sidebar .side-menu li a:hover:not(.active) {
-    background: var(--lighter-blue);
-    color: var(--light);
+    background: var(--grey);
+    color: var(--midnight-blue);
 }
 
 /* Update hover colors for sidebar menu items */
@@ -465,8 +465,8 @@ body {
 }
 
 #sidebar .side-menu li a:hover:not(.active) {
-    background: var(--light);  /* Change from var(--lighter-blue) */
-    color: var(--midnight-blue);  /* Change from var(--light) */
+    background: var(--grey);  /* Change from var(--light) to var(--grey) */
+    color: var(--midnight-blue);  /* Change from var(--light) to var(--grey) */
 }
 
 /* Update icon hover color */
@@ -476,7 +476,7 @@ body {
 
 /* Keep logout hover styles separate */
 #sidebar .side-menu li a.logout:hover {
-    background-color: var(--light);
-    color: var(--midnight-blue);  /* Change from var(--blue) */
+    background-color: var(--grey);
+    color: var(--midnight-blue);
     transform: translateX(5px);
 }
