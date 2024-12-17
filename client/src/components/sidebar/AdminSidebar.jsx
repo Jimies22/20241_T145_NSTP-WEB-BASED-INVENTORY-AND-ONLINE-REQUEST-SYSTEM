@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import '../../css/AdminSidebar.css';
+import NstpLogo from '../../assets/NSTP_LOGO.png';
 
 function AdminSidebar() {
     const [isSidebarVisible, setIsSidebarVisible] = useState(() => {
@@ -22,7 +23,7 @@ function AdminSidebar() {
         <section id="sidebar" className={isSidebarVisible ? '' : 'hide'}>
             <Link to="/Admin" className="brand">
                 <img 
-                    src="src/assets/NSTP_LOGO.png" 
+                    src={NstpLogo} 
                     alt="Admin Logo" 
                     className={`brand ${!isSidebarVisible ? 'small-logo' : ''}`} 
                 />
