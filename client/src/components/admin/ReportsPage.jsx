@@ -22,8 +22,8 @@ const ReportsPage = () => {
     try {
       const token = sessionStorage.getItem("sessionToken");
       
-      // First update the sheet
-      const response = await fetch("http://localhost:3000/api/update-sheets", {
+      // Updated endpoint to match the server route
+      const response = await fetch("http://localhost:3000/api/update-activity-logs", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
