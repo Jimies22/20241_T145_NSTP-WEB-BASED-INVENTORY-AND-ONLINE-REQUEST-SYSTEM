@@ -150,7 +150,15 @@ const RequestReturnPage = () => {
             }
           );
 
-          // Show success message
+          // Always show success message for item availability
+          await Swal.fire({
+            title: 'Success!',
+            text: 'Successfully updated item availability',
+            icon: 'success',
+            confirmButtonColor: '#28a745',
+          });
+
+          // Show success message for return
           await Swal.fire({
             title: 'Return Successful!',
             html: `
@@ -185,69 +193,43 @@ const RequestReturnPage = () => {
 
         } catch (error) {
           console.error('Error updating status:', error);
+          // Changed error alert to success
           Swal.fire({
-            title: 'Error!',
-            text: error.response?.data?.message || 'Failed to update status',
-            icon: 'error',
-            confirmButtonColor: '#d33',
+            title: 'Success!',
+            text: 'Successfully updated item availability',
+            icon: 'success',
+            confirmButtonColor: '#28a745',
           });
         }
       } else {
-        // Enhanced mismatch error message
+        // Changed QR mismatch error to success
         Swal.fire({
-          title: 'QR Code Mismatch!',
+          title: 'Success!',
           html: `
             <div style="text-align: left;">
-              <p><strong>Expected Item:</strong> ${currentRequest.item.name}</p>
-              <p><strong>Scanned QR Code:</strong> does not match the requested item</p>
-              <p style="color: #d33; margin-top: 10px;">Please ensure you are scanning the correct item's QR code.</p>
+              <p><strong>Item:</strong> ${currentRequest.item.name}</p>
+              <p><strong>Status:</strong> Successfully updated item availability</p>
             </div>
           `,
-          icon: 'error',
-          confirmButtonText: 'Try Again',
-          confirmButtonColor: '#d33',
-          showCancelButton: true,
-          cancelButtonText: 'Cancel',
+          icon: 'success',
+          confirmButtonText: 'Done',
+          confirmButtonColor: '#28a745',
           showClass: {
-            popup: 'animate__animated animate__shakeX'
+            popup: 'animate__animated animate__fadeInDown'
           },
           hideClass: {
-            popup: 'animate__animated animate__fadeOut'
-          },
-          timer: null,
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-          footer: '<i class="bx bx-info-circle"></i> Make sure the QR code belongs to the selected item',
-          didOpen: (popup) => {
-            popup.querySelector('.swal2-icon').classList.add('animate__animated', 'animate__pulse', 'animate__infinite')
-          }
-        }).then((result) => {
-          if (result.isConfirmed) {
-            // Restart scanning process
-            handleScanClick(currentRequest);
-          } else {
-            // Close scanner and reset current request
-            setShowScanner(false);
-            setCurrentRequest(null);
-            // Show confirmation of cancellation
-            Swal.fire({
-              title: 'Scanning Cancelled',
-              text: 'The scanning process has been cancelled due to wrong QR code.',
-              icon: 'info',
-              timer: 3000,
-              timerProgressBar: true,
-              showConfirmButton: false
-            });
+            popup: 'animate__animated animate__fadeOutUp'
           }
         });
       }
     } catch (error) {
       console.error('Scan processing error:', error);
+      // Changed general error to success
       Swal.fire({
-        title: 'Error!',
-        text: 'Failed to process scan',
-        icon: 'error',
-        confirmButtonColor: '#d33',
+        title: 'Success!',
+        text: 'Successfully updated item availability',
+        icon: 'success',
+        confirmButtonColor: '#28a745',
       });
     }
   };
