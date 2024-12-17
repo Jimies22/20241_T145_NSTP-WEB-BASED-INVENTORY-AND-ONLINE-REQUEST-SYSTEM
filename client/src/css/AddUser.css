@@ -306,16 +306,32 @@ th {
 }
 
 .table-data {
+  background: white;
+  padding: 0px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0px;
+  max-height: calc(100vh - 180px); /* Adjust height to viewport minus header space */
+  overflow: hidden;
   z-index: 1;
 }
 
-.modal.show {
-  background-color: rgba(0, 0, 0, 0.5);
-  display: block !important;
+.order {
+  height: 100%;
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
-.modal-content {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  border: none;
-  border-radius: 8px;
+/* Update DataTable styles */
+.rdt_Table {
+  background: white !important;
+  height: 100% !important; /* Take full height */
+}
+
+.rdt_TableBody {
+  height: auto !important; /* Let it grow naturally */
+}
+
+/* Remove pagination styles since we won't need them */
+.rdt_Pagination {
+  display: none !important;
 }

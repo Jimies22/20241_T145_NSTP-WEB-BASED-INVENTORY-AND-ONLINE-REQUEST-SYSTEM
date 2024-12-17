@@ -59,20 +59,18 @@ function AddUser() {
           >
             <i className={`bx ${editLocked ? 'bx-lock' : 'bx-edit'}`}></i>
           </button>
-          {/* Delete button removed/commented out
           <button
             onClick={() => handleDelete(row.userID)}
             className="delete-btn"
           >
-            <i className="bx bx-trash"></i>
+            <i className="bx bx-trash addButton"></i>
           </button>
-          */}
           <button
-            onClick={() => handleArchive(row)}
+            onClick={() => handleArchive(row.userID)}
             className="archive-btn"
             title="Archive"
           >
-            <i className="bx bx-archive-in"></i>
+            <i className="bx bx-archive-in addButton"></i>
           </button>
         </div>
       ),
@@ -278,7 +276,7 @@ function AddUser() {
     }
   };
 
-  const handleArchive = async (user) => {
+  const handleArchive = async (userID) => {
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "Do you want to archive this user?",
@@ -293,7 +291,7 @@ function AddUser() {
       try {
         const token = sessionStorage.getItem('sessionToken');
         const response = await axios.patch(
-          `http://localhost:3000/users/${user.userID}/archive`,
+          `http://localhost:3000/users/${userID}/archive`,
           { isArchived: true },
           {
             headers: {
@@ -306,7 +304,7 @@ function AddUser() {
         if (response.status === 200) {
           await logActivity(
             'ARCHIVE_USER',
-            `Archived user: ${user.name} (ID: ${user.userID})`
+            `Archived user ID: ${userID}`
           );
           
           Swal.fire(
@@ -502,7 +500,6 @@ function AddUser() {
                 }
                 columns={columns}
                 data={filteredUsers}
-                pagination
                 responsive
                 highlightOnHover
                 pointerOnHover
@@ -569,16 +566,14 @@ function AddUser() {
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Department:</label>
-                      <select
+                      <input
+                        type="text"
                         className="form-control"
                         name="department"
                         value={formData.department}
                         onChange={handleInputChange}
                         required
-                      >
-                        <option value="">Select Department</option>
-                        <option value="NSTP">NSTP</option>
-                      </select>
+                      />
                     </div>
                   </div>
                   <div className="modal-footer">

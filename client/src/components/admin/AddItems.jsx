@@ -665,7 +665,6 @@ function AddItems({ updateItem }) {
                 }
                 columns={columns}
                 data={filteredItems}
-                pagination
                 responsive
                 highlightOnHover
                 pointerOnHover
