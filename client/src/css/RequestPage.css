@@ -589,20 +589,50 @@ main {
   position: relative;
   min-width: 110px;
   justify-content: center;
-  border-radius: 8px 8px 0 0;
-  margin-right: 4px;
-  background-color: #dee2e6;
   height: 36px;
   font-size: 15px;
   font-weight: 500;
+  background-color: #dee2e6;
+  margin-right: 4px;
+  border-radius: 8px 8px 0 0;
 }
 
-/* Adjust the border radius to match Chrome's tabs */
-.chrome-tab {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+/* Add pseudo-elements for the curved bottom corners */
+.chrome-tab::before,
+.chrome-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 8px;
+}
+
+.chrome-tab::before {
+  left: -8px;
+  border-bottom-right-radius: 8px;
+  box-shadow: 4px 4px 0 4px #dee2e6;
+}
+
+.chrome-tab::after {
+  right: -8px;
+  border-bottom-left-radius: 8px;
+  box-shadow: -4px 4px 0 4px #dee2e6;
+}
+
+/* Adjust active tab styles */
+.chrome-tab.active {
+  background-color: #fff;
+  color: #1a73e8;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.chrome-tab.active::before {
+  box-shadow: 4px 4px 0 4px #fff;
+}
+
+.chrome-tab.active::after {
+  box-shadow: -4px 4px 0 4px #fff;
 }
 
 .chrome-tab i {
@@ -610,19 +640,11 @@ main {
   font-size: 18px;
 }
 
-.chrome-tab:hover {
-  background-color: #e9ecef;
-}
-
-.chrome-tab.active {
-  background-color: #fff;
-  color: #1a73e8;
-  font-weight: 600;
-}
-
 .chrome-tabs-content {
   padding: 20px;
   background-color: #fff;
+  position: relative;
+  z-index: 0;
 }
 
 /* Status Badge Styling */
