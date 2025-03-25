@@ -40,14 +40,17 @@ function AdminSidebar() {
                 <li className={location.pathname === '/Admin' ? 'active' : ''}>
                     <a href="/Admin"><i className='bx bxs-dashboard'></i><span className="text">Dashboard</span></a>
                 </li>
-                <li className={location.pathname === '/request' ? 'active' : ''}>
-                    <Link to="/request"><i className='bx bxs-shopping-bag-alt'></i><span className="text">Request</span></Link>
+                <li className={location.pathname.startsWith('/request') ? 'active' : ''}>
+                    <Link to="/request">
+                        <i className='bx bx-envelope'></i>
+                        <span className="text">Request</span>
+                    </Link>
                 </li>
                 <li className={location.pathname === '/add' ? 'active' : ''}>
-                    <Link to="/add"><i className='bx bxs-message-square-add'></i><span className="text">Add Items</span></Link>
+                    <Link to="/add"><i className='bx bxs-message-square-add'></i><span className="text">Items</span></Link>
                 </li>
                 <li className={location.pathname === '/users' ? 'active' : ''}>
-                    <Link to="/users"><i className='bx bxs-user-account'></i><span className="text">Add Users</span></Link>
+                    <Link to="/users"><i className='bx bxs-user-account'></i><span className="text">Users</span></Link>
                 </li>
                 <li className={location.pathname === '/reports' ? 'active' : ''}>
                     <a href="/reports"><i className='bx bxs-report'></i><span className="text">Reports</span></a>

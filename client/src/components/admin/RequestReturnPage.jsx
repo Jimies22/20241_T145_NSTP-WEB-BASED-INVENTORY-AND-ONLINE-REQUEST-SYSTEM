@@ -210,7 +210,7 @@ const RequestReturnPage = () => {
                   <i className='bx bx-block'></i> Rejected
                 </Link>
                 <Link to="/request/return" className={`chrome-tab ${location.pathname === '/request/return' ? 'active' : ''}`}>
-                  <i className='bx bx-undo'></i> Return
+                  <i className='bx bx-undo'></i> Return Item
                 </Link>
                 <Link to="/admin" className={`chrome-tab ${location.pathname === '/admin' ? 'active' : ''}`}>
                   <i className='bx bx-home'></i> Home
