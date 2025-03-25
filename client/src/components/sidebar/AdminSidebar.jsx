@@ -34,7 +34,7 @@ function AdminSidebar() {
                 className="toggle-button" 
                 style={{ zIndex: 3000 }}
             >
-                <i className={`bx ${isSidebarVisible ? 'bx-x' : 'bx-menu'}`}></i>
+                <i className={`bx ${isSidebarVisible ? 'bx-chevron-left' : 'bx-chevron-right'}`}></i>
             </button>
             <ul className="side-menu top">
                 <li className={location.pathname === '/Admin' ? 'active' : ''}>
