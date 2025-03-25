@@ -390,3 +390,452 @@ main {
   background-color: #28a745;
   color: white;
 }
+
+/* Tab Container */
+.tab-container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0 15px;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  color: #6c757d;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab-item i {
+  margin-right: 8px;
+  font-size: 1.1rem;
+}
+
+.tab-item:hover {
+  color: #495057;
+  background-color: #e9ecef;
+}
+
+.tab-item.active {
+  color: #3C91E6;
+  border-bottom: 2px solid #3C91E6;
+  background-color: #fff;
+}
+
+/* Table Data */
+.table-data {
+  padding: 20px;
+  background-color: #fff;
+}
+
+/* Status Badge Styling */
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+  text-align: center;
+}
+
+.status.pending {
+  background-color: #FFF4DE;
+  color: #FFA800;
+}
+
+.status.approved {
+  background-color: #E1F0FF;
+  color: #3699FF;
+}
+
+.status.rejected {
+  background-color: #FFE2E5;
+  color: #F64E60;
+}
+
+.status.cancelled {
+  background-color: #F3F6F9;
+  color: #6c757d;
+}
+
+.status.returned {
+  background-color: #C9F7F5;
+  color: #1BC5BD;
+}
+
+/* Button Styling */
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.approve-btn, .reject-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.approve-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Add disabled state styles */
+.approve-btn.disabled, .reject-btn.disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  border: 1px solid #dee2e6;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.approve-btn.disabled:hover, .reject-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Hover effects for active buttons only */
+.approve-btn:not(.disabled):hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+}
+
+.reject-btn:not(.disabled):hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+}
+
+/* No requests message */
+.no-requests {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.no-requests i {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #adb5bd;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .tab-navigation {
+    flex-wrap: wrap;
+  }
+  
+  .tab-item {
+    flex: 1 1 auto;
+    padding: 10px;
+    justify-content: center;
+  }
+  
+  .tab-item i {
+    margin-right: 5px;
+  }
+}
+
+/* Chrome-style Browser Tabs */
+.chrome-tabs-container {
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.chrome-tabs {
+  display: flex;
+  background-color: #f1f3f4;
+  padding: 8px 8px 0;
+  border-bottom: none;
+}
+
+.chrome-tab {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: #5f6368;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  min-width: 110px;
+  justify-content: center;
+  border-radius: 8px 8px 0 0;
+  margin-right: 4px;
+  background-color: #dee2e6;
+  height: 36px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Adjust the border radius to match Chrome's tabs */
+.chrome-tab {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.chrome-tab i {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.chrome-tab:hover {
+  background-color: #e9ecef;
+}
+
+.chrome-tab.active {
+  background-color: #fff;
+  color: #1a73e8;
+  font-weight: 600;
+}
+
+.chrome-tabs-content {
+  padding: 20px;
+  background-color: #fff;
+}
+
+/* Status Badge Styling */
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+  text-align: center;
+}
+
+.status.pending {
+  background-color: #FFF4DE;
+  color: #FFA800;
+}
+
+.status.approved {
+  background-color: #E1F0FF;
+  color: #3699FF;
+}
+
+.status.rejected {
+  background-color: #FFE2E5;
+  color: #F64E60;
+}
+
+.status.cancelled {
+  background-color: #F3F6F9;
+  color: #6c757d;
+}
+
+.status.returned {
+  background-color: #C9F7F5;
+  color: #1BC5BD;
+}
+
+/* Table Styling */
+.pending-requests table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pending-requests table th {
+  padding: 12px 20px;
+  text-align: left;
+  background: #f6f6f6;
+  color: #2b2b2b;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}
+
+.pending-requests table td {
+  padding: 12px 20px;
+  vertical-align: middle;
+  border-bottom: 1px solid #eee;
+}
+
+/* Make sure there's no conflicting styles */
+.pending-requests table thead {
+  display: table-header-group !important;
+}
+
+.pending-requests table tr {
+  display: table-row !important;
+}
+
+.pending-requests table th {
+  display: table-cell !important;
+}
+
+/* Button styles */
+.approve-btn, .reject-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.approve-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Add disabled state styles */
+.approve-btn.disabled, .reject-btn.disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  border: 1px solid #dee2e6;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.approve-btn.disabled:hover, .reject-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Hover effects for active buttons only */
+.approve-btn:not(.disabled):hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
+}
+
+.reject-btn:not(.disabled):hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(220, 53, 69, 0.2);
+}
+
+/* No requests message */
+.no-requests {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.no-requests i {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  color: #adb5bd;
+}
+
+/* Actions container */
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .chrome-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .chrome-tab {
+    flex: 1 1 auto;
+    margin-bottom: 4px;
+  }
+}
+
+/* Return button style */
+.return-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #007bff;
+  color: white;
+}
+
+.return-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+}
+
+/* View button style */
+.view-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #6c757d;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(108, 117, 125, 0.2);
+}
+
+/* Scan QR button style */
+.scan-qr-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #4285F4;
+  color: white;
+}
+
+.scan-qr-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(66, 133, 244, 0.2);
+}
