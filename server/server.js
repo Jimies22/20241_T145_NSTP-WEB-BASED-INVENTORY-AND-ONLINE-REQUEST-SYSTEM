@@ -22,14 +22,53 @@ const sheetsRoutes = require('./routes/sheetsRoutes');
 
 require("dotenv").config();
 require("./config/passport");
+
+// Update the CORS configuration to include your ngrok URL
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'http://localhost:3001',
+    'http://localhost:3000',
+    // Add your ngrok URL here (will be different each time you start ngrok)
+    'https://6de1-2001-4455-63f-5800-6888-b77f-84e2-681d.ngrok-free.app'
+  ];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.some(allowed => origin?.match(new RegExp(allowed.replace('*', '.*'))))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  next();
+});
+
+// Update your CORS middleware configuration
 app.use(
   cors({
-    origin: ["http://localhost:3001", "http://localhost:3000"],
+    origin: function(origin, callback) {
+      const allowedOrigins = [
+        'http://localhost:3001',
+        'http://localhost:3000',
+        // Add your ngrok URL here (will be different each time you start ngrok)
+        'https://6de1-2001-4455-63f-5800-6888-b77f-84e2-681d.ngrok-free.app'
+      ];
+      
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.some(allowed => origin.match(new RegExp(allowed.replace('*', '.*'))))) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

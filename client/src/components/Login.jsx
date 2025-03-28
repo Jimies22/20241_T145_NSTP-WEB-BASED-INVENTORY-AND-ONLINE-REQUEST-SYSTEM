@@ -136,15 +136,15 @@ function Login() {
       const data = await response.json();
       console.log("Server response:", data);
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+      if (!response.ok || !data.token || !data.user) {
+        throw new Error(data.message || 'Invalid credentials');
       }
 
       sessionStorage.setItem("sessionToken", data.token);
       
       const userInfo = {
-        email: email,
-        role: "admin"
+        email: data.user.email,
+        role: data.user.role
       };
       
       sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
@@ -163,7 +163,7 @@ function Login() {
         navigate("/user");
       }
 
-      logActivity('login', `User logged in: ${email}`);
+      logActivity('login', `User logged in: ${data.user.email}`);
     } catch (error) {
       console.error("Login error:", error);
       Swal.fire({
