@@ -621,9 +621,9 @@ function AddItems({ updateItem }) {
         <main>
           <div className="head-title">
             <div className="left">
-              <h1>Items Management</h1>
+              <h1>Equipment Management</h1>
               <ul className="breadcrumb">
-                <li><a href="#">Items</a></li>
+                <li><a href="#">Equipment</a></li>
                 <li><i className='bx bx-chevron-right'></i></li>
                 <li><a className="active" href="/admin">Home</a></li>
               </ul>

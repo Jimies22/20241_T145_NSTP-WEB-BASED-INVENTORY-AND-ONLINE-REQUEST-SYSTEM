@@ -52,7 +52,7 @@ const UserSidebar = () => {
                 <li className={location.pathname === '/user-borrowed' ? 'active' : ''}>
                     <a href="/user-borrowed">
                         <i className='bx bxs-book'></i>
-                        <span className="text">Borrowed Items</span>
+                        <span className="text">Borrowed Equipment</span>
                     </a>
                 </li>
                 {/* <li className={location.pathname === '/user-report' ? 'active' : ''}>

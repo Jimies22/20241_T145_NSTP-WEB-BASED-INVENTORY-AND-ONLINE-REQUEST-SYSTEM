@@ -62,7 +62,7 @@ function Login() {
         const userInfo = {
             name: data.user.name,
             email: data.user.email,
-            picture: data.user.picture,
+            picture: data.user.picture || "src/assets/profile.png",
             role: data.user.role
         };
         console.log("Storing user info:", userInfo);

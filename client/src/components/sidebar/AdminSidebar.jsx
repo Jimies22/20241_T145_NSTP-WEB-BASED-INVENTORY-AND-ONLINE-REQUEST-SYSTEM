@@ -47,7 +47,7 @@ function AdminSidebar() {
                     </Link>
                 </li>
                 <li className={location.pathname === '/add' ? 'active' : ''}>
-                    <Link to="/add"><i className='bx bxs-message-square-add'></i><span className="text">Items</span></Link>
+                    <Link to="/add"><i className='bx bxs-message-square-add'></i><span className="text">Equipments</span></Link>
                 </li>
                 <li className={location.pathname === '/users' ? 'active' : ''}>
                     <Link to="/users"><i className='bx bxs-user-account'></i><span className="text">Users</span></Link>
