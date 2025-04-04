@@ -123,6 +123,7 @@
 .table td {
   padding: 16px 0;
   color: var(--color-dark);
+  border-bottom: 1px solid var(--color-grey);
 }
 
 .table tr:hover {
@@ -263,4 +264,18 @@
   .headTitle h1 {
     font-size: 28px;
   }
+}
+
+/* Update the pagination/rows per page section */
+.table-footer {
+  background: var(--color-light);
+  color: var(--color-light);
+  padding: 10px;
+  border-radius: 0 0 20px 20px;
+}
+
+/* Update dropdown and pagination text colors */
+.table-footer select,
+.table-footer span {
+  color: var(--color-light);
 }

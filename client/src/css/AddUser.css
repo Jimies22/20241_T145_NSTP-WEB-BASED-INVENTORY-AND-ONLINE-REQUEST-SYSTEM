@@ -55,6 +55,7 @@
 .form-group input,
 .form-group select {
   width: 100%;
+  width: 60;
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -198,7 +199,9 @@ th {
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 700px;
+  margin: 0 auto;
 }
 
 .search-wrapper i {
@@ -208,6 +211,7 @@ th {
   transform: translateY(-50%);
   color: #6c757d;
   font-size: 1.2rem;
+  z-index: 2;
 }
 
 .add-new-button {
@@ -254,6 +258,7 @@ th {
   border-radius: 8px;
   font-size: 0.9rem;
   transition: all 0.3s ease;
+  position: relative;
 }
 
 .search-input:focus {
@@ -301,16 +306,32 @@ th {
 }
 
 .table-data {
+  background: white;
+  padding: 0px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0px;
+  max-height: calc(100vh - 180px); /* Adjust height to viewport minus header space */
+  overflow: hidden;
   z-index: 1;
 }
 
-.modal.show {
-  background-color: rgba(0, 0, 0, 0.5);
-  display: block !important;
+.order {
+  height: 100%;
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
-.modal-content {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  border: none;
-  border-radius: 8px;
+/* Update DataTable styles */
+.rdt_Table {
+  background: white !important;
+  height: 100% !important; /* Take full height */
+}
+
+.rdt_TableBody {
+  height: auto !important; /* Let it grow naturally */
+}
+
+/* Remove pagination styles since we won't need them */
+.rdt_Pagination {
+  display: none !important;
 }

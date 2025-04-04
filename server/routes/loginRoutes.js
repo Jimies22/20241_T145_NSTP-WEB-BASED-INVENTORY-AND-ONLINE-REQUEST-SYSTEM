@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
 const { sendEmail, getLoginNotificationEmail } = require('../services/emailService');
+const bcrypt = require('bcrypt');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -13,22 +14,47 @@ router.post('/', async (req, res) => {
         console.log('Login attempt:', req.body.email);
         const { email, password } = req.body;
 
+        // Debug logs
+        console.log('Login attempt with:', { email, password: '***' });
+
         // Basic validation
         if (!email || !password) {
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
-        // Find user (implement your actual admin authentication logic here)
+        // Find user in database
         const user = await User.findOne({ email });
+        console.log('Found user:', user ? 'Yes' : 'No');
+        console.log('Stored password hash:', user?.password);
+
+        // Check if user exists
         if (!user) {
             console.log('User not found:', email);
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid email or password' 
+            });
         }
 
-        // For admin login (implement proper password verification)
-        if (user.role !== 'admin') {
-            console.log('Non-admin attempted admin login:', email);
-            return res.status(401).json({ message: 'Invalid credentials' });
+        // Make sure both password and hash exist before comparing
+        if (!password || !user.password) {
+            console.log('Missing password or hash');
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid credentials' 
+            });
+        }
+
+        // Compare password with hashed password in database
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log('Password valid:', isPasswordValid);
+        
+        if (!isPasswordValid) {
+            console.log('Invalid password:', email);
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Invalid email or password' 
+            });
         }
 
         // Generate JWT token
@@ -52,8 +78,8 @@ router.post('/', async (req, res) => {
             // Don't block login if email fails
         }
 
-        res.json({
-            message: 'Login successful',
+        res.status(200).json({
+            success: true,
             token,
             user: {
                 email: user.email,
@@ -64,7 +90,10 @@ router.post('/', async (req, res) => {
 
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error during login' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
     }
 });
 

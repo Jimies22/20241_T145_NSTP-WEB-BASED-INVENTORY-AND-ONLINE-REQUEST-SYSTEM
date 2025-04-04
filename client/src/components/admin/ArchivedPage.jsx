@@ -204,8 +204,9 @@ const ArchivedPage = () => {
           style={{
             display: "flex",
             gap: "8px",
-            justifyContent: "center",
-            minWidth: "150px",
+            justifyContent: "flex-start",
+            width: "100%",
+            padding: "8px 0",
           }}
         >
           <button
@@ -219,6 +220,7 @@ const ArchivedPage = () => {
               border: "none",
               borderRadius: "4px",
               cursor: "pointer",
+              whiteSpace: "nowrap",
             }}
           >
             Restore
@@ -234,12 +236,14 @@ const ArchivedPage = () => {
               border: "none",
               borderRadius: "4px",
               cursor: "pointer",
+              whiteSpace: "nowrap",
             }}
           >
             Delete
           </button>
         </div>
       ),
+      width: "200px",
     },
   ];
 

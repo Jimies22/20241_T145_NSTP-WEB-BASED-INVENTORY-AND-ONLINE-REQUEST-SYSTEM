@@ -5,7 +5,7 @@ import Sidebar from '../sidebar/AdminSidebar';
 import AdminNavbar from '../Navbar/AdminNavbar';
 import '../../css/AdminDashboard.css';
 import { Chart as ChartJS } from 'chart.js/auto';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Line, Pie } from 'react-chartjs-2';
 import axios from 'axios';
 
 function AdminDashboard() {
@@ -115,7 +115,7 @@ function AdminDashboard() {
     const requestsChartConfig = {
         labels: ['Pending', 'Approved', 'Rejected', 'Cancelled'],
         datasets: [{
-            label: 'Request Statistics',
+            label: 'Request Status',
             data: [
                 statistics.requests.pending,
                 statistics.requests.approved,
@@ -123,62 +123,121 @@ function AdminDashboard() {
                 statistics.requests.cancelled
             ],
             backgroundColor: [
-                'rgba(255, 206, 86, 0.5)',  // yellow for pending
-                'rgba(75, 192, 192, 0.5)',   // green for approved
-                'rgba(255, 99, 132, 0.5)',   // red for rejected
-                'rgba(153, 102, 255, 0.5)'   // purple for cancelled
+                'rgba(60, 145, 230, 0.7)',  // Light blue (matching website theme)
+                'rgba(75, 192, 192, 0.7)',  // Light teal
+                'rgba(219, 80, 74, 0.7)',   // Light red
+                'rgba(170, 170, 170, 0.7)'  // Light grey
             ],
-            borderColor: [
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(153, 102, 255, 1)'
-            ],
-            borderWidth: 1
+            borderWidth: 0
         }]
     };
 
-    const itemsChartConfig = {
+    const itemStatusPieConfig = {
         labels: ['Available', 'Borrowed', 'Archived'],
         datasets: [{
-            label: 'Item Statistics',
             data: [
                 statistics.items.available,
                 statistics.items.borrowed,
                 statistics.items.archived
             ],
             backgroundColor: [
-                'rgba(75, 192, 192, 0.5)',   // green for available
-                'rgba(255, 206, 86, 0.5)',   // yellow for borrowed
-                'rgba(255, 99, 132, 0.5)'    // red for archived
+                'rgba(75, 192, 192, 0.7)',  // Light teal
+                'rgba(60, 145, 230, 0.7)',  // Light blue
+                'rgba(170, 170, 170, 0.7)'  // Light grey
             ],
-            borderColor: [
-                'rgba(75, 192, 192, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(255, 99, 132, 1)'
-            ],
-            borderWidth: 1
+            borderWidth: 0
         }]
     };
 
-    const chartOptions = {
+    const barChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: 'Request Statistics',
+                font: {
+                    family: 'Poppins',
+                    size: 16
+                }
+            },
+            datalabels: {
+                color: '#342E37',
+                anchor: 'end',
+                align: 'top',
+                formatter: (value) => Math.round(value)
+            }
+        },
         scales: {
             y: {
                 beginAtZero: true,
+                grid: {
+                    display: false
+                },
                 ticks: {
-                    stepSize: 1
+                    stepSize: 1,
+                    callback: function(value) {
+                        return Math.round(value);
+                    }
+                }
+            },
+            x: {
+                grid: {
+                    display: false
                 }
             }
-        },
+        }
+    };
+
+    const pieChartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'top',
+                position: 'right',
+                labels: {
+                    font: {
+                        family: 'Poppins',
+                        size: 12
+                    },
+                    padding: 20,
+                    usePointStyle: true,
+                    generateLabels: (chart) => {
+                        const datasets = chart.data.datasets[0];
+                        return chart.data.labels.map((label, index) => ({
+                            text: `${label}: ${datasets.data[index]}`,
+                            fillStyle: datasets.backgroundColor[index],
+                            hidden: false,
+                            index: index
+                        }));
+                    }
+                }
             },
-            title: {
-                display: true,
-                text: 'Statistics Overview'
+            tooltip: {
+                callbacks: {
+                    label: (context) => {
+                        const value = context.raw;
+                        const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
+                        const percentage = ((value * 100) / total).toFixed(1);
+                        return `${context.label}: ${value} (${percentage}%)`;
+                    }
+                }
+            },
+            datalabels: {
+                color: '#fff',
+                font: {
+                    weight: 'bold',
+                    size: 14
+                },
+                formatter: (value, ctx) => {
+                    const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = ((value * 100) / sum).toFixed(1);
+                    return `${value}\n(${percentage}%)`;
+                },
+                anchor: 'center',
+                align: 'center',
+                offset: 0
             }
         }
     };
@@ -250,16 +309,18 @@ function AdminDashboard() {
 
                     {/* Charts */}
                     <div className="charts-container">
-                        <div className="chart-box">
-                            <h3>Request Statistics</h3>
-                            <div style={{ height: '300px' }}>
-                                <Bar data={requestsChartConfig} options={chartOptions} />
+                        <div className="chart-row">
+                            <div className="chart-box">
+                                <h3>Request Statistics</h3>
+                                <div className="chart-wrapper">
+                                    <Bar data={requestsChartConfig} options={barChartOptions} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="chart-box">
-                            <h3>Item Statistics</h3>
-                            <div style={{ height: '300px' }}>
-                                <Bar data={itemsChartConfig} options={chartOptions} />
+                            <div className="chart-box">
+                                <h3>Item Status Distribution</h3>
+                                <div className="chart-wrapper">
+                                    <Pie data={itemStatusPieConfig} options={pieChartOptions} />
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,8 +1,9 @@
 // models/User.js
 const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
-const userSchema = new mongoose.Schema({
+const bcrypt = require('bcrypt');
 
+const userSchema = new mongoose.Schema({
     email: { 
         type: String, 
         required: true, 
@@ -15,10 +16,15 @@ const userSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid email!`
         }
     },
+    password: {
+        type: String,
+        required: true  // This ensures password can't be undefined
+    },
     role: { 
         type: String, 
         required: true,
-        enum: ['admin', 'user']
+        enum: ['admin', 'user'],
+        default: 'user'
     },
     name: { 
         type: String, 
@@ -45,6 +51,14 @@ const userSchema = new mongoose.Schema({
         default: false 
     },
 }, { timestamps: true });
+
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
+    next();
+});
 
 userSchema.methods.generateGoogleId = function () {
     if (!this.googleId) {

@@ -1,3 +1,6 @@
+
+
+
 .borrow-overlay {
     position: fixed;
     top: 0;
@@ -12,99 +15,55 @@
 }
 
 .borrow-content {
-    left: 200px;
     background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 100%;
-    height: 100%;
+    padding: 32px;
+    border-radius: 16px;
+    width: 90%;
     max-width: 500px;
-    max-height: 540px;
     position: relative;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.header-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
 .close-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 16px;
+    right: 16px;
     background: none;
     border: none;
     font-size: 24px;
-    cursor: pointer;
     color: #666;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 
 .close-btn:hover {
-    background-color: #f0f0f0;
+    background-color: #f5f5f5;
     color: #333;
-}
-
-.item-title {
-    font-size: 28px;
-    color: #333;
-    margin: 0 0 10px 0;
-    padding-right: 40px;
-    line-height: 1.2;
-}
-
-.status-label {
-    display: inline-block;
-    padding: 6px 16px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 600;
-    margin: 5px 0 20px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #FFFFFF;
-}
-
-.status-label:hover {
-    background-color: #45a049;
-}
-
-.status-label.alternative1 {
-    background-color: #22c55e;
-}
-
-.status-label.alternative2 {
-    background-color: #16a34a;
-}
-
-.status-label.alternative3 {
-    background-color: #059669;
-}
-
-.status-label.available {
-    background-color: #4CAF50;  /* Green background */
-}
-
-.status-label.not-available {
-    background-color: #f44336;  /* Red background */
 }
 
 .booking-layout {
     display: flex;
-    gap: 40px;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 24px;
 }
 
-.booking-form {
-    flex: 1;
-}
-
-.booking-form h3 {
-    font-size: 18px;
+.booking-layout h3 {
+    font-size: 20px;
     color: #333;
-    margin: 0 0 20px 0;
+    margin: 0;
 }
 
 .form-group {
@@ -114,32 +73,36 @@
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #666;
+    color: #555;
+    font-weight: 500;
 }
 
-.form-group input {
-    width: 100%;
+.time-input {
+    display: flex;
+    gap: 12px;
+}
+
+.time-input select {
+    flex: 1;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #f8f9fa;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.form-group input:focus {
+.time-input select:hover {
+    border-color: #2196f3;
+    background-color: #fff;
+}
+
+.time-input select:focus {
     border-color: #2196f3;
     outline: none;
-}
-
-.item-image {
-    flex: 1;
-    padding-right: 20px;
-}
-
-.item-image img {
-    width: 100%;
-    height: auto;
-    max-height: 300px;
-    object-fit: contain;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
 }
 
 .book-now-btn {
@@ -148,81 +111,31 @@
     background-color: #2196f3;
     color: white;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
+    border-radius: 8px;
     font-size: 16px;
     font-weight: 600;
-    margin-top: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
 }
 
 .book-now-btn:hover {
     background-color: #1976d2;
 }
 
+.book-now-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .booking-layout {
-        flex-direction: column-reverse;
-        gap: 20px;
-    }
-
     .borrow-content {
-        padding: 20px;
         width: 95%;
+        padding: 24px;
     }
 
-    .item-image img {
-        max-height: 200px;
+    .time-input {
+        gap: 8px;
     }
-}
-
-.date-input,
-.time-input {
-    width: 100%;
-    padding: 12px;
-    background-color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    color: #000000;
-}
-
-/* Calendar icon color */
-.date-input::-webkit-calendar-picker-indicator {
-    filter: invert();
-    opacity: 0.8;
-    cursor: pointer;
-}
-
-/* Clock icon color */
-.time-input::-webkit-calendar-picker-indicator {
-    filter: invert();
-    opacity: 0.8;
-    cursor: pointer;
-}
-
-/* For Firefox */
-.date-input::-moz-calendar-picker-indicator,
-.time-input::-moz-calendar-picker-indicator {
-    filter: invert(0.3);
-    opacity: 0.8;
-}
-
-/* Add placeholder styling */
-.date-input::placeholder,
-.time-input::placeholder {
-    color: #000000;
-}
-
-/* For the time input's placeholder text (--:-- --) */
-.time-input {
-    color: #000000;
-}
-
-/* When user starts typing or selects a value */
-.time-input:focus,
-.date-input:focus,
-.time-input:valid,
-.date-input:valid {
-    color: #000000;
 } 

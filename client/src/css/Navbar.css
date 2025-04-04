@@ -1,3 +1,5 @@
+
+
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
 
 * {
@@ -18,6 +20,8 @@ li {
 	--poppins: 'Poppins', sans-serif;
 	--lato: 'Lato', sans-serif;
 
+	--midnight-blue: #13325b;
+	--lighter-blue: #1e4f94;
 	--light: #F9F9F9;
 	--blue: #3C91E6;
 	--light-blue: #CFE8FF;
@@ -171,7 +175,7 @@ body {
 /* NAVBAR */
 #content nav {
     height: 56px;
-    background: var(--light);
+    background: var(--midnight-blue);
     padding: 0 24px;
     display: flex;
     align-items: center;
@@ -181,7 +185,7 @@ body {
     top: 0;
     left: 0;
     z-index: 1000;
-    margin-top: 0; /* Added to remove spaces at the top */
+    margin-top: 0;
 }
 
 #content nav::before {
@@ -192,16 +196,16 @@ body {
 	bottom: -40px;
 	left: 0;
 	border-radius: 50%;
-	box-shadow: -20px -20px 0 var(--light);
+	box-shadow: -20px -20px 0 var(--midnight-blue);
 }
 
 #content nav a {
-	color: var(--dark);
+	color: var(--light);
 }
 
 #content nav .bx.bx-menu {
 	cursor: pointer;
-	color: var(--dark);
+	color: var(--light);
 }
 
 #content nav .nav-link {
@@ -212,7 +216,7 @@ body {
 }
 
 #content nav .nav-link:hover {
-	color: var(--blue);
+	color: var(--light-blue);
 }
 
 #content nav form {
@@ -1183,7 +1187,7 @@ body {
 /* Update existing styles */
 #content nav {
     height: 56px;
-    background: var(--light);
+    background: var(--midnight-blue);
     padding: 0 24px;
     display: flex;
     align-items: center;
@@ -1199,11 +1203,11 @@ body {
     position: relative;
     display: flex;
     align-items: center;
-    color: var(--dark);
+    color: var(--light);
 }
 
 #content nav .notification:hover {
-    color: var(--blue);
+    color: var(--light-blue);
 }
 
 /* Adjust profile container spacing */
@@ -1211,4 +1215,25 @@ body {
     position: relative;
     display: flex;
     align-items: center;
+}
+
+/* Pagination Styles - UserDashboard.css */
+.user-dashboard .pagination {
+    color: #333; /* Set a specific color for pagination */
+    background-color: #fff; /* Ensure background is distinct */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Example of pagination item styles */
+.user-dashboard .pagination a {
+    color: #007bff; /* Link color for pagination */
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+.user-dashboard .pagination a:hover {
+    background-color: #f0f0f0; /* Hover effect for pagination links */
 }

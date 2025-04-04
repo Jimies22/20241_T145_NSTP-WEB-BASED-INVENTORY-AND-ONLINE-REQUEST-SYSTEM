@@ -668,3 +668,47 @@ button:hover {
   justify-content: space-between;
   align-items: center;
 }
+
+/* Update approve button */
+.approve-btn {
+    background-color: #13325b !important; /* Midnight blue with !important to override any existing styles */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.approve-btn:hover {
+    background-color: #1e4f94 !important; /* Slightly lighter blue for hover */
+    opacity: 0.9;
+}
+
+/* Update reject button */
+.reject-btn {
+    background-color: #13325b !important; /* Midnight blue with !important to override any existing styles */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reject-btn:hover {
+    background-color: #1e4f94 !important; /* Slightly lighter blue for hover */
+    opacity: 0.9;
+}
+
+/* If the buttons have specific classes in your HTML */
+button[class*="Approve"],
+button[class*="Reject"] {
+    background-color: #13325b !important;
+    color: white;
+}
+
+button[class*="Approve"]:hover,
+button[class*="Reject"]:hover {
+    background-color: #1e4f94 !important;
+}

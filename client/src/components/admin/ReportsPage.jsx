@@ -22,7 +22,16 @@ const ReportsPage = () => {
     try {
       const token = sessionStorage.getItem("sessionToken");
       
-      // Updated endpoint to match the server route
+      // Show loading state
+      Swal.fire({
+        title: 'Updating sheets...',
+        text: 'Please wait while we update the Google Sheets',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
       const response = await fetch("http://localhost:3000/api/update-activity-logs", {
         method: "POST",
         headers: {
@@ -35,6 +44,9 @@ const ReportsPage = () => {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to update sheet');
       }
+
+      // Close loading state
+      Swal.close();
 
       // Then open the sheet
       const sheetsUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit#gid=0`;

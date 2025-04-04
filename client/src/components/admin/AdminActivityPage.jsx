@@ -191,7 +191,10 @@ const ActivityPage = () => {
                     padding: '6px 12px',
                     border: '1px solid #ddd',
                     borderRadius: '4px',
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    backgroundColor: '#f8f9fa',
+                    color: '#495057',
+                    outline: 'none'
                 }}
             />
             {filterText && (

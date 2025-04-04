@@ -5,11 +5,13 @@ import axios from "axios";
 import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import Swal from "sweetalert2";
+import { Link, useLocation } from "react-router-dom";
 
 const RequestRejectedPage = () => {
   const [requests, setRequests] = useState([]);
   const [userIdToNameMap, setUserIdToNameMap] = useState({});
   const [itemIdToNameMap, setItemIdToNameMap] = useState({});
+  const location = useLocation();
 
   useEffect(() => {
     fetchRequests();
@@ -30,10 +32,10 @@ const RequestRejectedPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      // Filter for rejected requests only
       const rejectedRequests = response.data
-        .filter(request => request.status.toLowerCase() === 'rejected')
+        .filter(request => request.status === "rejected")
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
       setRequests(rejectedRequests);
     } catch (error) {
       console.error("Error fetching requests:", error);
@@ -56,14 +58,12 @@ const RequestRejectedPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Users:", response.data); // debug output
 
       const userIdToNameMap = response.data.reduce((map, user) => {
         map[user._id] = user.name;
         return map;
       }, {});
       setUserIdToNameMap(userIdToNameMap);
-      console.log("User ID to Name Map:", userIdToNameMap); // debug output
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -112,87 +112,77 @@ const RequestRejectedPage = () => {
             <div className="head-title">
               <div className="left">
                 <h1>Requests</h1>
-                <ul className="breadcrumb">
-                  <li><a href="#">Rejected</a></li>
-                  <li><i className="bx bx-chevron-right"></i></li>
-                  <li><a className="active" href="/request/cancelled"> Cancelled </a></li>
-                  <li><i className="bx bx-chevron-right"></i></li>
-                  <li><a className="active" href="/request"> Pending </a></li>
-                  <li><i className="bx bx-chevron-right"></i></li>
-                  <li><a className="active" href="/request/return"> Return </a></li>
-                  <li><i className="bx bx-chevron-right"></i></li>
-                  <li><a className="active" href="/admin"> Home </a></li>
-                </ul>
               </div>
             </div>
-            <div className="table-data">
-              <div className="pending-requests">
-                <div className="head">
-                  
-                </div>
-                <div className="order">
-                  <div className="table-container" style={{ overflowY: 'auto', maxHeight: '490px' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1 }}>
-                        <tr>
-                          <th>User Name</th>
-                          <th>Item Name</th>
-                          <th>Borrow Date</th>
-                          <th>Return Date</th>
-                          <th>Status</th>
-                          <th style={{ textAlign: 'center' }}>Actions</th> {/* Center the Actions header */}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {requests.length > 0 ? (
-                          requests.map((request) => (
-                            <tr key={request._id}>
-                              <td>{request.userId.name || "Unknown User"}</td>
-                              <td>
-                                {itemIdToNameMap[request.item?._id] ||
-                                  "Unknown Item"}
-                              </td>{" "}
-                              {/* Added optional chaining */}
-                              <td>
-                                {new Date(
-                                  request.borrowDate
-                                ).toLocaleDateString()}
-                              </td>
-                              <td>
-                                {new Date(
-                                  request.returnDate
-                                ).toLocaleDateString()}
-                              </td>
-                              <td>
-                                <span
-                                  className={`status rejected`}
-                                >
-                                  {request.status}
-                                </span>
-                              </td>
-                              <td>
-                                <div className="actions">
-                                  <span className="status-text">Rejected by admin</span>
-                                </div>
+            
+            <div className="chrome-tabs-container">
+              <div className="chrome-tabs">
+                <Link to="/request" className={`chrome-tab ${location.pathname === '/request' ? 'active' : ''}`}>
+                  <i className='bx bx-time-five'></i> Pending
+                </Link>
+                <Link to="/request/cancelled" className={`chrome-tab ${location.pathname === '/request/cancelled' ? 'active' : ''}`}>
+                  <i className='bx bx-x-circle'></i> Cancelled
+                </Link>
+                <Link to="/request/rejected" className={`chrome-tab ${location.pathname === '/request/rejected' ? 'active' : ''}`}>
+                  <i className='bx bx-block'></i> Rejected
+                </Link>
+                <Link to="/request/return" className={`chrome-tab ${location.pathname === '/request/return' ? 'active' : ''}`}>
+                  <i className='bx bx-undo'></i> Return Item
+                </Link>
+                <Link to="/admin" className={`chrome-tab ${location.pathname === '/admin' ? 'active' : ''}`}>
+                  <i className='bx bx-home'></i> Home
+                </Link>
+              </div>
+              
+              <div className="chrome-tabs-content">
+                <div className="pending-requests">
+                  <div className="order">
+                    <div className="table-container" style={{ overflowY: 'auto', maxHeight: '490px' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead style={{ position: 'sticky', top: 0, backgroundColor: '#fff', zIndex: 1 }}>
+                          <tr>
+                            <th>User Name</th>
+                            <th>Item Name</th>
+                            <th>Borrow Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                            <th style={{ textAlign: 'center' }}>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {requests.length > 0 ? (
+                            requests.map((request) => (
+                              <tr key={request._id}>
+                                <td>{userIdToNameMap[request.user] || "Unknown User"}</td>
+                                <td>{itemIdToNameMap[request.item] || "Unknown Item"}</td>
+                                <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
+                                <td>{new Date(request.returnDate).toLocaleDateString()}</td>
+                                <td>
+                                  <span className={`status ${request.status.toLowerCase()}`}>
+                                    {request.status}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div className="actions">
+                                    <button className="view-btn">
+                                      <i className="bx bx-show"></i>
+                                      View
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="6" className="no-requests">
+                                <i className="bx bx-package" style={{ fontSize: "2rem", marginBottom: "10px" }}></i>
+                                <p>No rejected requests available</p>
                               </td>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="6" className="no-requests">
-                              <i
-                                className="bx bx-package"
-                                style={{
-                                  fontSize: "2rem",
-                                  marginBottom: "10px",
-                                }}
-                              ></i>
-                              <p>No rejected requests available</p>
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

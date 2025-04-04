@@ -1,3 +1,6 @@
+
+
+
 /* Modal Base Styles */
 .modal {
   position: fixed;
@@ -99,8 +102,17 @@
 
 .imageContainer img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  transform: none !important;
+  transition: none !important;
+}
+
+.imageContainer img:hover {
+  transform: none !important;
+  scale: 1 !important;
 }
 
 /* Information List */

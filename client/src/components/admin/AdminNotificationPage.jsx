@@ -105,7 +105,7 @@ function NotificationPage() {
                                                 notifications.map((notification) => (
                                                     <tr key={notification._id}>
                                                         <td className="card">
-                                                            <img src={notification.user.image} alt="User Image" />
+                                                            {/* <img src={notification.user.image} alt="User Image" /> */}
                                                             <p>{notification.user.name}</p>
                                                         </td>
                                                         <td>{notification.message}</td>

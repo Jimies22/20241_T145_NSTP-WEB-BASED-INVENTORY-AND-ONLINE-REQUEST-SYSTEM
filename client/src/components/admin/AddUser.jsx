@@ -500,7 +500,6 @@ function AddUser() {
                 }
                 columns={columns}
                 data={filteredUsers}
-                pagination
                 responsive
                 highlightOnHover
                 pointerOnHover

@@ -143,26 +143,24 @@ th {
     border-radius: 5px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin: 0px;
-    max-height: 530px;
-    height: calc(100vh - 180px);
+    max-height: calc(100vh - 180px);
     overflow: hidden;
     z-index: 1;
 }
 
 .order {
     height: 100%;
-    overflow: auto;
+    overflow-y: auto;
 }
 
 /* DataTable specific styles */
 .rdt_Table {
     background: white !important;
-    height: calc(100% - 20px) !important;
+    height: 100% !important;
 }
 
 .rdt_TableBody {
-    height: calc(100% - 100px) !important;
-    /* Adjust for header and pagination */
+    height: auto !important;
 }
 
 /* Make the table header sticky */
@@ -304,8 +302,7 @@ tr:hover {
 }
 
 .rdt_Pagination {
-    border-top: none !important;
-    padding: 1rem !important;
+    display: none !important;
 }
 
 .actions {
@@ -693,4 +690,19 @@ option {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     border: none;
     border-radius: 8px;
+}
+
+/* Update QR code icon color */
+.codes-btn i {
+  color: #000000;  /* Change to black */
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+.codes-btn:hover {
+  background-color: #5a6268;
+}
+
+.codes-btn:hover i {
+  color: #ffffff;  /* Keep white color on hover */
 }
