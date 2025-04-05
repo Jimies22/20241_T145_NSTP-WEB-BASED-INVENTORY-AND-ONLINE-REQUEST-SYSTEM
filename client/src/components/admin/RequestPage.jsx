@@ -229,7 +229,9 @@ const RequestPage = () => {
                             <th>User Name</th>
                             <th>Item Name</th>
                             <th>Borrow Date</th>
+                            <th>Borrow Time</th>
                             <th>Return Date</th>
+                            <th>Return Time</th>
                             <th>Status</th>
                             <th style={{ textAlign: 'center' }}>Actions</th>
                           </tr>
@@ -238,22 +240,18 @@ const RequestPage = () => {
                           {requests.length > 0 ? (
                             requests.map((request) => (
                               <tr key={request._id}>
-                                <td>{userIdToNameMap[request.user] || "Unknown User"}</td>
-                                <td>{itemIdToNameMap[request.item] || "Unknown Item"}</td>
                                 <td>
-                                  {new Date(
-                                    request.borrowDate
-                                  ).toLocaleDateString()}
+                                  {request.userId?.name || request.user?.name || request.userName || userIdToNameMap[request.userId?._id] || userIdToNameMap[request.user?._id] || "N/A"}
                                 </td>
                                 <td>
-                                  {new Date(
-                                    request.returnDate
-                                  ).toLocaleDateString()}
+                                  {request.itemId?.name || request.item?.name || request.itemName || itemIdToNameMap[request.itemId?._id] || itemIdToNameMap[request.item?._id] || "N/A"}
                                 </td>
+                                <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
+                                <td>{new Date(request.borrowDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                                <td>{new Date(request.returnDate).toLocaleDateString()}</td>
+                                <td>{new Date(request.returnDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                                 <td>
-                                  <span
-                                    className={`status ${request.status.toLowerCase()}`}
-                                  >
+                                  <span className={`status ${request.status.toLowerCase()}`}>
                                     {request.status}
                                   </span>
                                 </td>

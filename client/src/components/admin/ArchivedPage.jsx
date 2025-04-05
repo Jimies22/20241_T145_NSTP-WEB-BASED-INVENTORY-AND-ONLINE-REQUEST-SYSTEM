@@ -5,12 +5,15 @@ import Sidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "../../css/ArchivePage.css";
 import Swal from 'sweetalert2';
+import { Link } from "react-router-dom";
+import { logActivity } from '../../utils/activityLogger';
 
 const ArchivedPage = () => {
   const [archivedItems, setArchivedItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('items');
 
   const customStyles = {
     table: {
@@ -78,6 +81,9 @@ const ArchivedPage = () => {
         );
 
         if (response.status === 200) {
+          // Log the restore activity
+          await logActivity('RESTORE_ITEM', `Restored item: ${row.name}`);
+
           setArchivedItems((prevItems) =>
             prevItems.filter((item) => item.item_id !== row.item_id)
           );
@@ -131,6 +137,18 @@ const ArchivedPage = () => {
       setIsLoading(true);
       try {
         const token = sessionStorage.getItem("sessionToken");
+        // Get the item name before deleting
+        const itemResponse = await axios.get(
+          `http://localhost:3000/items/${itemId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const itemName = itemResponse.data.name;
+
+        // Delete the item
         const response = await axios.delete(
           `http://localhost:3000/items/${itemId}`,
           {
@@ -140,6 +158,9 @@ const ArchivedPage = () => {
           }
         );
         if (response.status === 200) {
+          // Log the activity
+          await logActivity('DELETE_ITEM', `Permanently deleted item: ${itemName}`);
+          
           setArchivedItems((prevItems) =>
             prevItems.filter((item) => item.item_id !== itemId)
           );
@@ -247,30 +268,32 @@ const ArchivedPage = () => {
     },
   ];
 
-  useEffect(() => {
-    const fetchArchivedItems = async () => {
-      setLoadingItems(true);
-      try {
-        const token = sessionStorage.getItem("sessionToken");
-        const response = await axios.get("http://localhost:3000/items", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const archived = response.data.filter((item) => item.isArchived);
-        setArchivedItems(archived);
-        setLoadingItems(false);
-      } catch (error) {
-        setError("Error fetching archived items");
-        if (error.response?.status === 401) {
-          setError("Unauthorized access. Please log in again.");
-        }
-        setLoadingItems(false);
+  const fetchArchivedItems = async () => {
+    setLoadingItems(true);
+    try {
+      const token = sessionStorage.getItem("sessionToken");
+      const response = await axios.get("http://localhost:3000/items", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const archived = response.data.filter((item) => item.isArchived);
+      setArchivedItems(archived);
+      setLoadingItems(false);
+    } catch (error) {
+      setError("Error fetching archived items");
+      if (error.response?.status === 401) {
+        setError("Unauthorized access. Please log in again.");
       }
-    };
+      setLoadingItems(false);
+    }
+  };
 
-    fetchArchivedItems();
-  }, []);
+  useEffect(() => {
+    if (activeTab === 'items') {
+      fetchArchivedItems();
+    }
+  }, [activeTab]);
 
   // Add hover effects with CSS
   const buttonHoverStyles = `
@@ -293,58 +316,54 @@ const ArchivedPage = () => {
             <div className="head-title">
               <div className="left">
                 <h1>Archives</h1>
-                <ul className="breadcrumb">
-                  <li>
-                    <a href="#">Items</a>
-                  </li>
-                  <li>
-                    <i className="bx bx-chevron-right"></i>
-                  </li>
-                  <li>
-                    <a className="active" href="/admin/archived-users">
-                      Users
-                    </a>
-                  </li>
-                  <li>
-                    <i className="bx bx-chevron-right"></i>
-                  </li>
-                  <li>
-                    <a className="active" href="/admin">
-                      Home
-                    </a>
-                  </li>
-                </ul>
+                {/* <ul className="breadcrumb">
+                  <li><a href="#">Archives</a></li>
+                  <li><i className='bx bx-chevron-right'></i></li>
+                  <li><a className="active" href="/admin">Home</a></li>
+                </ul> */}
               </div>
             </div>
 
-            <div
-              style={{
-                padding: "0px",
-                backgroundColor: "white",
-                borderRadius: "8px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                margin: "0px",
-                height: "540px",
-                overflow: "hidden",
-              }}
-            >
-              <DataTable
-                columns={itemColumns}
-                data={archivedItems}
-                pagination={false}
-                responsive
-                highlightOnHover
-                pointerOnHover
-                progressPending={loadingItems || isLoading}
-                progressComponent={<div>Loading...</div>}
-                customStyles={customStyles}
-                noDataComponent={
-                  <div style={{ padding: "24px" }}>No archived items found</div>
-                }
-                fixedHeader
-                fixedHeaderScrollHeight="calc(100vh - 290px)"
-                dense
-              />
+            <div className="table-data">
+              <div className="order">
+                <div className="head">
+                  <h3>Archived {activeTab}</h3>
+                  <div className="tabs">
+                    <Link 
+                      to="/archive"
+                      className={`tab-btn ${activeTab === 'items' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('items')}
+                    >
+                      Items
+                    </Link>
+                    <Link 
+                      to="/admin/archived-users"
+                      className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('users')}
+                    >
+                      Users
+                    </Link>
+                  </div>
+                </div>
+                <DataTable
+                  columns={activeTab === 'items' ? itemColumns : itemColumns}
+                  data={activeTab === 'items' ? archivedItems : archivedItems}
+                  pagination
+                  responsive
+                  highlightOnHover
+                  pointerOnHover
+                  progressPending={activeTab === 'items' ? loadingItems : loadingItems}
+                  progressComponent={<div>Loading...</div>}
+                  customStyles={customStyles}
+                  noDataComponent={
+                    <div className="no-requests">
+                      <i className={`bx ${activeTab === 'items' ? 'bx-package' : 'bx-package'}`} 
+                         style={{ fontSize: "2rem", marginBottom: "10px" }}/>
+                      <p>No archived {activeTab} found</p>
+                    </div>
+                  }
+                />
+              </div>
             </div>
           </main>
         </section>

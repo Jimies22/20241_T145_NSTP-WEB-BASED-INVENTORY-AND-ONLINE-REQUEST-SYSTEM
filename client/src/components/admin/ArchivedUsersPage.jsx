@@ -5,55 +5,79 @@ import Sidebar from "../sidebar/AdminSidebar";
 import AdminNavbar from "../Navbar/AdminNavbar";
 import "../../css/ArchivePage.css";
 import Swal from 'sweetalert2';
+import { Link } from "react-router-dom";
 import { logActivity } from '../../utils/activityLogger';
 
 const ArchivedUsersPage = () => {
   const [archivedUsers, setArchivedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('users');
+
+  const customStyles = {
+    table: {
+      style: {
+        backgroundColor: "white",
+        borderCollapse: "collapse",
+        width: "100%",
+      },
+    },
+    rows: {
+      style: {
+        minHeight: "52px",
+        borderBottom: "1px solid #e5e5e5",
+        fontSize: "14px",
+        "&:hover": {
+          backgroundColor: "#f5f5f5",
+        },
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: "8px",
+        paddingRight: "8px",
+        backgroundColor: "#f8f9fa",
+        fontWeight: "bold",
+        fontSize: "14px",
+        color: "#333",
+        borderBottom: "2px solid #dee2e6",
+        minHeight: "52px",
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: "8px",
+        paddingRight: "8px",
+        fontSize: "14px",
+      },
+    },
+  };
 
   const columns = [
     {
       name: "Name",
-      selector: (row) => row.name,
+      selector: row => row.name,
       sortable: true,
     },
     {
       name: "Email",
-      selector: (row) => row.email,
+      selector: row => row.email,
       sortable: true,
     },
     {
       name: "Role",
-      selector: (row) => row.role,
-      sortable: true,
-    },
-    {
-      name: "Department",
-      selector: (row) => row.department,
-      sortable: true,
-    },
-    {
-      name: "Archive Date",
-      selector: (row) => new Date(row.updatedAt).toLocaleDateString(),
+      selector: row => row.role,
       sortable: true,
     },
     {
       name: "Actions",
       cell: (row) => (
-        <div
-          className="actions"
-          style={{
-            display: "flex",
-            gap: "8px",
-            justifyContent: "center",
-            minWidth: "150px",
-          }}
-        >
+        <div className="actions" style={{ display: "flex", gap: "8px" }}>
           <button
             onClick={() => handleRestore(row)}
             className="restore-btn"
-            disabled={loading}
+            disabled={isLoading}
             style={{
               padding: "6px 12px",
               backgroundColor: "#28a745",
@@ -66,9 +90,12 @@ const ArchivedUsersPage = () => {
             Restore
           </button>
           <button
-            onClick={() => handleDelete(row.userID)}
+            onClick={() => {
+              console.log("Delete clicked for user:", row); // Debug log
+              handleDelete(row.userID);
+            }}
             className="delete-btn"
-            disabled={loading}
+            disabled={isLoading}
             style={{
               padding: "6px 12px",
               backgroundColor: "#dc3545",
@@ -82,37 +109,52 @@ const ArchivedUsersPage = () => {
           </button>
         </div>
       ),
+      width: "200px",
     },
   ];
 
-  useEffect(() => {
-    fetchArchivedUsers();
-  }, []);
-
   const fetchArchivedUsers = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const token = sessionStorage.getItem('sessionToken');
+      const token = sessionStorage.getItem("sessionToken");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
       const response = await axios.get("http://localhost:3000/users", {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      const archived = response.data.filter((user) => user.isArchived);
-      setArchivedUsers(archived);
-      setError(null);
+
+      if (response.status === 200) {
+        const archived = response.data.filter((user) => user.isArchived === true);
+        setArchivedUsers(archived);
+      }
     } catch (error) {
       console.error("Error fetching archived users:", error);
-      setError("Failed to fetch archived users");
+      let errorMessage = 'Failed to fetch archived users';
+      if (error.response?.status === 401) {
+        errorMessage = "Unauthorized access. Please log in again.";
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
+      setError(errorMessage);
       Swal.fire({
         icon: 'error',
-        title: 'Error',
-        text: 'Failed to fetch archived users'
+        title: 'Error!',
+        text: errorMessage,
+        showConfirmButton: true
       });
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchArchivedUsers();
+  }, []);
 
   const handleRestore = async (user) => {
     const result = await Swal.fire({
@@ -210,45 +252,6 @@ const ArchivedUsersPage = () => {
     }
   };
 
-  const customStyles = {
-    table: {
-      style: {
-        backgroundColor: "white",
-        borderCollapse: "collapse",
-        width: "100%",
-      },
-    },
-    rows: {
-      style: {
-        minHeight: "52px",
-        borderBottom: "1px solid #e5e5e5",
-        fontSize: "14px",
-        "&:hover": {
-          backgroundColor: "#f5f5f5",
-        },
-      },
-    },
-    headCells: {
-      style: {
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        backgroundColor: "#f8f9fa",
-        fontWeight: "bold",
-        fontSize: "14px",
-        color: "#333",
-        borderBottom: "2px solid #dee2e6",
-        minHeight: "52px",
-      },
-    },
-    cells: {
-      style: {
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        fontSize: "14px",
-      },
-    },
-  };
-
   const buttonHoverStyles = `
     .restore-btn:hover {
       background-color: #218838 !important;
@@ -268,19 +271,31 @@ const ArchivedUsersPage = () => {
           <main>
             <div className="head-title">
               <div className="left">
-                <h1>Archived Users</h1>
-                <ul className="breadcrumb">
-                  <li><a href="#">Users</a></li>
-                  <li><i className='bx bx-chevron-right'></i></li>
-                  <li><a className="active" href="/archive">Items</a></li>
-                  <li><i className='bx bx-chevron-right'></i></li>
-                  <li><a className="active" href="/admin">Home</a></li>
-                </ul>
+                <h1>Archives</h1>
               </div>
             </div>
 
             <div className="table-data">
               <div className="order">
+                <div className="head">
+                  <h3>Archived Users</h3>
+                  <div className="tabs">
+                    <Link 
+                      to="/archive"
+                      className={`tab-btn ${activeTab === 'items' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('items')}
+                    >
+                      Items
+                    </Link>
+                    <Link 
+                      to="/admin/archived-users"
+                      className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`}
+                      onClick={() => setActiveTab('users')}
+                    >
+                      Users
+                    </Link>
+                  </div>
+                </div>
                 <DataTable
                   columns={columns}
                   data={archivedUsers}
@@ -292,8 +307,9 @@ const ArchivedUsersPage = () => {
                   progressComponent={<div>Loading...</div>}
                   customStyles={customStyles}
                   noDataComponent={
-                    <div style={{ padding: "24px" }}>
-                      {error || "No archived users found"}
+                    <div className="no-requests">
+                      <i className="bx bx-user" style={{ fontSize: "2rem", marginBottom: "10px" }}></i>
+                      <p>No archived users found</p>
                     </div>
                   }
                 />

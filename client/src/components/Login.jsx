@@ -143,6 +143,7 @@ function Login() {
       sessionStorage.setItem("sessionToken", data.token);
       
       const userInfo = {
+        name: data.user.name,
         email: data.user.email,
         role: data.user.role
       };

@@ -2,7 +2,7 @@ const User = require("../models/User");
 
 // Create a new user
 const createUser = async (req, res) => {
-  const { email, role, name, department } = req.body;
+  const { email, role, name, department, password } = req.body;
 
   try {
     // Extract userID from email for student emails
@@ -29,6 +29,7 @@ const createUser = async (req, res) => {
       name,
       department,
       userID,
+      password,
     });
 
     await newUser.save();

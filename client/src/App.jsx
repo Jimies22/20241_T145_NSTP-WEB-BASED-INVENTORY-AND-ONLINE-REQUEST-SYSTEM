@@ -31,6 +31,7 @@ import UserRequestRejected from './components/user/UserRequestRejected';
 import RequestReturnPage from './components/admin/RequestReturnPage';
 import RequestRejectedPage from './components/admin/RequestRejectedPage';
 import RequestCancelledPage from './components/admin/RequestCancelledPage';
+import ArchivedRequestsPage from './components/admin/ArchivedRequestsPage';
 
 
 function App() {
@@ -72,7 +73,11 @@ function App() {
                 <Route path="/user-borrowed" element={<ProtectedRoute role="user"><UserBorrowPage /></ProtectedRoute>} />
                 <Route path="/user-report" element={<ProtectedRoute role="user"><UserReportPage /></ProtectedRoute>} />
                 <Route path="/reports" element={<ProtectedRoute role="admin"><ReportsPage/></ProtectedRoute>} />
-                <Route path="/archive" element={<ProtectedRoute role="admin"><ArchivedPage/></ProtectedRoute>} />
+                <Route path="/archive" element={
+                    <ProtectedRoute role="admin">
+                        <ArchivedPage />
+                    </ProtectedRoute>
+                } />
                 <Route path="/admin/archived-users" element={<ProtectedRoute role="admin"><ArchivedUsersPage /></ProtectedRoute>} />
                 <Route path="/activity" element={
                     <ProtectedRoute role="admin">
@@ -102,8 +107,31 @@ function App() {
                         <AdminActivityPage />
                     </ProtectedRoute>
                 } />
-                {/* <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard /></ProtectedRoute>} /> */}
-                {/* <Route path="/request" element={<ProtectedRoute role="user"><Sidebar /></ProtectedRoute>} /> */}
+                <Route path="/admin/archived-requests" element={
+                    <ProtectedRoute role="admin">
+                        <ArchivedRequestsPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/requests/rejected" element={
+                    <ProtectedRoute role="admin">
+                        <RequestRejectedPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/admin/requests/cancelled" element={
+                    <ProtectedRoute role="admin">
+                        <RequestCancelledPage />
+                    </ProtectedRoute>
+                } />
+                <Route path="/user/requests/rejected" element={
+                    <ProtectedRoute role="user">
+                        <UserRequestRejected />
+                    </ProtectedRoute>
+                } />
+                <Route path="/user/requests/cancelled" element={
+                    <ProtectedRoute role="user">
+                        <UserRequestCancelled />
+                    </ProtectedRoute>
+                } />
             </Routes>
         </>
     );
