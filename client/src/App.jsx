@@ -59,7 +59,7 @@ function App() {
     return (
         <>
             <Routes>
-                <Route path="/" element={<Navigate to="/login" />} />
+                {/* <Route path="/" element={<Navigate to="/login" />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/user" element={<ProtectedRoute role="user"><UserDashboard items={items} fetchItems={fetchItems} loading={loading} error={error} /></ProtectedRoute>} />
@@ -72,7 +72,7 @@ function App() {
                 <Route path="/user-dashboard" element={<UserDashboard />} />
                 <Route path="/user-borrowed" element={<ProtectedRoute role="user"><UserBorrowPage /></ProtectedRoute>} />
                 <Route path="/user-report" element={<ProtectedRoute role="user"><UserReportPage /></ProtectedRoute>} />
-                <Route path="/reports" element={<ProtectedRoute role="admin"><ReportsPage/></ProtectedRoute>} />
+                <Route path="/reports" element={<ProtectedRoute role="admin"><ReportsPage/></ProtectedRoute>} /> */}
                 <Route path="/archive" element={
                     <ProtectedRoute role="admin">
                         <ArchivedPage />
