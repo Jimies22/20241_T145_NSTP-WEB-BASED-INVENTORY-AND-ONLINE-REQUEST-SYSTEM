@@ -59,6 +59,8 @@ function App() {
     return (
         <>
             <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<Login />} />
                 {/* <Route path="/" element={<Navigate to="/login" />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
@@ -78,15 +80,30 @@ function App() {
                         <ArchivedPage />
                     </ProtectedRoute>
                 } />
-                <Route path="/admin/archived-users" element={<ProtectedRoute role="admin"><ArchivedUsersPage /></ProtectedRoute>} />
+                <Route path="/admin/archived-users" element={
+                    <ProtectedRoute role="admin">
+                        <ArchivedUsersPage />
+                        </ProtectedRoute>
+                    } />
                 <Route path="/activity" element={
                     <ProtectedRoute role="admin">
                         <AdminActivityPage/>
                     </ProtectedRoute>
                 } />
-                <Route path="/notification" element={<AdminNotificationPage/>} />
+
+                <Route path="/notification" element={                    
+                    <ProtectedRoute >
+                        <AdminNotificationPage/>
+                        </ProtectedRoute>
+                    } />
                 <Route path="/usernotification" element={<UserNotificationPage/>} />
-                <Route path="/users" element={<AddUser />} />
+
+                <Route path="/users" element={
+                    <ProtectedRoute>
+                            <AddUser /> 
+                    </ProtectedRoute>
+                    
+                    } />
                 <Route path="/request/return" element={
                     <ProtectedRoute role="admin">
                         <RequestReturnPage />
