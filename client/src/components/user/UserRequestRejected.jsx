@@ -6,6 +6,9 @@ import "../../css/RequestPage.css";
 import "../../css/RequestModal.css"; // Changed from Modal.css to RequestModal.css
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { logActivity } from '../../utils/activityLogger';
 
 function RejectedPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -14,6 +17,7 @@ function RejectedPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isArchiving, setIsArchiving] = useState(false);
 
   useEffect(() => {
     const fetchUserRequests = async () => {
@@ -35,9 +39,9 @@ function RejectedPage() {
         }
 
         const data = await response.json();
-        // Filter rejected requests on the client side
+        // Filter rejected requests and not archived
         const rejectedRequests = data.filter(
-          request => request.status.toLowerCase() === 'rejected'
+          request => request.status.toLowerCase() === 'rejected' && !request.isArchived
         );
         setUserRequests(rejectedRequests);
       } catch (error) {
@@ -174,6 +178,57 @@ function RejectedPage() {
     }
   };
 
+  const handleArchive = async (request) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to archive this rejected request?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, archive it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        setIsArchiving(true);
+        const token = sessionStorage.getItem("sessionToken");
+        const response = await axios.patch(
+          `http://localhost:3000/borrow/${request._id}/archive`,
+          { isArchived: true },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          await logActivity('archive', `Archived rejected request`);
+          
+          Swal.fire(
+            'Archived!',
+            'Request has been archived successfully.',
+            'success'
+          );
+
+          // Update the local state to remove the archived request
+          setUserRequests(userRequests.filter(r => r._id !== request._id));
+        }
+      } catch (error) {
+        console.error("Error archiving request:", error);
+        Swal.fire(
+          'Error!',
+          error.response?.data?.message || 'Failed to archive request',
+          'error'
+        );
+      } finally {
+        setIsArchiving(false);
+      }
+    }
+  };
+
   // Update the columns configuration to match AddItems.jsx style
   const columns = [
     {
@@ -212,6 +267,13 @@ function RejectedPage() {
             title="View details"
           >
             <i className='bx bx-show'></i>
+          </button>
+          <button
+            className="archive-btn"
+            onClick={() => handleArchive(row)}
+            title="Archive request"
+          >
+            <i className='bx bx-archive'></i>
           </button>
         </div>
       ),

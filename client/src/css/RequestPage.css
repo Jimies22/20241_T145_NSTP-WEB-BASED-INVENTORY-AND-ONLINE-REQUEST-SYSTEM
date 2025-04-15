@@ -861,3 +861,132 @@ main {
   transform: translateY(-1px);
   box-shadow: 0 2px 5px rgba(66, 133, 244, 0.2);
 }
+
+/* QR Scanner Modal Styles */
+.qr-scanner-modal {
+  z-index: 1060 !important;
+}
+
+#reader {
+  width: 100% !important;
+  min-height: 400px !important;
+  border: none !important;
+}
+
+#reader__scan_region {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 300px !important;
+}
+
+#reader__scan_region > img {
+  display: none !important;
+}
+
+#reader__dashboard {
+  padding: 10px !important;
+}
+
+#reader__camera_selection {
+  width: 100% !important;
+  padding: 8px !important;
+  margin-bottom: 10px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+}
+
+.scan-qr-btn {
+  background-color: #4285F4 !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+}
+
+.scan-qr-btn:hover {
+  background-color: #357ABD !important;
+}
+
+/* Modal styles */
+.modal.show {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.request-details p {
+  margin-bottom: 0.75rem;
+}
+
+.request-details .status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.view-btn {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.view-btn:hover {
+  background-color: #138496;
+}
+
+.modal-content {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tab-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  background-color: #3C91E6;
+  color: white;
+}
+
+.tab-btn:hover {
+  background-color: #ddd;
+}
+
+.tab-btn.active:hover {
+  background-color: #2d7ac9;
+}

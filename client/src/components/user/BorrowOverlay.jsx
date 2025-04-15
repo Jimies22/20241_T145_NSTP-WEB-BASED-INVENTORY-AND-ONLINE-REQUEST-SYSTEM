@@ -83,6 +83,7 @@ const BorrowOverlay = ({ item, onClose }) => {
     const borrowDate = createDate(borrowHour, borrowMinute, borrowPeriod);
     const returnDate = createDate(returnHour, returnMinute, returnPeriod);
 
+    /* Comment out time validation
     // Validate that the selected time is not in the past
     if (borrowDate < new Date()) {
       Swal.fire({
@@ -106,6 +107,7 @@ const BorrowOverlay = ({ item, onClose }) => {
       setLoading(false);
       return;
     }
+    */
 
     try {
       // First, make the borrow request

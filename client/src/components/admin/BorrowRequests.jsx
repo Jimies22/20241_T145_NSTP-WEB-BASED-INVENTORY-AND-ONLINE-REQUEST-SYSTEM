@@ -75,7 +75,9 @@ const BorrowRequests = () => {
               <th>User</th>
               <th>Item</th>
               <th>Borrow Date</th>
+              <th>Borrow Time</th>
               <th>Return Date</th>
+              <th>Return Time</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -83,10 +85,12 @@ const BorrowRequests = () => {
           <tbody>
             {requests.map((request) => (
               <tr key={request._id}>
-                <td>{request.userId?.name || 'N/A'}</td>
-                <td>{request.item?.name || 'N/A'}</td>
+                <td>{request.userId?.name || request.user?.name || request.userName || 'N/A'}</td>
+                <td>{request.itemId?.name || request.item?.name || request.itemName || 'N/A'}</td>
                 <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
+                <td>{new Date(request.borrowDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                 <td>{new Date(request.returnDate).toLocaleDateString()}</td>
+                <td>{new Date(request.returnDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                 <td>
                   <span className={`status ${request.status}`}>
                     {request.status}

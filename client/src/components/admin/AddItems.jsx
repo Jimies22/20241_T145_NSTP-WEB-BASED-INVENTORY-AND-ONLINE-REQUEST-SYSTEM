@@ -270,11 +270,40 @@ function AddItems({ updateItem }) {
             },
           });
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: isEditing ? 'Item updated successfully' : 'Item added successfully'
-      });
+      const savedItem = response.data.item;
+
+      // Generate QR code automatically for new items
+      if (!isEditing && savedItem) {
+        // Create QR code
+        const qrCodeUrl = await QRCode.toDataURL(savedItem._id, {
+          width: 200,
+          margin: 2
+        });
+
+        // Show success message with QR code
+        Swal.fire({
+          icon: 'success',
+          title: 'Item added successfully!',
+          html: `
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+              <p>Your item has been added. Here's the QR code:</p>
+              <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px;"/>
+              <a href="${qrCodeUrl}" download="qr-code.png" class="btn btn-primary">
+                Download QR Code
+              </a>
+            </div>
+          `,
+          showConfirmButton: true,
+          confirmButtonText: 'Close'
+        });
+      } else {
+        // Show regular success message for edits
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: isEditing ? 'Item updated successfully' : 'Item added successfully'
+        });
+      }
 
       await fetchItems();
       handleCloseModal();
@@ -306,7 +335,22 @@ function AddItems({ updateItem }) {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/items/${item_id}`);
+        // Get the item details before deletion
+        const token = sessionStorage.getItem("sessionToken");
+        const itemResponse = await axios.get(`http://localhost:3000/items/${item_id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const itemName = itemResponse.data.name;
+
+        // Delete the item
+        await axios.delete(`http://localhost:3000/items/${item_id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         Swal.fire(
           'Deleted!',
           'Item has been deleted.',
@@ -314,7 +358,7 @@ function AddItems({ updateItem }) {
         );
         handleCloseModal();
         fetchItems();
-        await logActivity('DELETE_ITEM', `Deleted item ID: ${item_id}`);
+        await logActivity('DELETE_ITEM', `Deleted item: ${itemName}`);
       } catch (error) {
         console.error("Error deleting item:", error);
         Swal.fire(

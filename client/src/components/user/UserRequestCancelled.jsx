@@ -5,6 +5,9 @@ import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import "../../css/RequestModal.css"; // Changed from Modal.css to RequestModal.css
 import DataTable from "react-data-table-component";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { logActivity } from '../../utils/activityLogger';
 
 function CancelledPage() {
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -13,6 +16,7 @@ function CancelledPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isArchiving, setIsArchiving] = useState(false);
 
   useEffect(() => {
     const fetchUserRequests = async () => {
@@ -34,9 +38,9 @@ function CancelledPage() {
         }
 
         const data = await response.json();
-        // Filter cancelled requests on the client side
+        // Filter cancelled requests and not archived
         const cancelledRequests = data.filter(
-          request => request.status.toLowerCase() === 'cancelled'
+          request => request.status.toLowerCase() === 'cancelled' && !request.isArchived
         );
         setUserRequests(cancelledRequests);
       } catch (error) {
@@ -170,6 +174,57 @@ function CancelledPage() {
     } catch (error) {
       console.error("Error cancelling request:", error);
       alert(error.message || "Failed to cancel request. Please try again.");
+    }
+  };
+
+  const handleArchive = async (request) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to archive this cancelled request?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, archive it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        setIsArchiving(true);
+        const token = sessionStorage.getItem("sessionToken");
+        const response = await axios.patch(
+          `http://localhost:3000/borrow/${request._id}/archive`,
+          { isArchived: true },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          await logActivity('archive', `Archived cancelled request`);
+          
+          Swal.fire(
+            'Archived!',
+            'Request has been archived successfully.',
+            'success'
+          );
+
+          // Update the local state to remove the archived request
+          setUserRequests(userRequests.filter(r => r._id !== request._id));
+        }
+      } catch (error) {
+        console.error("Error archiving request:", error);
+        Swal.fire(
+          'Error!',
+          error.response?.data?.message || 'Failed to archive request',
+          'error'
+        );
+      } finally {
+        setIsArchiving(false);
+      }
     }
   };
 

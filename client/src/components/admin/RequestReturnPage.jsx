@@ -6,25 +6,18 @@ import "../../css/Navbar.css";
 import "../../css/RequestPage.css";
 import Swal from "sweetalert2";
 import { Link, useLocation } from "react-router-dom";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import QRScanner from './QRScanner';
+import ReactDOM from 'react-dom';
 
 const RequestReturnPage = () => {
   const [requests, setRequests] = useState([]);
   const [userIdToNameMap, setUserIdToNameMap] = useState({});
   const [itemIdToNameMap, setItemIdToNameMap] = useState({});
   const location = useLocation();
-  const [scanner, setScanner] = useState(null);
 
   useEffect(() => {
     fetchRequests();
   }, []);
-
-  useEffect(() => {
-    if (requests.length > 0) {
-      fetchUsers();
-      fetchItems();
-    }
-  }, [requests]);
 
   const fetchRequests = async () => {
     const token = sessionStorage.getItem("sessionToken");
@@ -34,58 +27,50 @@ const RequestReturnPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      
+      // Filter for approved requests and ensure item data is populated
       const returnRequests = response.data
         .filter(request => request.status === "approved")
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       
+      console.log('Fetched requests:', returnRequests); // Debug log to check data structure
       setRequests(returnRequests);
+
+      // Create user and item maps directly from the populated data
+      const userMap = {};
+      const itemMap = {};
+      
+      returnRequests.forEach(request => {
+        // Check both possible property names for user data
+        if (request.userId && typeof request.userId === 'object') {
+          userMap[request.userId._id] = request.userId.name;
+        } else if (request.user && typeof request.user === 'object') {
+          userMap[request.user._id] = request.user.name;
+        }
+
+        // Check both possible property names for item data
+        if (request.itemId && typeof request.itemId === 'object') {
+          itemMap[request.itemId._id] = request.itemId.name;
+        } else if (request.item && typeof request.item === 'object') {
+          itemMap[request.item._id] = request.item.name;
+        }
+      });
+
+      setUserIdToNameMap(userMap);
+      setItemIdToNameMap(itemMap);
+
+      // Add this right after the axios call
+      console.log('Raw response data:', response.data);
+      console.log('Request object example:', response.data[0]);
     } catch (error) {
       console.error("Error fetching requests:", error);
       Swal.fire({
         title: "Error!",
-        text:
-          error.response?.status === 401
-            ? "Unauthorized access. Please log in again."
-            : "Error fetching request",
+        text: error.response?.status === 401
+          ? "Unauthorized access. Please log in again."
+          : "Error fetching requests",
         icon: "error",
       });
-    }
-  };
-
-  const fetchUsers = async () => {
-    const token = sessionStorage.getItem("sessionToken");
-    try {
-      const response = await axios.get("http://localhost:3000/users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const userIdToNameMap = response.data.reduce((map, user) => {
-        map[user._id] = user.name;
-        return map;
-      }, {});
-      setUserIdToNameMap(userIdToNameMap);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  const fetchItems = async () => {
-    const token = sessionStorage.getItem("sessionToken");
-    try {
-      const response = await axios.get("http://localhost:3000/items", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const itemIdToNameMap = response.data.reduce((map, item) => {
-        map[item._id] = item.name;
-        return map;
-      }, {});
-      setItemIdToNameMap(itemIdToNameMap);
-    } catch (error) {
-      console.error("Error fetching items:", error);
     }
   };
 
@@ -95,63 +80,68 @@ const RequestReturnPage = () => {
       html: '<div id="reader"></div>',
       showCancelButton: true,
       showConfirmButton: false,
-      cancelButtonText: 'Cancel',
-      customClass: {
-        container: 'scanner-modal',
-        popup: 'scanner-popup',
-        title: 'scanner-title',
-      },
+      width: '500px',
       didOpen: () => {
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-          "reader", 
-          { fps: 10, qrbox: 250 }, 
-          false
-        );
-        
-        html5QrcodeScanner.render((decodedText) => {
-          // Check if the scanned QR code matches the request ID
-          if (decodedText === requestId) {
-            html5QrcodeScanner.clear();
-            Swal.close();
-            handleReturn(requestId);
-          } else {
-            Swal.fire({
-              title: 'Error!',
-              text: 'QR code does not match the request',
-              icon: 'error',
-            });
-          }
-        }, (error) => {
-          console.warn(`QR Code scanning failed: ${error}`);
-        });
-        
-        setScanner(html5QrcodeScanner);
+        // Render QRScanner component with callbacks
+        const scannerElement = document.getElementById('reader');
+        if (scannerElement) {
+          ReactDOM.render(
+            <QRScanner 
+              onScanSuccess={(decodedText) => handleQRResult(decodedText, requestId)}
+              onScanError={(error) => console.warn('QR Scan error:', error)}
+            />,
+            scannerElement
+          );
+        }
       },
       willClose: () => {
-        if (scanner) {
-          scanner.clear();
+        // Cleanup
+        const scannerElement = document.getElementById('reader');
+        if (scannerElement) {
+          ReactDOM.unmountComponentAtNode(scannerElement);
         }
       }
     });
   };
 
-  const handleReturn = async (requestId) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to mark this item as returned?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, mark as returned!",
-    });
+  const handleQRResult = async (decodedText, requestId) => {
+    try {
+      const request = requests.find(r => r._id === requestId);
+      
+      if (!request) {
+        throw new Error('Request not found');
+      }
 
-    if (result.isConfirmed) {
+      // Get the item ID from the request object
+      const itemId = request.itemId?._id || request.item?._id;
+      
+      console.log('QR Code:', decodedText); // Debug log
+      console.log('Item ID from request:', itemId); // Debug log
+
+      // Check if the scanned QR code matches the item ID
+      if (!itemId || decodedText !== itemId) {
+        // Simply show error message for mismatched QR code
+        await Swal.fire({
+          title: 'Wrong QR Code',
+          text: 'QR code did not match',
+          icon: 'error',
+          confirmButtonText: 'Try Again',
+          showCancelButton: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // If user clicks "Try Again", reopen the scanner
+            handleScanQR(requestId);
+          }
+        });
+        return;
+      }
+
+      // Process the return
       const token = sessionStorage.getItem("sessionToken");
       try {
-        const response = await axios.patch(
-          `http://localhost:3000/borrow/${requestId}/status`,
-          { status: "returned" },
+        const response = await axios.put(
+          `http://localhost:3000/borrow/${requestId}/return`,
+          {},
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -159,21 +149,37 @@ const RequestReturnPage = () => {
           }
         );
 
-        Swal.fire({
-          title: "Success!",
-          text: "Item marked as returned successfully",
-          icon: "success",
+        console.log('Return response:', response); // Debug log
+
+        // Show success message
+        await Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Success!',
+          text: 'Item has been returned successfully',
+          showConfirmButton: true,
+          timer: 2000
         });
 
-        fetchRequests(); // Refresh the requests list
+        // Refresh the requests list
+        await fetchRequests();
       } catch (error) {
-        console.error("Error marking as returned:", error);
-        Swal.fire({
-          title: "Error!",
-          text: error.response?.data?.message || "Failed to mark as returned",
-          icon: "error",
+        console.error('Return request error:', error);
+        
+        await Swal.fire({
+          title: 'Error!',
+          text: 'Failed to process return. Please try again.',
+          icon: 'error'
         });
       }
+    } catch (error) {
+      console.error('QR processing error:', error);
+      
+      await Swal.fire({
+        title: 'Error!',
+        text: error.message || 'Failed to process QR code',
+        icon: 'error'
+      });
     }
   };
 
@@ -236,8 +242,12 @@ const RequestReturnPage = () => {
                           {requests.length > 0 ? (
                             requests.map((request) => (
                               <tr key={request._id}>
-                                <td>{userIdToNameMap[request.user] || "Unknown User"}</td>
-                                <td>{itemIdToNameMap[request.item] || "Unknown Item"}</td>
+                                <td>
+                                  {(request.userId?.name || request.user?.name || userIdToNameMap[request.userId] || userIdToNameMap[request.user] || "Unknown User")}
+                                </td>
+                                <td>
+                                  {(request.itemId?.name || request.item?.name || itemIdToNameMap[request.itemId] || itemIdToNameMap[request.item] || "Unknown Item")}
+                                </td>
                                 <td>{new Date(request.borrowDate).toLocaleDateString()}</td>
                                 <td>{new Date(request.returnDate).toLocaleDateString()}</td>
                                 <td>

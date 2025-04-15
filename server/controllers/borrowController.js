@@ -6,8 +6,8 @@ const borrowController = {
   // Create a new borrow request
   createRequest: async (req, res) => {
     try {
-      const { item, borrowDate, returnDate, requestDate } = req.body; // Added requestDate
-      const userId = req.user.userId; // Get userId from JWT middleware
+      const { item, borrowDate, returnDate, requestDate } = req.body;
+      const userId = req.user.userId;
 
       console.log("Incoming request body:", req.body);
 
@@ -23,15 +23,12 @@ const borrowController = {
         return res.status(404).json({ message: `Item not found: ${item}` });
       }
 
-      // Convert borrowDate, returnDate, and requestDate into Date objects
+      // Convert dates to Date objects
       const borrowDateObj = new Date(borrowDate);
       const returnDateObj = new Date(returnDate);
-      const requestDateObj = new Date(requestDate); // Convert requestDate to Date object
+      const requestDateObj = new Date(requestDate);
 
-      console.log("Borrow Date from Request:", borrowDate);
-      console.log("Return Date from Request:", returnDate);
-      console.log("Request Date from Request:", requestDate);
-
+      /* Comment out date validation
       // Validate that borrowDate and returnDate are on the same day
       if (borrowDateObj.toDateString() !== returnDateObj.toDateString()) {
         return res.status(400).json({
@@ -45,6 +42,7 @@ const borrowController = {
           .status(400)
           .json({ message: "Return date must be after borrow date." });
       }
+      */
 
       // Save the request in the database
       const newRequest = new Request({
@@ -52,15 +50,15 @@ const borrowController = {
         item,
         borrowDate: borrowDateObj,
         returnDate: returnDateObj,
-        requestDate: requestDateObj, // Store requestDate as Date object
+        requestDate: requestDateObj,
         status: "pending",
       });
 
       const savedRequest = await newRequest.save();
-      console.log("Saved Request:", savedRequest); // Log the saved request for debugging
+      console.log("Saved Request:", savedRequest);
       res.status(201).json(savedRequest);
     } catch (error) {
-      console.error("Error creating request:", error); // Log the error for debugging
+      console.error("Error creating request:", error);
       res
         .status(500)
         .json({ message: "Error creating request", error: error.message });
@@ -100,17 +98,60 @@ const borrowController = {
     }
   },
 
+  // Get user's approved requests
+  getUserApprovedRequests: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const approvedRequests = await Request.find({ 
+        userId: userId,
+        status: "approved"
+      })
+      .populate('item')
+      .populate('userId', 'name email')
+      .lean();
+      
+      console.log('Fetched approved requests:', approvedRequests); // Debug log
+      res.status(200).json(approvedRequests);
+    } catch (error) {
+      console.error('Error in getUserApprovedRequests:', error);
+      res.status(500).json({
+        message: "Error fetching approved requests",
+        error: error.message,
+      });
+    }
+  },
+
   // Update request status (for admin)
   updateRequestStatus: async (req, res) => {
     try {
       const { requestId } = req.params;
-      const { status, itemId } = req.body; // Get itemId from request body
+      const { status } = req.body;
 
       console.log('Attempting to update request:', {
         requestId,
-        newStatus: status,
-        collection: 'Request'
+        newStatus: status
       });
+
+      // First find the request and populate item details
+      const request = await Request.findById(requestId).populate('item');
+      if (!request) {
+        console.log('No request found with ID:', requestId);
+        return res.status(404).json({ message: "Request not found" });
+      }
+
+      // Check if item exists
+      const item = await Item.findById(request.item._id);
+      if (!item) {
+        console.log('No item found with ID:', request.item._id);
+        return res.status(404).json({ message: "Item not found" });
+      }
+
+      // If approving, check if item is available
+      if (status === "approved" && !item.availability) {
+        return res.status(400).json({ 
+          message: "Item is currently unavailable" 
+        });
+      }
 
       // Update the request status
       const updatedRequest = await Request.findByIdAndUpdate(
@@ -120,29 +161,33 @@ const borrowController = {
           new: true,
           runValidators: true
         }
-      );
+      ).populate('item').populate('userId');
 
       if (!updatedRequest) {
-        console.log('No request found with ID:', requestId);
-        return res.status(404).json({ message: "Request not found" });
+        console.log('Failed to update request');
+        return res.status(500).json({ message: "Failed to update request" });
       }
 
-      // If the status is approved, update the item's availability
+      // Update item availability based on status
       if (status === "approved") {
-        const updatedItem = await Item.findByIdAndUpdate(
-          itemId,
+        await Item.findByIdAndUpdate(
+          request.item._id,
           { availability: false },
           { new: true }
         );
-
-        if (!updatedItem) {
-          console.log('No item found with ID:', itemId);
-          return res.status(404).json({ message: "Item not found" });
-        }
+        console.log(`Item ${request.item._id} marked as unavailable`);
+      } else if (status === "rejected" || status === "returned") {
+        await Item.findByIdAndUpdate(
+          request.item._id,
+          { availability: true },
+          { new: true }
+        );
+        console.log(`Item ${request.item._id} marked as available`);
       }
 
       console.log('Successfully updated request:', updatedRequest);
       res.status(200).json(updatedRequest);
+
     } catch (error) {
       console.error("Error in updateRequestStatus:", error);
       res.status(500).json({

@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap");
 
 .actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 8px;
     justify-content: center;
 }
 
@@ -34,14 +34,25 @@
     transform: scale(1.1);
 }
 
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
 .delete-btn i {
     color: #f44336;
     font-size: 1.1rem;
     transition: all 0.2s ease;
-}
-
-.delete-btn:hover {
-    background-color: rgba(244, 67, 54, 0.1);
 }
 
 .delete-btn:hover i {
@@ -81,4 +92,161 @@
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.table-data {
+    padding: 24px;
+}
+
+.table-data .order {
+    flex-grow: 1;
+    flex-basis: 500px;
+    background: var(--light);
+    padding: 24px;
+    border-radius: 20px;
+}
+
+.table-data .order .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.table-data .order .head h3 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background-color: #3C91E6;
+    color: white;
+}
+
+.tab-btn:hover {
+    background-color: #ddd;
+}
+
+.tab-btn.active:hover {
+    background-color: #2d7ac9;
+}
+
+.no-requests {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.no-requests i {
+    display: block;
+    margin-bottom: 10px;
+    color: #999;
+}
+
+/* DataTable custom styles */
+.rdt_Table {
+    background: var(--light) !important;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.rdt_TableHeader {
+    background: #f8f9fa !important;
+    padding: 15px !important;
+}
+
+.rdt_TableHeadRow {
+    background: #f8f9fa !important;
+    border-bottom: 2px solid #dee2e6 !important;
+}
+
+.rdt_TableRow {
+    border-bottom: 1px solid #e5e5e5 !important;
+}
+
+.rdt_TableCell {
+    padding: 12px 15px !important;
+}
+
+/* Action buttons */
+.restore-btn,
+.delete-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.restore-btn {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+.delete-btn {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+.restore-btn:hover {
+    background-color: #218838 !important;
+}
+
+.delete-btn:hover {
+    background-color: #c82333 !important;
+}
+
+.restore-btn:disabled,
+.delete-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.archive-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+.archive-btn:hover {
+    background-color: #5a6268 !important;
+}
+
+.archive-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.archive-btn i {
+    font-size: 1.1rem;
 }

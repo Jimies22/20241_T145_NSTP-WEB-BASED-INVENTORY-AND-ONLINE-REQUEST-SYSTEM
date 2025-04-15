@@ -122,19 +122,23 @@ router.put("/mark-read/:requestId", jwtVerifyMiddleware, async (req, res) => {
   }
 });
 
-// Add this route to handle returns
+// Update the return route
 router.put('/:requestId/return', jwtVerifyMiddleware, async (req, res) => {
   try {
     console.log('Return request received for:', req.params.requestId);
     
-    const request = await Request.findById(req.params.requestId).populate('item');
+    const request = await Request.findById(req.params.requestId)
+      .populate('item')
+      .populate('userId');
     
     if (!request) {
       return res.status(404).json({ message: 'Request not found' });
     }
 
     if (request.status !== 'approved') {
-      return res.status(400).json({ message: 'Request must be approved before it can be returned' });
+      return res.status(400).json({ 
+        message: 'Request must be approved before it can be returned' 
+      });
     }
 
     // Update request status
@@ -150,6 +154,27 @@ router.put('/:requestId/return', jwtVerifyMiddleware, async (req, res) => {
 
     item.availability = true;
     await item.save();
+
+    // Send email notification if configured
+    try {
+      await sendEmail({
+        to: request.userId.email,
+        ...getItemReturnedEmail(
+          request.userId.name,
+          request.item.name,
+          new Date().toLocaleDateString()
+        ),
+      });
+    } catch (emailError) {
+      console.error('Failed to send return confirmation email:', emailError);
+      // Don't fail the request if email fails
+    }
+
+    console.log('Return processed successfully:', {
+      request: request._id,
+      item: item._id,
+      availability: item.availability
+    });
 
     res.json({
       message: 'Return processed successfully',
@@ -201,5 +226,8 @@ router.get('/user/:userId/returned', jwtVerifyMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch returned items', error: error.message });
   }
 });
+
+// Add this new route
+router.get("/approved", jwtVerifyMiddleware, borrowController.getUserApprovedRequests);
 
 module.exports = router;

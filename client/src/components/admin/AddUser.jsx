@@ -16,6 +16,7 @@ function AddUser() {
     name: "",
     department: "",
     userID: "",
+    password: "",
   });
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -159,38 +160,31 @@ function AddUser() {
     e.preventDefault();
     try {
       const token = sessionStorage.getItem('sessionToken');
+      
+      // Validate email format
+      const isStudentEmail = formData.email.trim().endsWith('@student.buksu.edu.ph');
+      const isValidGeneralEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email.trim());
+      
+      if (!isStudentEmail && !isValidGeneralEmail) {
+        throw new Error('Invalid email format. Must be a student email (@student.buksu.edu.ph) or a valid general email.');
+      }
+
+      // Validate password
+      if (!formData.password || formData.password.trim().length === 0) {
+        throw new Error('Password is required.');
+      }
+
       const userData = {
         name: formData.name.trim(),
         email: formData.email.trim(),
         role: formData.role,
         department: formData.department.trim(),
+        password: formData.password,
       };
 
-      if (isEditing) {
-        const response = await axios.patch(
-          `http://localhost:3000/users/${formData.userID}`,
-          userData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        
-        if (response.status === 200) {
-          await logActivity(
-            'UPDATE_USER',
-            `Updated user: ${userData.name} (${userData.email})`
-          );
-          
-          Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'User updated successfully'
-          });
-        }
-      } else {
+      console.log('Sending user data:', userData); // Debug log
+
+      if (!isEditing) {
         const response = await axios.post(
           "http://localhost:3000/users/register", 
           userData,
@@ -217,23 +211,63 @@ function AddUser() {
           handleCloseModal();
           await fetchUsers();
         }
+      } else {
+        const response = await axios.patch(
+          `http://localhost:3000/users/${formData.userID}`,
+          userData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if (response.status === 200) {
+          await logActivity(
+            'UPDATE_USER',
+            `Updated user: ${userData.name} (${userData.email})`
+          );
+          
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'User updated successfully'
+          });
+          
+          handleCloseModal();
+          await fetchUsers();
+        }
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        data: error.response?.data,
+        validationErrors: error.response?.data?.errors // Log validation errors if any
+      });
+      
       let errorMessage = 'Failed to save user';
       
       if (error.response?.status === 400) {
-        errorMessage = error.response.data.message;
+        errorMessage = error.response.data.message || 'Invalid user data';
+        if (error.response.data.errors) {
+          errorMessage += ': ' + Object.values(error.response.data.errors).join(', ');
+        }
       } else if (error.response?.status === 409) {
         errorMessage = 'Email already exists';
       } else if (error.response?.status === 401) {
         errorMessage = 'Unauthorized. Please log in again.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
       }
 
       Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: errorMessage
+        text: errorMessage,
+        footer: process.env.NODE_ENV === 'development' ? `Technical details: ${error.message}` : null
       });
     }
   };
@@ -351,6 +385,7 @@ function AddUser() {
           email: user.email,
           role: user.role,
           department: user.department || "",
+          password: user.password || "",
         });
         setIsEditing(true);
       } else {
@@ -359,6 +394,7 @@ function AddUser() {
           email: "",
           role: "",
           department: "",
+          password: "",
         });
         setIsEditing(false);
       }
@@ -395,6 +431,7 @@ function AddUser() {
         name: "",
         department: "",
         userID: "",
+        password: "",
       });
       setIsEditing(false);
       document.body.style.overflow = "unset";
@@ -571,6 +608,17 @@ function AddUser() {
                         className="form-control"
                         name="department"
                         value={formData.department}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Password:</label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        name="password"
+                        value={formData.password}
                         onChange={handleInputChange}
                         required
                       />

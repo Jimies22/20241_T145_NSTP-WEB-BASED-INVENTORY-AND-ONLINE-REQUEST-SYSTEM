@@ -5,11 +5,7 @@ import '../../css/Scanner.css';
 
 const QRScanner = ({ onScanSuccess, onScanError }) => {
   const [scanner, setScanner] = useState(null);
-  const [lastScanned, setLastScanned] = useState('');
-  const [scanTimeout, setScanTimeout] = useState(null);
-
-  // Create success sound
-  const successSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2220/2220-preview.mp3');
+  const [isScanning, setIsScanning] = useState(true);
 
   useEffect(() => {
     const newScanner = new Html5QrcodeScanner('reader', {
@@ -28,54 +24,20 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
 
     newScanner.render(
       async (decodedText) => {
-        console.log('Raw QR Code detected:', decodedText);
-        const cleanedText = decodedText.trim();
-        
-        if (cleanedText !== lastScanned) {
-          setLastScanned(cleanedText);
+        if (isScanning) {
+          console.log('Raw QR Code detected:', decodedText);
+          const cleanedText = decodedText.trim();
           
-          if (scanTimeout) {
-            clearTimeout(scanTimeout);
-          }
+          // Disable scanning immediately after first successful scan
+          setIsScanning(false);
           
-          const timeout = setTimeout(() => {
-            setLastScanned('');
-          }, 2000);
-          
-          setScanTimeout(timeout);
-          
-          // Play success sound
+          // Stop the scanner
           try {
-            await successSound.play();
+            await newScanner.stop();
           } catch (error) {
-            console.warn('Could not play success sound:', error);
+            console.warn('Error stopping scanner:', error);
           }
-
-          // Show success message with longer duration and close button
-          Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'QR Code Successfully Scanned!',
-            text: 'The item has been processed.',
-            showConfirmButton: true,
-            confirmButtonText: 'Close',
-            confirmButtonColor: '#28a745',
-            timer: 10000,
-            timerProgressBar: true,
-            toast: true,
-            background: '#a5dc86',
-            color: '#fff',
-            customClass: {
-              popup: 'animated slideInRight',
-              confirmButton: 'btn btn-success'
-            },
-            didOpen: (toast) => {
-              toast.addEventListener('mouseenter', Swal.stopTimer)
-              toast.addEventListener('mouseleave', Swal.resumeTimer)
-            },
-            allowOutsideClick: false
-          });
-
+          
           console.log('Cleaned QR Code:', cleanedText);
           onScanSuccess(cleanedText);
         }
@@ -90,18 +52,13 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
       if (newScanner) {
         newScanner.clear();
       }
-      if (scanTimeout) {
-        clearTimeout(scanTimeout);
-      }
     };
-  }, []);
+  }, [onScanSuccess, onScanError, isScanning]);
 
   const stopScanner = () => {
     if (scanner) {
+      setIsScanning(false);
       scanner.clear();
-    }
-    if (scanTimeout) {
-      clearTimeout(scanTimeout);
     }
   };
 
