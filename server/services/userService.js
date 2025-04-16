@@ -41,7 +41,8 @@ const createUser = async (req, res) => {
       await sendEmail({
         to: email,
         subject: emailContent.subject,
-        text: emailContent.text
+        text: emailContent.text,
+        html: emailContent.html
       });
       console.log(`Welcome email sent to ${email}`);
     } catch (emailError) {
