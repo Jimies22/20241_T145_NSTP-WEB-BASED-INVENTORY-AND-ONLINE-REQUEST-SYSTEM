@@ -26,6 +26,15 @@ function AddUser() {
   const [editLocked, setEditLocked] = useState(false);
   const [lockTimer, setLockTimer] = useState(null);
   const LOCK_TIMEOUT = 120000; // 10 mins in milliseconds
+  const [originalFormData, setOriginalFormData] = useState({
+    email: "",
+    role: "",
+    name: "",
+    department: "",
+    userID: "",
+    password: "",
+  });
+  const [hasChanges, setHasChanges] = useState(false);
 
   const columns = [
     {
@@ -150,10 +159,31 @@ function AddUser() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
+    const newFormData = {
+      ...formData,
       [name]: value,
-    }));
+    };
+    
+    setFormData(newFormData);
+    
+    if (isEditing) {
+      const hasChanged = 
+        newFormData.name !== originalFormData.name || 
+        newFormData.email !== originalFormData.email || 
+        newFormData.role !== originalFormData.role || 
+        newFormData.department !== originalFormData.department || 
+        (newFormData.password.trim() !== "" && newFormData.password !== originalFormData.password);
+      
+      setHasChanges(hasChanged);
+    } else {
+      const requiredFieldsFilled = 
+        newFormData.name.trim() !== "" && 
+        newFormData.email.trim() !== "" && 
+        newFormData.role.trim() !== "" && 
+        newFormData.password.trim() !== "";
+      
+      setHasChanges(requiredFieldsFilled);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -372,31 +402,37 @@ function AddUser() {
       );
       setEditLocked(true);
 
-      // Set timer to automatically unlock after 10 seconds
+      // Set timer to automatically unlock after timeout
       const timer = setTimeout(async () => {
         await handleCloseModal();
       }, LOCK_TIMEOUT);
       setLockTimer(timer);
 
       if (user) {
-        setFormData({
+        const userData = {
           userID: user.userID,
           name: user.name,
           email: user.email,
           role: user.role,
           department: user.department || "",
-          password: user.password || "",
-        });
+          password: "",  // Clear password field when editing
+        };
+        setFormData(userData);
+        setOriginalFormData(userData); // Store original data for comparison
         setIsEditing(true);
+        setHasChanges(false); // Reset change tracking for editing
       } else {
-        setFormData({
+        const emptyData = {
           name: "",
           email: "",
           role: "",
           department: "",
           password: "",
-        });
+        };
+        setFormData(emptyData);
+        setOriginalFormData(emptyData);
         setIsEditing(false);
+        setHasChanges(false);
       }
       setShowModal(true);
       document.body.style.overflow = "hidden";
@@ -433,7 +469,16 @@ function AddUser() {
         userID: "",
         password: "",
       });
+      setOriginalFormData({
+        email: "",
+        role: "",
+        name: "",
+        department: "",
+        userID: "",
+        password: "",
+      });
       setIsEditing(false);
+      setHasChanges(false); // Reset change tracking
       document.body.style.overflow = "unset";
     } catch (error) {
       console.error("Error releasing lock:", error);
@@ -625,8 +670,16 @@ function AddUser() {
                     </div>
                   </div>
                   <div className="modal-footer">
-                    
-                    <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#4287f5", borderColor: "#4287f5" }}>
+                    <button 
+                      type="submit" 
+                      className="btn btn-primary" 
+                      style={{ 
+                        backgroundColor: "#4287f5", 
+                        borderColor: "#4287f5",
+                        opacity: (isEditing && !hasChanges) ? 0.6 : 1 
+                      }}
+                      disabled={isEditing && !hasChanges}
+                    >
                       {isEditing ? "Update User" : "Add User"}
                     </button>
                     <button

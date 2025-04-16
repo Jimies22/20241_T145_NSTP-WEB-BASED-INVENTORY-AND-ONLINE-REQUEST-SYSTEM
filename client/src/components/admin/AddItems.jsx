@@ -40,6 +40,14 @@ function AddItems({ updateItem }) {
   const LOCK_TIMEOUT = 120000; // 1 mins in milliseconds
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+  const [originalFormData, setOriginalFormData] = useState({
+    item_id: "",
+    name: "",
+    description: "",
+    category: "",
+    isArchived: false,
+  });
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Initialize Cloudinary
   const cld = new Cloudinary({
@@ -188,10 +196,31 @@ function AddItems({ updateItem }) {
   };
 
   const handleInputChange = (e) => {
-    setFormData({
+    const { name, value } = e.target;
+    const newFormData = {
       ...formData,
-      [e.target.name]: e.target.value,
-    });
+      [name]: value,
+    };
+    
+    setFormData(newFormData);
+    
+    // Check if editing and if there are changes compared to original
+    if (isEditing) {
+      const hasChanged = 
+        newFormData.name !== originalFormData.name || 
+        newFormData.description !== originalFormData.description || 
+        newFormData.category !== originalFormData.category;
+      
+      setHasChanges(hasChanged);
+    } else {
+      // For new items, enable button if required fields are filled
+      const requiredFieldsFilled = 
+        newFormData.name.trim() !== "" && 
+        newFormData.description.trim() !== "" && 
+        newFormData.category.trim() !== "";
+      
+      setHasChanges(requiredFieldsFilled);
+    }
   };
 
   const handleMediaLibrary = () => {
@@ -402,23 +431,29 @@ function AddItems({ updateItem }) {
       setLockTimer(timer);
 
       if (item) {
-        setFormData({
+        const itemData = {
           item_id: item.item_id,
           name: item.name,
           description: item.description,
           category: item.category,
           isArchived: item.isArchived,
-        });
+        };
+        setFormData(itemData);
+        setOriginalFormData(itemData); // Store original data for comparison
         setIsEditing(true);
+        setHasChanges(false); // Reset change tracking
       } else {
-        setFormData({
+        const emptyData = {
           item_id: "",
           name: "",
           description: "",
           category: "",
           isArchived: false,
-        });
+        };
+        setFormData(emptyData);
+        setOriginalFormData(emptyData);
         setIsEditing(false);
+        setHasChanges(false); // Reset change tracking
       }
       setShowModal(true);
     } catch (error) {
@@ -453,7 +488,15 @@ function AddItems({ updateItem }) {
         category: "",
         isArchived: false,
       });
+      setOriginalFormData({
+        item_id: "",
+        name: "",
+        description: "",
+        category: "",
+        isArchived: false,
+      });
       setIsEditing(false);
+      setHasChanges(false); // Reset change tracking
     } catch (error) {
       console.error("Error releasing lock:", error);
     }
@@ -805,8 +848,16 @@ function AddItems({ updateItem }) {
                     </div>
                   </div>
                   <div className="modal-footer">
-                    
-                    <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#4287f5", borderColor: "#4287f5" }}>
+                    <button 
+                      type="submit" 
+                      className="btn btn-primary" 
+                      style={{ 
+                        backgroundColor: "#4287f5", 
+                        borderColor: "#4287f5",
+                        opacity: (isEditing && !hasChanges) ? 0.6 : 1 
+                      }}
+                      disabled={isEditing && !hasChanges}
+                    >
                       {isEditing ? "Update Item" : "Add Item"}
                     </button>
                     <button
