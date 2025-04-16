@@ -35,29 +35,30 @@
 }
 
 .delete-btn {
-    background-color: #dc3545;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 9999 !important;
+    min-width: 100px !important;
+    height: 38px !important;
+    padding: 8px 16px !important;
+    background-color: #dc3545 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-weight: 500 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    margin: 0 5px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
-}
-
-.delete-btn i {
-    color: #f44336;
-    font-size: 1.1rem;
-    transition: all 0.2s ease;
-}
-
-.delete-btn:hover i {
-    color: #ffffff;
-    transform: scale(1.1);
+    background-color: #c82333 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
 }
 
 .search-wrapper2 {
@@ -184,44 +185,145 @@
 
 .rdt_TableCell {
     padding: 12px 15px !important;
+    overflow: visible !important;
+    vertical-align: middle !important;
 }
 
-/* Action buttons */
-.restore-btn,
-.delete-btn {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
+.rdt_TableCell div {
+    overflow: visible !important;
 }
 
-.restore-btn {
+/* Ensure buttons in the DataTable are visible */
+.rdt_TableCell [class*="-btn"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: inline-flex !important;
+}
+
+/* Container for action buttons */
+.action-buttons-container {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100% !important;
+    padding: 5px 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+/* Strong CSS for buttons to ensure they're always visible */
+button.restore-btn,
+button.delete-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 100px !important;
+    height: 38px !important;
+    padding: 8px 16px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    cursor: pointer !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    position: relative !important;
+}
+
+/* Restore button styling */
+button.restore-btn {
     background-color: #28a745 !important;
     color: white !important;
 }
 
-.delete-btn {
+button.restore-btn:hover {
+    background-color: #218838 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    transform: translateY(-1px) !important;
+}
+
+button.restore-btn:disabled {
+    opacity: 0.65 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Delete button styling */
+button.delete-btn {
     background-color: #dc3545 !important;
     color: white !important;
 }
 
-.restore-btn:hover {
-    background-color: #218838 !important;
-}
-
-.delete-btn:hover {
+button.delete-btn:hover {
     background-color: #c82333 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    transform: translateY(-1px) !important;
 }
 
-.restore-btn:disabled,
-.delete-btn:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
+button.delete-btn:disabled {
+    opacity: 0.65 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Additional DataTable styling improvements */
+.rdt_TableCol {
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.rdt_TableCol_Sortable {
+    cursor: pointer !important;
+}
+
+.rdt_TableRow {
+    transition: background-color 0.2s ease !important;
+}
+
+.rdt_TableRow:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* Make sure each cell has proper alignment */
+.rdt_TableCell {
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    overflow: visible !important;
+}
+
+/* Center-align headers and content */
+.rdt_TableCol[data-column-id="status"],
+.rdt_TableCell[data-column-id="status"] {
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+.rdt_TableCol[data-column-id="archiveDate"],
+.rdt_TableCell[data-column-id="archiveDate"] {
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+/* Ensure last column (actions) is properly centered */
+.rdt_TableCol:last-child,
+.rdt_TableCell:last-child {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
 }
 
 .archive-btn {
