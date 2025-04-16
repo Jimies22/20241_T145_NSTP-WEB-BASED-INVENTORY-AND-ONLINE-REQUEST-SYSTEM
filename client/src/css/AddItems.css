@@ -457,7 +457,7 @@ tr:hover {
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background-color: #3C91E6;
+    background-color: #4287f5;
     color: white;
     border: none;
     border-radius: 8px;
@@ -468,9 +468,9 @@ tr:hover {
 }
 
 .add-new-button:hover {
-    background-color: #2d7bc0;
+    background-color: #3876d9;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(60, 145, 230, 0.2);
+    box-shadow: 0 4px 8px rgba(66, 135, 245, 0.2);
 }
 
 .add-new-button i {

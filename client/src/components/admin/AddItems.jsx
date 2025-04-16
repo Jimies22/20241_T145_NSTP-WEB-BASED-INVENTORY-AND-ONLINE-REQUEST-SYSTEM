@@ -806,13 +806,14 @@ function AddItems({ updateItem }) {
                   </div>
                   <div className="modal-footer">
                     
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#4287f5", borderColor: "#4287f5" }}>
                       {isEditing ? "Update Item" : "Add Item"}
                     </button>
                     <button
                       type="button"
                       className="btn btn-secondary"
                       onClick={handleCloseModal}
+                      style={{ backgroundColor: "#6c757d" }}
                     >
                       Cancel
                     </button>

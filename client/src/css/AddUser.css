@@ -218,17 +218,21 @@ th {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  background-color: #007bff;
+  padding: 10px 20px;
+  background-color: #4287f5;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .add-new-button:hover {
-  background-color: #0056b3;
+  background-color: #3876d9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(66, 135, 245, 0.2);
 }
 
 .add-new-button i {
@@ -265,31 +269,6 @@ th {
   outline: none;
   border-color: #3C91E6;
   box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
-}
-
-.add-new-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background-color: #3C91E6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.add-new-button:hover {
-  background-color: #2d7bc0;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(60, 145, 230, 0.2);
-}
-
-.add-new-button i {
-  font-size: 1.2rem;
 }
 
 /* Add these modal styles */
