@@ -7,7 +7,6 @@ import AdminNavbar from "../Navbar/AdminNavbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/AddItems.css";
 import Swal from 'sweetalert2';
-import { Cloudinary } from "@cloudinary/url-gen";
 import JsBarcode from 'jsbarcode';
 import QRCode from 'qrcode';
 import { logActivity } from "../../utils/activityLogger";
@@ -38,8 +37,7 @@ function AddItems({ updateItem }) {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [lockTimer, setLockTimer] = useState(null);
   const LOCK_TIMEOUT = 120000; // 1 mins in milliseconds
-  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
-  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [originalFormData, setOriginalFormData] = useState({
     item_id: "",
     name: "",
@@ -48,13 +46,6 @@ function AddItems({ updateItem }) {
     isArchived: false,
   });
   const [hasChanges, setHasChanges] = useState(false);
-
-  // Initialize Cloudinary
-  const cld = new Cloudinary({
-    cloud: {
-      cloudName: 'your-cloud-name' // Replace with your cloud name
-    }
-  });
 
   const columns = [
     {
@@ -223,45 +214,6 @@ function AddItems({ updateItem }) {
     }
   };
 
-  const handleMediaLibrary = () => {
-    var myWidget = cloudinary.createMediaLibrary({
-      cloud_name: 'djnkkoc1k',
-      api_key: '758589637182136',
-      multiple: false,
-      max_files: 1,
-      insertion_position: 'inline',
-      default_transformations: [[]],
-      styles: {
-        palette: {
-          window: "#FFFFFF",
-          windowBorder: "#90A0B3",
-          tabIcon: "#0078FF",
-          menuIcons: "#5A616A",
-          textDark: "#000000",
-          textLight: "#FFFFFF",
-          link: "#0078FF",
-          action: "#FF620C",
-          inactiveTabIcon: "#0E2F5A",
-          error: "#F44235",
-          inProgress: "#0078FF",
-          complete: "#20B832",
-          sourceBg: "#E4EBF1"
-        }
-      }
-    }, {
-      insertHandler: function(data) {
-        if (data.assets.length > 0) {
-          const imageUrl = data.assets[0].secure_url;
-          setSelectedImageUrl(imageUrl);
-          setPreviewUrl(imageUrl);
-          console.log('Selected image URL:', imageUrl);
-        }
-      }
-    });
-
-    myWidget.show();
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = sessionStorage.getItem("sessionToken");
@@ -272,13 +224,9 @@ function AddItems({ updateItem }) {
       formDataToSend.append("description", formData.description);
       formDataToSend.append("category", formData.category);
       
-      // If we have a Cloudinary URL, use that
-      if (selectedImageUrl) {
-        formDataToSend.append("imageUrl", selectedImageUrl);
-      } 
-      // Otherwise, use the locally uploaded file if it exists
-      else if (selectedFile) {
-        formDataToSend.append("image", selectedFile);
+      // Add the local image file if selected
+      if (selectedImage) {
+        formDataToSend.append("image", selectedImage);
       }
 
       const response = isEditing
@@ -496,7 +444,9 @@ function AddItems({ updateItem }) {
         isArchived: false,
       });
       setIsEditing(false);
-      setHasChanges(false); // Reset change tracking
+      setHasChanges(false);
+      setSelectedImage(null);
+      setPreviewUrl(null);
     } catch (error) {
       console.error("Error releasing lock:", error);
     }
@@ -702,6 +652,42 @@ function AddItems({ updateItem }) {
 
   return (
     <div className="dashboard">
+      <style jsx="true">{`
+        .image-selection-container {
+          border: 1px solid #dee2e6;
+          padding: 15px;
+          border-radius: 4px;
+          background-color: #f8f9fa;
+        }
+        .image-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 15px;
+          justify-content: center;
+        }
+        .predefined-image-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          cursor: pointer;
+          padding: 10px;
+          border: 1px solid #dee2e6;
+          border-radius: 8px;
+          transition: all 0.2s;
+          background-color: white;
+          width: 120px;
+        }
+        .predefined-image-item:hover {
+          border-color: #0d6efd;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+          transform: translateY(-2px);
+        }
+        .predefined-image-item span {
+          font-size: 14px;
+          margin-top: 8px;
+          font-weight: 500;
+        }
+      `}</style>
       <Sidebar />
       <section id="content">
         <AdminNavbar />
@@ -827,21 +813,52 @@ function AddItems({ updateItem }) {
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Image:</label>
-                      <div>
-                        <button
-                          type="button"
-                          className="btn btn-primary"
-                          onClick={handleMediaLibrary}
-                        >
-                          Choose from Cloudinary
-                        </button>
+                      <div className="image-selection-container">
+                        <div className="predefined-images">
+                          <p className="mb-3">Select from available images:</p>
+                          <div className="image-grid">
+                            {['tv.png', 'hdmi.png', 'extension.png', 'DLP.png'].map(imgName => (
+                              <div 
+                                key={imgName} 
+                                className="predefined-image-item"
+                                onClick={() => {
+                                  // Create a fetch to load the image and create a file from it
+                                  fetch(`/src/assets/Items/${imgName}`)
+                                    .then(res => res.blob())
+                                    .then(blob => {
+                                      const file = new File([blob], imgName, { type: blob.type });
+                                      setSelectedImage(file);
+                                      setPreviewUrl(URL.createObjectURL(blob));
+                                    })
+                                    .catch(err => {
+                                      console.error("Error loading predefined image:", err);
+                                      Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: `Could not load image: ${imgName}`
+                                      });
+                                    });
+                                }}
+                              >
+                                <img 
+                                  src={`/src/assets/Items/${imgName}`} 
+                                  alt={imgName}
+                                  className="img-thumbnail"
+                                  style={{ width: '80px', height: '60px', objectFit: 'contain' }}
+                                />
+                                <span>{imgName.replace('.png', '')}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                       {previewUrl && (
-                        <div className="mt-2">
+                        <div className="mt-3">
+                          <p><small>Selected image:</small></p>
                           <img
                             src={previewUrl}
                             alt="Preview"
-                            style={{ maxWidth: "200px", maxHeight: "200px" }}
+                            style={{ maxWidth: "200px", maxHeight: "200px", border: "1px solid #dee2e6", borderRadius: "4px" }}
                           />
                         </div>
                       )}
