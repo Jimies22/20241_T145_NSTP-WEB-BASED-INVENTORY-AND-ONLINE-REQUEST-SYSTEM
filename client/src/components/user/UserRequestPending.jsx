@@ -366,6 +366,28 @@ function PendingPage() {
     selectAllRowsItemText: 'All',
   };
 
+  // Add a filteredRequests variable before the return statement
+  const filteredRequests = searchTerm.trim() !== '' 
+    ? userRequests.filter(request => {
+        // Search in item name
+        const name = request.item?.name?.toLowerCase() || '';
+        // Search in item description
+        const description = request.item?.description?.toLowerCase() || '';
+        // Search in item category
+        const category = request.item?.category?.toLowerCase() || '';
+        // Search in status
+        const status = request.status?.toLowerCase() || '';
+        
+        const term = searchTerm.toLowerCase();
+        
+        // Return true if any field contains the search term
+        return name.includes(term) || 
+               description.includes(term) || 
+               category.includes(term) || 
+               status.includes(term);
+      })
+    : userRequests;
+
   return (
     <div className="dashboard">
       <Sidebar />
@@ -425,7 +447,7 @@ function PendingPage() {
                   </div>
                 }
                 columns={columns}
-                data={userRequests}
+                data={filteredRequests}
                 pagination
                 paginationPerPage={10}
                 paginationRowsPerPageOptions={[5, 10, 15, 20, 25, 30]}

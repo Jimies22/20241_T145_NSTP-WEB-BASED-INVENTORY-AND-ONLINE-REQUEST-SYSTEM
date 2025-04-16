@@ -88,8 +88,8 @@ const RequestReturnPage = () => {
         const scannerElement = document.getElementById('reader');
         if (scannerElement) {
           try {
-            ReactDOM.render(
-              <QRScanner 
+          ReactDOM.render(
+            <QRScanner 
                 onScanSuccess={(decodedText) => {
                   // Stop scanner before handling result
                   if (scannerInstance) {
@@ -109,13 +109,13 @@ const RequestReturnPage = () => {
                     handleQRResult(decodedText, requestId);
                   }, 100);
                 }}
-                onScanError={(error) => console.warn('QR Scan error:', error)}
+              onScanError={(error) => console.warn('QR Scan error:', error)}
                 onScannerMounted={(instance) => {
                   scannerInstance = instance;
                 }}
-              />,
-              scannerElement
-            );
+            />,
+            scannerElement
+          );
           } catch (error) {
             console.error("Error rendering QR scanner:", error);
           }
@@ -134,10 +134,10 @@ const RequestReturnPage = () => {
         
         // Then unmount the React component
         try {
-          const scannerElement = document.getElementById('reader');
-          if (scannerElement) {
-            ReactDOM.unmountComponentAtNode(scannerElement);
-          }
+        const scannerElement = document.getElementById('reader');
+        if (scannerElement) {
+          ReactDOM.unmountComponentAtNode(scannerElement);
+        }
         } catch (error) {
           console.error("Error unmounting QR scanner:", error);
         }
