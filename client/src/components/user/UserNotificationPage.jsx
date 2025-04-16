@@ -45,7 +45,7 @@ function UserNotificationPage() {
           status: request.status,
           timestamp: new Date(request.updatedAt || request.requestDate).toLocaleString(),
           message: getNotificationMessage(request),
-          isRead: request.isRead || false
+          isRead: request.isRead === true // Ensure boolean value
         }));
 
       // Sort notifications by timestamp (newest first)
@@ -54,6 +54,13 @@ function UserNotificationPage() {
       );
 
       setNotifications(sortedNotifications);
+      
+      // Update the notification count in localStorage
+      const unreadCount = sortedNotifications.filter(notif => !notif.isRead).length;
+      localStorage.setItem('userNotificationCount', unreadCount.toString());
+      
+      // Dispatch event to update the notification bell
+      window.dispatchEvent(new Event('notificationUpdate'));
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
@@ -105,7 +112,10 @@ function UserNotificationPage() {
         throw new Error('Failed to mark notification as read');
       }
 
-      // Update local state
+      // Get the response data which now includes unreadCount
+      const responseData = await response.json();
+
+      // Update local state with the new read status
       setNotifications(prevNotifications =>
         prevNotifications.map(notif =>
           notif.id === notificationId
@@ -114,17 +124,34 @@ function UserNotificationPage() {
         )
       );
 
-      // Get current unread count from notifications state
-      const unreadCount = notifications.filter(notif => !notif.isRead).length;
-      const newCount = Math.max(0, unreadCount - 1); // Ensure count doesn't go below 0
-      
-      // Update localStorage
-      localStorage.setItem('userNotificationCount', newCount.toString());
-      
-      // Dispatch custom event to update notification bell
-      window.dispatchEvent(new CustomEvent('notificationCountUpdate', {
-        detail: { count: newCount }
-      }));
+      // Use the unreadCount from the server response
+      if (responseData && typeof responseData.unreadCount === 'number') {
+        // Update localStorage with the count from the server
+        localStorage.setItem('userNotificationCount', responseData.unreadCount.toString());
+        
+        // Dispatch an event with the exact count from the server
+        const countUpdateEvent = new CustomEvent('notificationCountUpdate', {
+          detail: { count: responseData.unreadCount }
+        });
+        window.dispatchEvent(countUpdateEvent);
+        
+        // Also dispatch the general notification update event
+        window.dispatchEvent(new Event('notificationUpdate'));
+        
+        console.log(`[NotificationPage] Notification marked as read. Server reports ${responseData.unreadCount} unread notifications remaining.`);
+      } else {
+        // Fallback to counting locally if server doesn't provide count
+        const updatedNotifications = notifications.map(notif =>
+          notif.id === notificationId ? { ...notif, isRead: true } : notif
+        );
+        
+        const newUnreadCount = updatedNotifications.filter(notif => !notif.isRead).length;
+        localStorage.setItem('userNotificationCount', newUnreadCount.toString());
+        
+        // Dispatch update events
+        window.dispatchEvent(new Event('notificationUpdate'));
+        console.log(`[NotificationPage] Notification marked as read. Counted ${newUnreadCount} unread notifications remaining.`);
+      }
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }

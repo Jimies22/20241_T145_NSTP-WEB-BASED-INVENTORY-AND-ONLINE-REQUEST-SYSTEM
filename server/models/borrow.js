@@ -21,6 +21,12 @@ const requestSchema = new mongoose.Schema({
   borrowDate: { type: Date },
   returnDate: { type: Date },
   actualReturnDate: { type: Date },
+  isRead: { 
+    type: Boolean, 
+    default: false 
+  }
+}, {
+  timestamps: true // Add timestamps to track when records are created/updated
 });
 
 const Request = mongoose.model("Request", requestSchema);

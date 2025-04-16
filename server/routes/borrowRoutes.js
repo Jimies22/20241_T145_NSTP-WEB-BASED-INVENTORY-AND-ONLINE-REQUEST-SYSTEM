@@ -102,20 +102,39 @@ router.post("/return-item", async (req, res) => {
   }
 });
 
-// Add this route to mark a notification as read
+// Update the route to mark a notification as read
 router.put("/mark-read/:requestId", jwtVerifyMiddleware, async (req, res) => {
   try {
+    console.log(`Marking request ${req.params.requestId} as read`);
+    
+    // Update the request and ensure it returns populated data
     const request = await Request.findByIdAndUpdate(
       req.params.requestId,
       { isRead: true },
       { new: true }
-    );
+    )
+    .populate('item')
+    .populate('userId');
 
     if (!request) {
+      console.log(`Request not found: ${req.params.requestId}`);
       return res.status(404).json({ message: "Request not found" });
     }
 
-    res.json(request);
+    console.log(`Request marked as read: ${request._id}, isRead: ${request.isRead}`);
+
+    // Get the total count of unread requests for this user
+    const unreadCount = await Request.countDocuments({
+      userId: req.user.userId,
+      status: { $in: ['pending', 'rejected'] },
+      isRead: { $ne: true }
+    });
+
+    res.json({
+      request,
+      unreadCount,
+      message: "Request marked as read successfully"
+    });
   } catch (error) {
     console.error("Error marking request as read:", error);
     res.status(500).json({ message: "Server error" });

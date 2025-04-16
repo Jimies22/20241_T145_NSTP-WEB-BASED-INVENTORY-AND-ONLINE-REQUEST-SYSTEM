@@ -38,12 +38,34 @@ function UserNavbar() {
             fetchNotifications();
         };
         
+        // Handle specific notification count updates
+        const handleNotificationCountUpdate = (e) => {
+            // Check if this is a force refresh event
+            if (e.detail && e.detail.forceRefresh) {
+                fetchNotifications();
+            } 
+            // If we have a specific count provided
+            else if (e.detail && typeof e.detail.count === 'number') {
+                setNotificationCount(e.detail.count);
+                localStorage.setItem('userNotificationCount', e.detail.count.toString());
+            }
+            // Otherwise, read from localStorage
+            else {
+                const storedCount = localStorage.getItem('userNotificationCount');
+                if (storedCount !== null) {
+                    setNotificationCount(parseInt(storedCount, 10) || 0);
+                }
+            }
+        };
+        
         window.addEventListener('notificationUpdate', handleNotificationUpdate);
+        window.addEventListener('notificationCountUpdate', handleNotificationCountUpdate);
         window.addEventListener('storage', handleStorageChange);
         
         return () => {
             clearInterval(interval);
             window.removeEventListener('notificationUpdate', handleNotificationUpdate);
+            window.removeEventListener('notificationCountUpdate', handleNotificationCountUpdate);
             window.removeEventListener('storage', handleStorageChange);
         };
     }, []);
@@ -59,6 +81,8 @@ function UserNavbar() {
 
     const fetchNotifications = async () => {
         const token = sessionStorage.getItem("sessionToken");
+        if (!token) return;
+        
         try {
             const response = await axios.get("http://localhost:3000/borrow/my-requests", {
                 headers: {
@@ -69,17 +93,23 @@ function UserNavbar() {
             // Only count unread notifications that are pending or rejected
             const notificationRequests = response.data.filter(req => 
                 ['pending', 'rejected'].includes(req.status.toLowerCase()) 
-                && !req.isRead
+                && req.isRead !== true  // Explicitly check for not true
             );
 
             setNotifications(notificationRequests);
-            setNotificationCount(notificationRequests.length);
+            const newCount = notificationRequests.length;
+            setNotificationCount(newCount);
             
-            // Update localStorage
+            // Update localStorage with the actual count from the server
             localStorage.setItem('userNotifications', JSON.stringify(notificationRequests));
-            localStorage.setItem('userNotificationCount', notificationRequests.length.toString());
+            localStorage.setItem('userNotificationCount', newCount.toString());
+            
+            console.log(`[UserNavbar] Updated notification count: ${newCount}`);
+            
+            return newCount;
         } catch (error) {
             console.error("Error fetching notifications:", error);
+            return null;
         }
     };
 
