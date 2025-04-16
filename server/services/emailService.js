@@ -93,13 +93,56 @@ const baseEmailTemplate = (title, content) => `
         }
         .button {
             display: inline-block;
-            background-color: #3498db;
+            background: linear-gradient(45deg, #1e5799, #2989d8, #207cca, #7db9e8);
             color: white;
-            padding: 10px 20px;
-            margin: 15px 0;
+            padding: 14px 28px;
+            margin: 20px 0;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 16px;
             text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .hero-button {
+            display: block;
+            width: 80%;
+            max-width: 300px;
+            margin: 30px auto;
+            background: linear-gradient(45deg, #0a2463, #3e92cc);
+            color: #ffffff;
+            padding: 16px 24px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 18px;
+            text-align: center;
+            box-shadow: 0 6px 15px rgba(0, 161, 255, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+        .hero-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 161, 255, 0.6), inset 0 0 0 2px rgba(255, 255, 255, 0.6);
+        }
+        .hero-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+            transition: transform 0.5s ease;
         }
         .alert {
             padding: 15px;
@@ -326,16 +369,19 @@ const getNewUserWelcomeEmail = (userName, email, temporaryPassword = null) => {
             `}
         </div>
         
-        <p>
-            <a href="http://localhost:3000/login" class="button">Access the System</a>
-        </p>
+        <div style="text-align: center; margin: 25px 0;">
+            <!-- Button with gradient background, white text, and moderate size -->
+            <a href="http://localhost:3001/login" style="display: inline-block; width: auto; min-width: 180px; max-width: 240px; background: linear-gradient(to right, #1e5799, #2989d8); color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
+                ACCESS THE SYSTEM
+            </a>
+        </div>
         
         <p>If you have any questions or need assistance, please contact the system administrator.</p>
     `;
     
     return {
         subject: '🎉 Welcome to NSTP Inventory System',
-        text: `Hello ${userName}, Welcome to the NSTP Inventory System! Your account has been created by an administrator. Your account details: - Email: ${email} ${temporaryPassword ? `- Temporary Password: ${temporaryPassword} We recommend changing this password after your first login.` : '- You can log in using Google Authentication.'} You can access the system at: http://localhost:3000/login. If you have any questions or need assistance, please contact the system administrator. This is an automated message, please do not reply.`,
+        text: `Hello ${userName}, Welcome to the NSTP Inventory System! Your account has been created by an administrator. Your account details: - Email: ${email} ${temporaryPassword ? `- Temporary Password: ${temporaryPassword} We recommend changing this password after your first login.` : '- You can log in using Google Authentication.'} You can access the system at: http://localhost:3001/login. If you have any questions or need assistance, please contact the system administrator. This is an automated message, please do not reply.`,
         html: baseEmailTemplate('Welcome to NSTP Inventory System', content)
     };
 };
