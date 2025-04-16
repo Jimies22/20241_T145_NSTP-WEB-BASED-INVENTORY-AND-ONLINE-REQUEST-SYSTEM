@@ -1,4 +1,4 @@
-// src/components/NotificationPage.jsx
+// src/components/AdminNotificationPage.jsx
 import React, { useState, useEffect } from 'react';
 import AdminSidebar from '../sidebar/AdminSidebar';
 import AdminNavbar from '../Navbar/AdminNavbar';
@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../../css/NotificationPage.css';
 
-function NotificationPage() {
+function AdminNotificationPage() {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -134,4 +134,4 @@ function NotificationPage() {
     );
 }
 
-export default NotificationPage;
+export default AdminNotificationPage;

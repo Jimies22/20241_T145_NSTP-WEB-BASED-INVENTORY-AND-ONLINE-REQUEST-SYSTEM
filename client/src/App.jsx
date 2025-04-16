@@ -61,7 +61,7 @@ function App() {
                 <Route path="/archive" element={<ProtectedRoute role="admin"><ArchivedPage /></ProtectedRoute>} />
                 <Route path="/admin/archived-users" element={<ProtectedRoute role="admin"><ArchivedUsersPage /></ProtectedRoute>} />
                 <Route path="/activity" element={<ProtectedRoute role="admin"><AdminActivityPage /></ProtectedRoute>} />
-                <Route path="/notification" element={<ProtectedRoute><AdminNotificationPage /></ProtectedRoute>} />
+                <Route path="/notification" element={<ProtectedRoute role="admin"><AdminNotificationPage /></ProtectedRoute>} />
                 <Route path="/users" element={<ProtectedRoute role="admin"><AddUser /></ProtectedRoute>} />
                 <Route path="/request/return" element={<ProtectedRoute role="admin"><RequestReturnPage /></ProtectedRoute>} />
                 <Route path="/request/rejected" element={<ProtectedRoute role="admin"><RequestRejectedPage /></ProtectedRoute>} />
