@@ -98,33 +98,63 @@ th {
   background-color: #f4f4f4;
 }
 
+/* Action Buttons Base Styling - No background or outline until hover */
 .edit-btn,
-.delete-btn {
-  padding: 6px 12px;
-  margin: 0 5px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.edit-btn {
-  background-color: #ffffff;
-  color: rgb(255, 255, 255);
-}
-
-.delete-btn {
-  background-color: #ffffff;
+.delete-btn,
+.archive-btn {
+  background-color: transparent !important;
   color: white;
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px;
 }
 
+/* Icon Colors - Using more vibrant and modern colors */
+.edit-btn i {
+  color: #2196F3; /* Brighter blue */
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+.delete-btn i {
+  color: #FF5252; /* Softer red */
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+.archive-btn i {
+  color: #78909C; /* Slate blue-gray */
+  font-size: 1.1rem;
+  transition: color 0.2s ease;
+}
+
+/* Hover States */
 .edit-btn:hover {
-  background-color: #1976d2;
+  background-color: #1565C0 !important;
 }
 
 .delete-btn:hover {
-  background-color: #d32f2f;
+  background-color: #C62828 !important;
 }
 
+.archive-btn:hover {
+  background-color: #546E7A !important;
+}
+
+/* Hover text colors */
+.edit-btn:hover i,
+.delete-btn:hover i,
+.archive-btn:hover i {
+  color: white;
+}
 
 .alert {
   margin-bottom: 1rem;
@@ -141,8 +171,6 @@ th {
 }
 
 .actions button {
-  color: #f44336;
-  padding: 0.5rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -152,12 +180,7 @@ th {
   font-size: 1.2rem;
 }
 
-/* .addButton {
-  color: white;
-  border-color: white;
-  background-color: white;
-} */
-
+/* Search Styles */
 .search-container {
   width: 500px;
   display: flex;
@@ -175,24 +198,6 @@ th {
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.edit-btn i {
-  color: #3C91E6;
-  font-size: 1.1rem;
-  transition: color 0.2s ease;
-}
-
-.archive-btn i {
-  color: rgb(48, 206, 0);
-  font-size: 1.1rem;
-  transition: color 0.2s ease;
-}
-
-.delete-btn i {
-  color: #f44336;
-  font-size: 1.1rem;
-  transition: color 0.2s ease;
 }
 
 .search-wrapper {
@@ -271,7 +276,7 @@ th {
   box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
 }
 
-/* Add these modal styles */
+/* Modal Styles */
 .modal {
   z-index: 1050 !important;
 }
@@ -284,6 +289,7 @@ th {
   z-index: 1050 !important;
 }
 
+/* Table Styles */
 .table-data {
   background: white;
   padding: 0px;
@@ -300,7 +306,7 @@ th {
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
-/* Update DataTable styles */
+/* DataTable styles */
 .rdt_Table {
   background: white !important;
   height: 100% !important; /* Take full height */
@@ -310,7 +316,6 @@ th {
   height: auto !important; /* Let it grow naturally */
 }
 
-/* Remove pagination styles since we won't need them */
 .rdt_Pagination {
   display: none !important;
 }

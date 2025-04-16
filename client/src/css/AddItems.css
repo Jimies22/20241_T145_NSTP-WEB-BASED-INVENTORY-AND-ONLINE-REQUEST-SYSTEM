@@ -40,8 +40,6 @@ main {
     overflow: hidden;
 }
 
-
-
 .edit-btn,
 .delete-btn {
     background: none;
@@ -203,35 +201,78 @@ tr:hover {
     background-color: #f5f5f5;
 }
 
+/* Action Buttons Styling */
 .actions {
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    align-items: center;
 }
 
 .edit-btn,
-.delete-btn {
-    background: none;
+.archive-btn,
+.delete-btn,
+.codes-btn {
+    background-color: transparent !important;
+    padding: 6px;
+    border-radius: 6px;
     border: none;
+    outline: none;
+    box-shadow: none;
     cursor: pointer;
-    padding: 5px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.edit-btn:hover {
-    background-color: rgba(0, 102, 255, 0.1);
-}
-
-.delete-btn:hover {
-    background-color: rgba(244, 67, 54, 0.1);
-}
-
+/* Icon Colors */
 .edit-btn i {
-    color: #0066ff;
+    color: #2196F3;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
 }
 
 .delete-btn i {
-    color: #f44336;
+    color: #FF5252;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+.archive-btn i {
+    color: #78909C;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+.codes-btn i {
+    color: #000000;
+    font-size: 1.1rem;
+    transition: color 0.2s ease;
+}
+
+/* Hover States */
+.edit-btn:hover {
+    background-color: #1565C0 !important;
+}
+
+.delete-btn:hover {
+    background-color: #C62828 !important;
+}
+
+.archive-btn:hover {
+    background-color: #546E7A !important;
+}
+
+.codes-btn:hover {
+    background-color: #5a6268 !important;
+}
+
+/* Hover text colors */
+.edit-btn:hover i,
+.delete-btn:hover i,
+.archive-btn:hover i,
+.codes-btn:hover i {
+    color: white;
 }
 
 .add-button:hover {
@@ -305,38 +346,6 @@ tr:hover {
     display: none !important;
 }
 
-.actions {
-    display: flex;
-    gap: 8px;
-}
-
-.edit-btn,
-.delete-btn {
-    padding: 6px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.edit-btn:hover {
-    background-color: rgba(0, 102, 255, 0.1);
-}
-
-.delete-btn:hover {
-    background-color: rgba(244, 67, 54, 0.1);
-}
-
-.edit-btn i {
-    color: #0066ff;
-    font-size: 1.2rem;
-}
-
-.delete-btn i {
-    color: #f44336;
-    font-size: 1.2rem;
-}
-
 .loading,
 .no-data {
     padding: 2rem;
@@ -344,11 +353,9 @@ tr:hover {
     color: #666;
 }
 
-
 .add-button:hover {
     background-color: #45a049;
 }
-
 
 .form-control {
     border-radius: 4px;
@@ -380,8 +387,6 @@ tr:hover {
     background-color: #5c636a;
     border-color: #565e64;
 }
-
-
 
 :root {
     --poppins: 'Poppins', sans-serif;
@@ -475,192 +480,6 @@ tr:hover {
 
 .add-new-button i {
     font-size: 1.2rem;
-}
-
-/* Action Buttons Styling */
-.actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.edit-btn,
-.archive-btn {
-    padding: 6px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.edit-btn {
-    background-color: rgba(60, 145, 230, 0.1);
-}
-
-.archive-btn {
-    background-color: rgb(255, 255, 255);
-}
-
-.edit-btn:hover {
-    background-color: rgba(60, 145, 230, 0.2);
-}
-
-.archive-btn:hover {
-    background-color: rgb(48, 206, 0);
-    transition: all 0.2s ease;
-}
-
-.archive-btn i {
-    color: rgb(48, 206, 0);
-    font-size: 1.1rem;
-    transition: color 0.2s ease;
-}
-
-.archive-btn:hover i {
-    color: rgb(255, 255, 255);
-}
-
-.edit-btn:hover i {
-    color: rgb(255, 255, 255);
-}
-
-
-
-
-
-
-
-.form-label {
-    font-weight: 500;
-    color: #2c3e50;
-    margin-bottom: 8px;
-}
-
-.form-control {
-    padding: 10px 16px;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus {
-    border-color: #3C91E6;
-    box-shadow: 0 0 0 3px rgba(60, 145, 230, 0.1);
-}
-
-
-.btn {
-    padding: 10px 20px;
-    font-weight: 500;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.btn-primary {
-    background-color: #3C91E6;
-    border: none;
-}
-
-.btn-primary:hover {
-    background-color: #2d7bc0;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(60, 145, 230, 0.2);
-}
-
-.btn-secondary {
-    background-color: #e9ecef;
-    border: none;
-    color: #2c3e50;
-}
-
-.btn-secondary:hover {
-    background-color: #dee2e6;
-    color: #2c3e50;
-}
-
-
-/* Success Message Styling */
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    padding: 12px 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border: 1px solid #c3e6cb;
-}
-
-.custom-modal .modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    padding: 1.5rem;
-    border-top: 1px solid #eee;
-    background-color: #f8f9fa;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
-
-.custom-modal .btn {
-    min-width: 120px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.custom-modal .modal-dialog {
-    max-width: 800px;
-    width: 90%;
-    margin: 1.75rem auto;
-}
-
-.custom-modal .modal-content {
-    width: 100%;
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.custom-modal .modal-body {
-    padding: 2rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-}
-
-.form-control {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 1rem;
-    line-height: 1.5;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-control:focus {
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-select.form-control {
-    cursor: pointer;
-    background-color: #fff;
-    background-clip: padding-box;
-}
-
-select.form-control:invalid {
-    color: #6c757d;
-}
-
-option {
-    color: #212529;
 }
 
 /* Add or update these modal styles */
