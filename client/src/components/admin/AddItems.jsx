@@ -265,20 +265,22 @@ function AddItems({ updateItem }) {
             <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
               <p>Your item has been added. Here's the QR code:</p>
               <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px;"/>
-              <a href="${qrCodeUrl}" download="qr-code.png" class="btn btn-primary">
+              <a href="${qrCodeUrl}" download="qr-code.png" class="btn" style="background-color: #3f85f7; color: white; width: 100%; border-radius: 5px; padding: 10px; text-decoration: none; font-weight: 500; border: none;">
                 Download QR Code
               </a>
             </div>
           `,
           showConfirmButton: true,
-          confirmButtonText: 'Close'
+          confirmButtonText: 'Close',
+          confirmButtonColor: '#6c757d'
         });
       } else {
         // Show regular success message for edits
         Swal.fire({
           icon: 'success',
           title: 'Success!',
-          text: isEditing ? 'Item updated successfully' : 'Item added successfully'
+          text: isEditing ? 'Item updated successfully' : 'Item added successfully',
+          confirmButtonColor: '#3f85f7'
         });
       }
 
