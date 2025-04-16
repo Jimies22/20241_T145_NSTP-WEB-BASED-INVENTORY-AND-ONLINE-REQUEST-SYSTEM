@@ -75,6 +75,8 @@ const RequestReturnPage = () => {
   };
 
   const handleScanQR = (requestId) => {
+    let scannerInstance = null;
+    
     Swal.fire({
       title: 'Scan QR Code',
       html: '<div id="reader"></div>',
@@ -85,21 +87,70 @@ const RequestReturnPage = () => {
         // Render QRScanner component with callbacks
         const scannerElement = document.getElementById('reader');
         if (scannerElement) {
-          ReactDOM.render(
-            <QRScanner 
-              onScanSuccess={(decodedText) => handleQRResult(decodedText, requestId)}
-              onScanError={(error) => console.warn('QR Scan error:', error)}
-            />,
-            scannerElement
-          );
+          try {
+            ReactDOM.render(
+              <QRScanner 
+                onScanSuccess={(decodedText) => {
+                  // Stop scanner before handling result
+                  if (scannerInstance) {
+                    try {
+                      scannerInstance.clear();
+                      scannerInstance = null;
+                    } catch (e) {
+                      console.warn("Error clearing scanner:", e);
+                    }
+                  }
+                  
+                  // Close the modal before proceeding
+                  Swal.close();
+                  
+                  // Handle result after modal is closed
+                  setTimeout(() => {
+                    handleQRResult(decodedText, requestId);
+                  }, 100);
+                }}
+                onScanError={(error) => console.warn('QR Scan error:', error)}
+                onScannerMounted={(instance) => {
+                  scannerInstance = instance;
+                }}
+              />,
+              scannerElement
+            );
+          } catch (error) {
+            console.error("Error rendering QR scanner:", error);
+          }
         }
       },
       willClose: () => {
-        // Cleanup
-        const scannerElement = document.getElementById('reader');
-        if (scannerElement) {
-          ReactDOM.unmountComponentAtNode(scannerElement);
+        // Cleanup scanner instance first
+        if (scannerInstance) {
+          try {
+            scannerInstance.clear();
+            scannerInstance = null;
+          } catch (e) {
+            console.warn("Error clearing scanner in willClose:", e);
+          }
         }
+        
+        // Then unmount the React component
+        try {
+          const scannerElement = document.getElementById('reader');
+          if (scannerElement) {
+            ReactDOM.unmountComponentAtNode(scannerElement);
+          }
+        } catch (error) {
+          console.error("Error unmounting QR scanner:", error);
+        }
+        
+        // Final cleanup of any remaining elements
+        const elementsToRemove = document.querySelectorAll('.html5-qrcode-element');
+        elementsToRemove.forEach(el => {
+          try {
+            el.remove();
+          } catch (e) {
+            console.warn("Failed to remove element:", e);
+          }
+        });
       }
     });
   };
@@ -190,6 +241,20 @@ const RequestReturnPage = () => {
     }
   `;
 
+  // Add this function
+  const handleNavigation = (e) => {
+    // Ensure any lingering QR scanner elements are removed before navigation
+    try {
+      const elementsToRemove = document.querySelectorAll('.html5-qrcode-element');
+      if (elementsToRemove.length > 0) {
+        console.log('Cleaning up lingering scanner elements during navigation');
+        elementsToRemove.forEach(el => el.remove());
+      }
+    } catch (error) {
+      console.warn('Error cleaning up during navigation:', error);
+    }
+  };
+
   return (
     <>
       <style>{buttonStyles}</style>
@@ -206,19 +271,39 @@ const RequestReturnPage = () => {
             
             <div className="chrome-tabs-container">
               <div className="chrome-tabs">
-                <Link to="/request" className={`chrome-tab ${location.pathname === '/request' ? 'active' : ''}`}>
+                <Link 
+                  to="/request" 
+                  className={`chrome-tab ${location.pathname === '/request' ? 'active' : ''}`}
+                  onClick={handleNavigation}
+                >
                   <i className='bx bx-time-five'></i> Pending
                 </Link>
-                <Link to="/request/cancelled" className={`chrome-tab ${location.pathname === '/request/cancelled' ? 'active' : ''}`}>
+                <Link 
+                  to="/request/cancelled" 
+                  className={`chrome-tab ${location.pathname === '/request/cancelled' ? 'active' : ''}`}
+                  onClick={handleNavigation}
+                >
                   <i className='bx bx-x-circle'></i> Cancelled
                 </Link>
-                <Link to="/request/rejected" className={`chrome-tab ${location.pathname === '/request/rejected' ? 'active' : ''}`}>
+                <Link 
+                  to="/request/rejected" 
+                  className={`chrome-tab ${location.pathname === '/request/rejected' ? 'active' : ''}`}
+                  onClick={handleNavigation}
+                >
                   <i className='bx bx-block'></i> Rejected
                 </Link>
-                <Link to="/request/return" className={`chrome-tab ${location.pathname === '/request/return' ? 'active' : ''}`}>
+                <Link 
+                  to="/request/return" 
+                  className={`chrome-tab ${location.pathname === '/request/return' ? 'active' : ''}`}
+                  onClick={handleNavigation}
+                >
                   <i className='bx bx-undo'></i> Return Item
                 </Link>
-                <Link to="/admin" className={`chrome-tab ${location.pathname === '/admin' ? 'active' : ''}`}>
+                <Link 
+                  to="/admin" 
+                  className={`chrome-tab ${location.pathname === '/admin' ? 'active' : ''}`}
+                  onClick={handleNavigation}
+                >
                   <i className='bx bx-home'></i> Home
                 </Link>
               </div>
