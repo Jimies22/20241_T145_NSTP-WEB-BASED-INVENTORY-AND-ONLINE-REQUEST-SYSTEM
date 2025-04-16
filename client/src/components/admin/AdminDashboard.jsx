@@ -299,7 +299,7 @@ function AdminDashboard() {
                             </span>
                         </div>
                         <div className="box">
-                            <i className='bx bxs-dollar-circle'></i>
+                            <i className='bx bxs-bookmark-alt'></i>
                             <span className="text">
                                 <h3>{statistics.items.borrowed}</h3>
                                 <p>Borrowed Items</p>
