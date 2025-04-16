@@ -97,6 +97,24 @@ const getBorrowRequestStatusEmail = (userName, itemName, status, reason = '') =>
     `
 });
 
+const getItemReturnedEmail = (userName, itemName, borrowDate, returnDate) => ({
+    subject: '✅ Item Successfully Returned - NSTP Inventory System',
+    text: `
+        Hello ${userName},
+
+        We're confirming that you have successfully returned the following item to the NSTP Inventory:
+
+        Item: ${itemName}
+        Borrowed On: ${new Date(borrowDate).toLocaleString()}
+        Returned On: ${new Date(returnDate).toLocaleString()}
+
+        Thank you for returning the item in a timely manner. Your responsibility for this item has ended.
+        If you have any questions about this return or need to borrow equipment in the future, please visit the NSTP office.
+
+        This is an automated message, please do not reply.
+    `
+});
+
 const getNewUserWelcomeEmail = (userName, email, temporaryPassword = null) => ({
     subject: '🎉 Welcome to NSTP Inventory System',
     text: `
@@ -141,5 +159,6 @@ module.exports = {
     getNewItemNotificationEmail,
     getBorrowRequestStatusEmail,
     getNewUserWelcomeEmail,
+    getItemReturnedEmail,
     testEmailService
 };

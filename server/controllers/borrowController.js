@@ -1,6 +1,7 @@
 const Request = require("../models/borrow");
 const User = require("../models/User");
 const Item = require("../models/Item");
+const activityService = require("../services/activityService");
 
 const borrowController = {
   // Create a new borrow request
@@ -276,6 +277,77 @@ const borrowController = {
       res.status(500).json({
         message: "Error cancelling request",
         error: error.message,
+      });
+    }
+  },
+
+  // Process a return
+  processReturn: async (req, res) => {
+    try {
+      const { requestId } = req.params;
+      
+      // Find the request with populated fields
+      const request = await Request.findById(requestId)
+        .populate('item')
+        .populate('userId');
+      
+      if (!request) {
+        return res.status(404).json({ message: 'Request not found' });
+      }
+
+      if (request.status !== 'approved') {
+        return res.status(400).json({
+          message: 'Request must be approved before it can be returned'
+        });
+      }
+
+      // Update request status
+      request.status = 'returned';
+      request.actualReturnDate = new Date();
+      await request.save();
+
+      // Update item availability
+      const item = await Item.findById(request.item._id);
+      if (!item) {
+        return res.status(404).json({ message: 'Item not found' });
+      }
+
+      item.availability = true;
+      await item.save();
+
+      // Log the return activity using activityService
+      try {
+        const adminUser = await User.findById(req.user.userId);
+        if (adminUser) {
+          await activityService.logActivity(
+            req.user.userId,
+            adminUser.name,
+            adminUser.role,
+            'return_item',
+            `${adminUser.name} processed return of ${item.name} from ${request.userId.name}`
+          );
+        }
+      } catch (logError) {
+        console.error('Failed to log activity:', logError);
+        // Continue processing even if logging fails
+      }
+
+      console.log('Return processed successfully:', {
+        request: request._id,
+        item: item._id,
+        availability: item.availability
+      });
+
+      res.json({
+        message: 'Return processed successfully',
+        request: request,
+        item: item
+      });
+    } catch (error) {
+      console.error('Error processing return:', error);
+      res.status(500).json({
+        message: 'Error processing return',
+        error: error.message
       });
     }
   },

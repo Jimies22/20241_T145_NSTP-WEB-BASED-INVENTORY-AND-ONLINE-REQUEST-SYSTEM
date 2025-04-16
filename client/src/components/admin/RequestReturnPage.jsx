@@ -202,6 +202,39 @@ const RequestReturnPage = () => {
 
         console.log('Return response:', response); // Debug log
 
+        // Get user and item details for the email confirmation
+        const userName = request.userId?.name || request.user?.name || userIdToNameMap[request.userId] || userIdToNameMap[request.user];
+        const itemName = request.itemId?.name || request.item?.name || itemIdToNameMap[request.itemId] || itemIdToNameMap[request.item];
+        const userEmail = request.userId?.email || request.user?.email;
+        const borrowDate = request.borrowDate;
+        const returnDate = new Date(); // Current time as the return date
+
+        // If we have the user's email, send a confirmation email
+        if (userEmail) {
+          try {
+            // Send email notification
+            await axios.post(
+              "http://localhost:3000/borrow/return-notification",
+              {
+                userName,
+                userEmail,
+                itemName,
+                borrowDate,
+                returnDate
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            console.log('Return confirmation email sent to:', userEmail);
+          } catch (emailError) {
+            console.error('Failed to send return confirmation email:', emailError);
+            // Don't fail the process if email fails
+          }
+        }
+
         // Show success message
         await Swal.fire({
           position: 'center',

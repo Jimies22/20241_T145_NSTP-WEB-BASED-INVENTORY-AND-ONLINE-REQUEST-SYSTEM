@@ -142,73 +142,7 @@ router.put("/mark-read/:requestId", jwtVerifyMiddleware, async (req, res) => {
 });
 
 // Update the return route
-router.put('/:requestId/return', jwtVerifyMiddleware, async (req, res) => {
-  try {
-    console.log('Return request received for:', req.params.requestId);
-    
-    const request = await Request.findById(req.params.requestId)
-      .populate('item')
-      .populate('userId');
-    
-    if (!request) {
-      return res.status(404).json({ message: 'Request not found' });
-    }
-
-    if (request.status !== 'approved') {
-      return res.status(400).json({ 
-        message: 'Request must be approved before it can be returned' 
-      });
-    }
-
-    // Update request status
-    request.status = 'returned';
-    request.actualReturnDate = new Date();
-    await request.save();
-
-    // Update item availability
-    const item = await Item.findById(request.item._id);
-    if (!item) {
-      return res.status(404).json({ message: 'Item not found' });
-    }
-
-    item.availability = true;
-    await item.save();
-
-    // Send email notification if configured
-    try {
-      await sendEmail({
-        to: request.userId.email,
-        ...getItemReturnedEmail(
-          request.userId.name,
-          request.item.name,
-          new Date().toLocaleDateString()
-        ),
-      });
-    } catch (emailError) {
-      console.error('Failed to send return confirmation email:', emailError);
-      // Don't fail the request if email fails
-    }
-
-    console.log('Return processed successfully:', {
-      request: request._id,
-      item: item._id,
-      availability: item.availability
-    });
-
-    res.json({
-      message: 'Return processed successfully',
-      request: request,
-      item: item
-    });
-
-  } catch (error) {
-    console.error('Error processing return:', error);
-    res.status(500).json({
-      message: 'Error processing return',
-      error: error.message
-    });
-  }
-});
+router.put('/:requestId/return', jwtVerifyMiddleware, isAdmin, borrowController.processReturn);
 
 // Get user's returned items
 router.get('/user/:userId', jwtVerifyMiddleware, async (req, res) => {
@@ -248,5 +182,33 @@ router.get('/user/:userId/returned', jwtVerifyMiddleware, async (req, res) => {
 
 // Add this new route
 router.get("/approved", jwtVerifyMiddleware, borrowController.getUserApprovedRequests);
+
+// Add a return notification endpoint
+router.post('/return-notification', jwtVerifyMiddleware, async (req, res) => {
+  try {
+    const { userName, userEmail, itemName, borrowDate, returnDate } = req.body;
+
+    // Validate required fields
+    if (!userName || !userEmail || !itemName || !borrowDate || !returnDate) {
+      return res.status(400).json({ 
+        message: 'Missing required fields for return notification'
+      });
+    }
+
+    // Send the return confirmation email
+    await sendEmail({
+      to: userEmail,
+      ...getItemReturnedEmail(userName, itemName, borrowDate, returnDate)
+    });
+
+    res.json({ message: 'Return notification sent successfully' });
+  } catch (error) {
+    console.error('Error sending return notification:', error);
+    res.status(500).json({ 
+      message: 'Failed to send return notification',
+      error: error.message 
+    });
+  }
+});
 
 module.exports = router;
