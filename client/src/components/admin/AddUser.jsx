@@ -61,27 +61,31 @@ function AddUser() {
     {
       name: "Actions",
       cell: (row) => (
-        <div className="actions">
+        <div className="actions" style={{ display: 'flex', gap: '0', justifyContent: 'center' }}>
           <button
             onClick={() => handleShowModal(row)}
             className={`edit-btn ${editLocked ? 'disabled' : ''}`}
             disabled={editLocked}
             title={editLocked ? "User is being edited by another user" : "Edit user"}
+            style={{ margin: '0 1px', padding: '4px' }}
           >
             <i className={`bx ${editLocked ? 'bx-lock' : 'bx-edit'}`}></i>
           </button>
           <button
             onClick={() => handleDelete(row.userID)}
             className="delete-btn"
+            title="Delete user"
+            style={{ backgroundColor: 'transparent', background: 'none', margin: '0 1px', padding: '4px' }}
           >
-            <i className="bx bx-trash addButton"></i>
+            <i className="bx bx-trash"></i>
           </button>
           <button
             onClick={() => handleArchive(row.userID)}
             className="archive-btn"
             title="Archive"
+            style={{ margin: '0 1px', padding: '4px' }}
           >
-            <i className="bx bx-archive-in addButton"></i>
+            <i className="bx bx-archive-in"></i>
           </button>
         </div>
       ),

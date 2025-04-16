@@ -229,7 +229,7 @@ const getLoginNotificationEmail = (userName) => {
     `;
     
     return {
-        subject: '🔐 New Login Detected - NSTP Inventory System',
+    subject: '🔐 New Login Detected - NSTP Inventory System',
         text: `Hello ${userName}, A new login was detected on your NSTP Inventory System account. Time: ${new Date().toLocaleString()}. Action Required: If this wasn't you, please contact the administrator immediately. This is an automated message, please do not reply.`,
         html: baseEmailTemplate('New Login Detected', content)
     };

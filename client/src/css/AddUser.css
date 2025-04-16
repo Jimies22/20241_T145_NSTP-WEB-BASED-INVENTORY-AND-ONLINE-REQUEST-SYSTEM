@@ -98,23 +98,23 @@ th {
   background-color: #f4f4f4;
 }
 
-/* Action Buttons Base Styling - No background or outline until hover */
+/* Action Buttons Base Styling - No background or outline until hover/active */
 .edit-btn,
 .delete-btn,
 .archive-btn {
   background-color: transparent !important;
   color: white;
-  padding: 6px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-  box-shadow: none;
+  padding: 4px !important;
+  border-radius: 4px !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 5px;
+  margin: 0 !important;
 }
 
 /* Icon Colors - Using more vibrant and modern colors */
@@ -124,10 +124,54 @@ th {
   transition: color 0.2s ease;
 }
 
+.delete-btn {
+  background-color: transparent !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 .delete-btn i {
-  color: #FF5252; /* Softer red */
-  font-size: 1.1rem;
-  transition: color 0.2s ease;
+  color: #FF5252 !important; /* Keep only the icon in red */
+  font-size: 1.1rem !important;
+  background: transparent !important;
+}
+
+/* Override any potential button styling coming from external libraries */
+button.delete-btn {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Delete button hover style - red background with white icon - tiny outline */
+.delete-btn:hover {
+  background-color: #FF5252 !important;
+  border-radius: 2px !important;
+  padding: 0px !important;
+  margin: 0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  width: auto !important;
+}
+
+.delete-btn:hover i {
+  color: white !important;
+  padding: 1px !important;
+}
+
+/* Active state - darker red */
+.delete-btn:active {
+  background-color: #D32F2F !important;
+  border: none !important;
+}
+
+.delete-btn:active i {
+  color: white !important;
 }
 
 .archive-btn i {
@@ -136,17 +180,35 @@ th {
   transition: color 0.2s ease;
 }
 
-/* Hover States */
+/* Hover States - Only change background on hover with consistent sizing */
+.edit-btn:hover, .delete-btn:hover, .archive-btn:hover {
+  border-radius: 4px !important;
+  padding: 4px !important;
+  margin: 0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Individual button colors */
 .edit-btn:hover {
   background-color: #1565C0 !important;
 }
 
 .delete-btn:hover {
-  background-color: #C62828 !important;
+  background-color: #FF5252 !important;
 }
 
 .archive-btn:hover {
   background-color: #546E7A !important;
+}
+
+/* Active (clicked) States */
+.edit-btn:active {
+  background-color: #0D47A1 !important;
+}
+
+.archive-btn:active {
+  background-color: #455A64 !important;
 }
 
 /* Hover text colors */
@@ -166,14 +228,18 @@ th {
 
 .actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 2px !important;
   justify-content: center;
+  align-items: center;
+  padding: 0;
 }
 
 .actions button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  margin: 0 !important;
+  padding: 6px !important;
 }
 
 .actions button i {
@@ -318,4 +384,26 @@ th {
 
 .rdt_Pagination {
   display: none !important;
+}
+
+/* Additional styles to ensure no outlines or borders on action buttons */
+.actions button,
+.actions button:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.actions i,
+.actions i:focus {
+  outline: none !important;
+}
+
+/* Fix for Boxicons outlines - except for active state */
+.bx {
+  outline: none !important;
+}
+
+.addButton {
+  outline: none !important;
 }
