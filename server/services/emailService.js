@@ -97,6 +97,25 @@ const getBorrowRequestStatusEmail = (userName, itemName, status, reason = '') =>
     `
 });
 
+const getNewUserWelcomeEmail = (userName, email, temporaryPassword = null) => ({
+    subject: '🎉 Welcome to NSTP Inventory System',
+    text: `
+        Hello ${userName},
+
+        Welcome to the NSTP Inventory System! Your account has been created by an administrator.
+
+        Your account details:
+        - Email: ${email}
+        ${temporaryPassword ? `- Temporary Password: ${temporaryPassword}\n        We recommend changing this password after your first login.` : '- You can log in using Google Authentication.'}
+
+        You can access the system at: http://localhost:3000/login
+
+        If you have any questions or need assistance, please contact the system administrator.
+
+        This is an automated message, please do not reply.
+    `
+});
+
 // Test email function
 const testEmailService = async (testEmail) => {
     try {
@@ -121,5 +140,6 @@ module.exports = {
     getLoginNotificationEmail,
     getNewItemNotificationEmail,
     getBorrowRequestStatusEmail,
+    getNewUserWelcomeEmail,
     testEmailService
 };

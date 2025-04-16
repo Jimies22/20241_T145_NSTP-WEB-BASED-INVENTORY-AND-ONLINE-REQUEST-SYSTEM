@@ -35,6 +35,7 @@ function AddUser() {
     password: "",
   });
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const columns = [
     {
@@ -188,6 +189,11 @@ function AddUser() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
     try {
       const token = sessionStorage.getItem('sessionToken');
       
@@ -234,8 +240,15 @@ function AddUser() {
           
           Swal.fire({
             icon: 'success',
-            title: 'Success!',
-            text: 'User added successfully'
+            title: 'User Added Successfully!',
+            html: `
+              <div class="text-center">
+                <p>User account has been created for ${userData.name}.</p>
+                <p>A welcome email has been sent to:</p>
+                <p><strong>${userData.email}</strong></p>
+              </div>
+            `,
+            confirmButtonColor: '#3f85f7'
           });
           
           handleCloseModal();
@@ -299,6 +312,8 @@ function AddUser() {
         text: errorMessage,
         footer: process.env.NODE_ENV === 'development' ? `Technical details: ${error.message}` : null
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -478,7 +493,8 @@ function AddUser() {
         password: "",
       });
       setIsEditing(false);
-      setHasChanges(false); // Reset change tracking
+      setHasChanges(false);
+      setIsSubmitting(false);
       document.body.style.overflow = "unset";
     } catch (error) {
       console.error("Error releasing lock:", error);
@@ -676,17 +692,25 @@ function AddUser() {
                       style={{ 
                         backgroundColor: "#4287f5", 
                         borderColor: "#4287f5",
-                        opacity: (isEditing && !hasChanges) ? 0.6 : 1 
+                        opacity: (isEditing && !hasChanges) || isSubmitting ? 0.6 : 1 
                       }}
-                      disabled={isEditing && !hasChanges}
+                      disabled={(isEditing && !hasChanges) || isSubmitting}
                     >
-                      {isEditing ? "Update User" : "Add User"}
+                      {isSubmitting ? (
+                        <span>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          {isEditing ? "Updating..." : "Adding..."}
+                        </span>
+                      ) : (
+                        isEditing ? "Update User" : "Add User"
+                      )}
                     </button>
                     <button
                       type="button"
                       className="btn btn-secondary"
                       onClick={handleCloseModal}
                       style={{ backgroundColor: "#6c757d" }}
+                      disabled={isSubmitting}
                     >
                       Cancel
                     </button>

@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const { sendEmail, getNewUserWelcomeEmail } = require("./emailService");
 
 // Create a new user
 const createUser = async (req, res) => {
@@ -33,9 +34,28 @@ const createUser = async (req, res) => {
     });
 
     await newUser.save();
+    
+    // Send welcome email to the newly registered user
+    try {
+      const emailContent = getNewUserWelcomeEmail(name, email, password);
+      await sendEmail({
+        to: email,
+        subject: emailContent.subject,
+        text: emailContent.text
+      });
+      console.log(`Welcome email sent to ${email}`);
+    } catch (emailError) {
+      console.error("Error sending welcome email:", emailError);
+      // Continue with registration even if email fails
+    }
+    
     res
       .status(201)
-      .json({ message: "User registered successfully", user: newUser });
+      .json({ 
+        message: "User registered successfully", 
+        user: newUser,
+        emailSent: true 
+      });
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ message: "Server error" });
