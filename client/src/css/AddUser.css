@@ -104,7 +104,7 @@ th {
 .archive-btn {
   background-color: transparent !important;
   color: white;
-  padding: 4px !important;
+  padding: 6px !important;
   border-radius: 4px !important;
   border: none !important;
   outline: none !important;
@@ -129,7 +129,7 @@ th {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
+  border-radius: 4px !important;
   padding: 6px !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -151,17 +151,16 @@ button.delete-btn {
 /* Delete button hover style - red background with white icon - tiny outline */
 .delete-btn:hover {
   background-color: #FF5252 !important;
-  border-radius: 2px !important;
-  padding: 0px !important;
-  margin: 0 !important;
-  transform: none !important;
-  box-shadow: none !important;
-  width: auto !important;
+  border-radius: 4px !important; /* Consistent border radius */
+  padding: 4px !important; /* Consistent padding */
+  margin: 0 !important; /* Consistent margin */
+  transform: none !important; /* Consistent transform */
+  box-shadow: none !important; /* Consistent box-shadow */
 }
 
+/* Updated delete-btn hover icon color */
 .delete-btn:hover i {
-  color: white !important;
-  padding: 1px !important;
+  color: white !important; /* Consistent icon color */
 }
 
 /* Active state - darker red */
