@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite",
+    "test": "vitest"
   },
   "dependencies": {
     "@cloudinary/react": "^1.13.1",
