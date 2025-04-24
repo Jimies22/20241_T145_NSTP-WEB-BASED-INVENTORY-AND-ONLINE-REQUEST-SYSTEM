@@ -46,6 +46,7 @@ function AddItems({ updateItem }) {
     isArchived: false,
   });
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const columns = [
     {
@@ -216,6 +217,11 @@ function AddItems({ updateItem }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true); // Start submission
     const token = sessionStorage.getItem("sessionToken");
 
     try {
@@ -298,6 +304,8 @@ function AddItems({ updateItem }) {
         title: 'Error!',
         text: error.response?.data?.message || 'Error saving item'
       });
+    } finally {
+      setIsSubmitting(false); // Reset submission state whether successful or not
     }
   };
 
@@ -449,6 +457,7 @@ function AddItems({ updateItem }) {
       setHasChanges(false);
       setSelectedImage(null);
       setPreviewUrl(null);
+      setIsSubmitting(false); // Reset submission state when closing modal
     } catch (error) {
       console.error("Error releasing lock:", error);
     }
@@ -824,7 +833,6 @@ function AddItems({ updateItem }) {
                                 key={imgName} 
                                 className="predefined-image-item"
                                 onClick={() => {
-                                  // Create a fetch to load the image and create a file from it
                                   fetch(`/src/assets/Items/${imgName}`)
                                     .then(res => res.blob())
                                     .then(blob => {
@@ -853,6 +861,33 @@ function AddItems({ updateItem }) {
                             ))}
                           </div>
                         </div>
+                        
+                        {/* Add custom file upload option */}
+                        <div className="custom-upload mt-4">
+                          <p className="mb-2">Or upload your own image:</p>
+                          <input
+                            type="file"
+                            className="form-control"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                if (file.size > 10 * 1024 * 1024) {
+                                  Swal.fire({
+                                    icon: 'error',
+                                    title: 'File too large',
+                                    text: 'Please select an image less than 10MB'
+                                  });
+                                  e.target.value = ''; // Clear the file input
+                                  return;
+                                }
+                                setSelectedImage(file);
+                                setPreviewUrl(URL.createObjectURL(file));
+                              }
+                            }}
+                          />
+                          <small className="text-muted">Maximum file size: 10MB</small>
+                        </div>
                       </div>
                       {previewUrl && (
                         <div className="mt-3">
@@ -873,11 +908,18 @@ function AddItems({ updateItem }) {
                       style={{ 
                         backgroundColor: "#4287f5", 
                         borderColor: "#4287f5",
-                        opacity: (isEditing && !hasChanges) ? 0.6 : 1 
+                        opacity: (isEditing && !hasChanges) || isSubmitting ? 0.6 : 1 
                       }}
-                      disabled={isEditing && !hasChanges}
+                      disabled={(isEditing && !hasChanges) || isSubmitting}
                     >
-                      {isEditing ? "Update Item" : "Add Item"}
+                      {isSubmitting ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          {isEditing ? "Updating..." : "Adding..."}
+                        </>
+                      ) : (
+                        isEditing ? "Update Item" : "Add Item"
+                      )}
                     </button>
                     <button
                       type="button"
