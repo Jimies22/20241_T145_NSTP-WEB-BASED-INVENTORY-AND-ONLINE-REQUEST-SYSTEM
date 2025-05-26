@@ -194,6 +194,7 @@ function Login() {
   };
 
   return (
+    
     <GoogleOAuthProvider clientId={clientId}>
       {isLoading && (
         <div className="loading-screen">
@@ -204,13 +205,24 @@ function Login() {
           </div>
         </div>
       )}
-      <div className="logo">
+      <div>
+        <div className="top-nav-links">
+          <ul>
+            <li><a href="/">Equipments</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div className="logo">
         <img src={nstpLogo} alt="Logo" className="nstp_logo" />
         <div className="header-text">
           <h6>NSTP INVENTORY &amp;</h6>
           <h6>ONLINE REQUEST</h6>
         </div>
       </div>
+      </div>
+      
       <form
         onSubmit={handleLogin}
         className="d-flex align-items-center justify-content-center vh-100"

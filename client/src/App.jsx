@@ -1,5 +1,6 @@
 //src/App.jsx
 import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';

@@ -129,6 +129,75 @@ h1 {
 p {
     color: rgb(0, 0, 0);
 }
+/* .navbar{
+    background-color: #13325b;
+    color: white;
+} */
+
+
+.top-nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2000;
+    background: transparent;
+    padding: 1.2rem 2.5rem 1.2rem 1rem;
+}
+
+.top-nav-links ul {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.top-nav-links ul li a {
+    color: #13325b;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+}
+
+.top-nav-links ul li a:hover {
+    color: #7b96d4;
+    text-decoration: underline;
+}
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #13325b;
+    color: white;
+    z-index: 1000;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.nav-links {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    color: white;
+}
+.nav-links ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 2rem;
+}
+.nav-links ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+.nav-links ul li a:hover {
+    color: #7b96d4;
+}
+
 .nstp_bg {
     position: fixed;
     top: 0;
@@ -380,4 +449,38 @@ hr{
 
 .swal2-popup {
     z-index: 1051 !important;  /* Ensure popup is above overlay */
+}
+
+form.d-flex.align-items-center.justify-content-center.vh-100 {
+    margin-top: 80px;
+}
+
+.top-nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2000;
+    background: transparent;
+    padding: 1.2rem 2.5rem 1.2rem 1rem;
+}
+
+.top-nav-links ul {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.top-nav-links ul li a {
+    color: #13325b;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+}
+
+.top-nav-links ul li a:hover {
+    color: #7b96d4;
+    text-decoration: underline;
 }
