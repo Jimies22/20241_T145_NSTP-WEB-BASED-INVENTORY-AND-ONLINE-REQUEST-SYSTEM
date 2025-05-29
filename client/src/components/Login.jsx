@@ -1,7 +1,7 @@
 // src/components/Login.jsx
 import React, { useState } from "react";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -9,6 +9,7 @@ import "../css/Login.css"; // Ensure this path is correct
 import nstpLogo from "../assets/NSTP_LOGO.png";
 import Swal from "sweetalert2";
 import { logActivity } from '../utils/activityLogger';
+//import OfficeDisplay from "./office/OfficeDisplay";
 
 const clientId =
   "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com";
@@ -208,9 +209,9 @@ function Login() {
       <div>
         <div className="top-nav-links">
           <ul>
-            <li><a href="/">Equipments</a></li>
-            <li><a href="/about">About</a></li>
-            <li><a href="/contact">Contact</a></li>
+            <li><Link to="/equipment">Equipments</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
           </ul>
         </div>
         

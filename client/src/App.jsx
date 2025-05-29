@@ -26,6 +26,7 @@ import UserRequestCancelled from './components/user/UserRequestCancelled';
 import UserRequestRejected from './components/user/UserRequestRejected';
 import UserBorrowPage from './components/user/UserBorrowPage';
 import UserReportPage from './components/user/UserReportPage';
+import OfficeDisplay from './components/office/OfficeDisplay';
 
 function App() {
     const [items, setItems] = useState([]);
@@ -82,6 +83,9 @@ function App() {
                 <Route path="/user-borrowed" element={<ProtectedRoute role="user"><UserBorrowPage /></ProtectedRoute>} />
                 <Route path="/user-report" element={<ProtectedRoute role="user"><UserReportPage /></ProtectedRoute>} />
                 <Route path="/usernotification" element={<UserNotificationPage />} />
+
+                {/* New route for equipment display */}
+                <Route path="/equipment" element={<OfficeDisplay />} />
             </Routes>
         </>
     );

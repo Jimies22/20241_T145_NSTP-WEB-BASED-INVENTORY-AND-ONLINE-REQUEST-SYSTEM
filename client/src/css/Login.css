@@ -136,34 +136,34 @@ p {
 
 
 .top-nav-links {
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 2000;
-    background: transparent;
-    padding: 1.2rem 2.5rem 1.2rem 1rem;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
 }
 
 .top-nav-links ul {
-    display: flex;
-    gap: 2rem;
     list-style: none;
     margin: 0;
     padding: 0;
+    display: flex;
+    gap: 20px;
 }
 
-.top-nav-links ul li a {
-    color: #13325b;
-    font-weight: 600;
+.top-nav-links li a {
+    color: #333;
     text-decoration: none;
-    font-size: 1.1rem;
-    transition: color 0.2s;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
-.top-nav-links ul li a:hover {
-    color: #7b96d4;
-    text-decoration: underline;
+.top-nav-links li a:hover {
+    background-color: #f0f0f0;
+    color: #007bff;
 }
+
 .navbar {
     position: fixed;
     top: 0;

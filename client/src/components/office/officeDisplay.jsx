@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import UserSidebar from "../sidebar/UserSidebar";
-import UserNavbar from "../Navbar/UserNavbar";
+import { useNavigate, Link } from "react-router-dom";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import "../../css/UserDashboard.css";
 import axios from "axios";
-import BorrowOverlay from "./BorrowOverlay";
+import BorrowOverlay from "../user/BorrowOverlay";
 import Swal from "sweetalert2";
 
-const UserDashboard = () => {
+const clientId = "549675419873-ft3kc0fpc3nm9d3tibrpt13b3gu78hd4.apps.googleusercontent.com";
+
+const OfficeDisplay = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,20 +20,7 @@ const UserDashboard = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [availabilityFilter, setAvailabilityFilter] = useState("");
   const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    const token = sessionStorage.getItem("sessionToken");
-    if (!token) {
-      navigate("/login");
-    } else {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (decodedToken.exp < currentTime) {
-        sessionStorage.removeItem("sessionToken");
-        navigate("/login");
-      }
-    }
-  }, [navigate]);
+  const [showGoogleLogin, setShowGoogleLogin] = useState(false);
 
   useEffect(() => {
     fetchItems();
@@ -49,13 +37,7 @@ const UserDashboard = () => {
 
   const fetchItems = async () => {
     try {
-      const token = sessionStorage.getItem("sessionToken");
-      const response = await axios.get("http://localhost:3000/items", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
+      const response = await axios.get("http://localhost:3000/items");
       // Filter out archived items
       const activeItems = response.data.filter(item => !item.isArchived);
       setItems(activeItems);
@@ -95,14 +77,6 @@ const UserDashboard = () => {
     return matchesSearch && matchesCategory && matchesAvailability;
   });
 
-  const updateItem = (updatedItem) => {
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.item_id === updatedItem.item_id ? updatedItem : item
-      )
-    );
-  };
-
   const handleCardClick = async (item) => {
     try {
       const response = await axios.get(
@@ -121,11 +95,66 @@ const UserDashboard = () => {
     setSelectedItem(null);
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const response = await fetch("http://localhost:3000/login/google", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+        body: JSON.stringify({ token: credentialResponse.credential })
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      sessionStorage.setItem("sessionToken", data.token);
+      sessionStorage.setItem("userInfo", JSON.stringify(data.user));
+
+      // After successful login, proceed with borrow request
+      if (selectedItem) {
+        setShowBorrowOverlay(true);
+      }
+
+      Swal.fire({
+        title: "Login Successful",
+        text: "You can now proceed with borrowing the item.",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+      });
+
+    } catch (error) {
+      console.error("Google login error:", error);
+      Swal.fire({
+        title: "Login Failed",
+        text: error.message || "Failed to login with Google. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
+
+  const handleGoogleError = () => {
+    Swal.fire({
+      title: "Google Login Failed",
+      text: "Unable to login with Google. Please try again.",
+      icon: "error",
+      confirmButtonColor: "#d33",
+    });
+  };
+
   const handleBorrowItem = async (item) => {
     try {
       const token = sessionStorage.getItem("sessionToken");
       if (!token) {
-        throw new Error("No authentication token found");
+        setSelectedItem(item);
+        setShowGoogleLogin(true);
+        return;
       }
 
       // Check if user has pending request for this item
@@ -135,11 +164,7 @@ const UserDashboard = () => {
         }
       });
 
-      console.log("Current item:", item); // Debug log
-      console.log("Existing requests:", response.data); // Debug log
-
       const existingRequest = response.data.find(request => {
-        // Add null checks and logging
         if (!request || !request.item) {
           console.log("Invalid request found:", request);
           return false;
@@ -157,11 +182,6 @@ const UserDashboard = () => {
         });
         return;
       }
-
-      console.log("Setting selected item:", {
-        itemId: item._id,
-        itemDetails: item
-      });
       
       setSelectedItem(item);
       setShowBorrowOverlay(true);
@@ -193,19 +213,23 @@ const UserDashboard = () => {
   };
 
   return (
-    <div className="user-dashboard">
-      <UserSidebar />
-      <section id="content">
-        <UserNavbar />
+    <GoogleOAuthProvider clientId={clientId}>
+      <div className="equipment-display">
+        <nav className="navbar">
+          <div className="navbar-container">
+            <div className="navbar-left">
+              <Link to="/" className="navbar-home-link">Home</Link>
+            </div>
+            <div className="navbar-brand">
+              {/* <img src={nstpLogo} alt="System Logo" className="navbar-logo" /> */}
+              <span className="system-name">NSTP Inventory System</span>
+            </div>
+          </div>
+        </nav>
         <main>
           <div className="head-title">
             <div className="left">
-              <h1>Dashboard</h1>
-              <ul className="breadcrumb">
-                                <li><a href="#">Dashboard</a></li>
-                                <li><i className='bx bx-chevron-right'></i></li>
-                                <li><a className="active" href="/user-dashboard">Home</a></li>
-                            </ul>
+              <h1>Available Equipment</h1>
             </div>
             <div className="search-filter-container">
               <div className="search-box">
@@ -289,7 +313,6 @@ const UserDashboard = () => {
                 <button className="close-btn" onClick={handleCloseModal}>×</button>
                 
                 <div className="modal-layout">
-                  {/* Left side - Image */}
                   <div className="modal-image">
                     <img
                       src={getImageUrl(selectedItem.image)}
@@ -301,7 +324,6 @@ const UserDashboard = () => {
                     />
                   </div>
 
-                  {/* Right side - Info and Button */}
                   <div className="modal-details">
                     <h2 className="modal-title">{selectedItem.name}</h2>
                     
@@ -316,7 +338,10 @@ const UserDashboard = () => {
 
                     <button
                       className="borrow-button"
-                      onClick={() => handleBorrowItem(selectedItem)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBorrowItem(selectedItem);
+                      }}
                       disabled={!selectedItem.availability}
                     >
                       {selectedItem.availability ? "Borrow Now" : "Not Available"}
@@ -326,6 +351,26 @@ const UserDashboard = () => {
               </div>
             </div>
           )}
+
+          {showGoogleLogin && (
+            <div className="modal-overlay">
+              <div className="modal-content google-login-modal">
+                <button className="close-btn" onClick={() => setShowGoogleLogin(false)}>×</button>
+                <div className="google-login-content">
+                  <h2>Login Required</h2>
+                  <p>Please login with your Google account to borrow this item.</p>
+                  <div className="google-login-button">
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleError}
+                      width={300}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {showBorrowOverlay && (
             <BorrowOverlay
               item={selectedItem}
@@ -333,9 +378,9 @@ const UserDashboard = () => {
             />
           )}
         </main>
-      </section>
-    </div>
+      </div>
+    </GoogleOAuthProvider>
   );
 };
 
-export default officeDisplay;
+export default OfficeDisplay; 
