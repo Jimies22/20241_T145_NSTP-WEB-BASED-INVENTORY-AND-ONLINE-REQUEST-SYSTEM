@@ -49,6 +49,10 @@ const OfficeDisplay = () => {
   // Remove session logic, always require Google verification for each borrow
   const [googleVerifiedUser, setGoogleVerifiedUser] = useState(null); // Store user info for current transaction only
 
+  const [showReturnModal, setShowReturnModal] = useState(false);
+  const [returnScanResult, setReturnScanResult] = useState(null);
+  const [returnLoading, setReturnLoading] = useState(false);
+
   useEffect(() => {
     fetchItems();
     fetchCategories();
@@ -389,6 +393,47 @@ const OfficeDisplay = () => {
     Swal.fire({ icon: 'info', title: 'Logged out', text: 'You have been logged out for the next transaction.' });
   };
 
+  // Handle Return Button Click
+  const handleReturnClick = () => {
+    setShowReturnModal(true);
+    setReturnScanResult(null);
+  };
+
+  // Handle QR/Barcode Scan for Return
+  const handleReturnScan = (err, result) => {
+    if (result) {
+      setReturnScanResult(result.text);
+    }
+  };
+
+  // Effect: When a code is scanned, validate and process return
+  useEffect(() => {
+    const processReturn = async () => {
+      if (!returnScanResult) return;
+      setReturnLoading(true);
+      try {
+        // Call backend to validate and mark as returned
+        const response = await axios.post("http://localhost:3000/return", { code: returnScanResult });
+        if (response.data && response.data.success) {
+          Swal.fire({ icon: 'success', title: 'Item Returned', text: response.data.message || 'The item has been marked as returned.' });
+        } else {
+          Swal.fire({ icon: 'error', title: 'Return Failed', text: response.data.message || 'Could not return the item.' });
+        }
+        setShowReturnModal(false);
+      } catch (error) {
+        Swal.fire({ icon: 'error', title: 'Return Failed', text: error.response?.data?.message || 'Could not return the item.' });
+        setShowReturnModal(false);
+      } finally {
+        setReturnLoading(false);
+        setReturnScanResult(null);
+      }
+    };
+    if (showReturnModal && returnScanResult) {
+      processReturn();
+    }
+    // eslint-disable-next-line
+  }, [returnScanResult]);
+
   return (
     <GoogleOAuthProvider clientId={clientId}>
       <div className="equipment-display">
@@ -449,6 +494,16 @@ const OfficeDisplay = () => {
                   <option value="unavailable">Currently Unavailable</option>
                 </select>
               </div>
+            </div>
+            <div className="return-btn-container" style={{ display: 'inline-block', marginLeft: 16 }}>
+              <button
+                className="return-btn"
+                title="Scan to return the item"
+                onClick={handleReturnClick}
+                style={{ padding: '10px 18px', background: '#13325b', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
+              >
+                Return
+              </button>
             </div>
           </div>
 
@@ -697,6 +752,25 @@ const OfficeDisplay = () => {
                 <p>Do you want to confirm your borrow requests for all scanned items?</p>
                 <button className="borrow-button" onClick={handleConfirmCartBorrow}>Confirm</button>
                 <button className="close-btn" onClick={() => setShowCartConfirmModal(false)}>×</button>
+              </div>
+            </div>
+          )}
+
+          {/* Return Modal */}
+          {showReturnModal && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <button className="close-btn" onClick={() => setShowReturnModal(false)}>×</button>
+                <h2>Scan to Return Item</h2>
+                <p>Scan the QR or barcode of the item you want to return.</p>
+                <div style={{ width: '100%', maxWidth: 400, margin: '0 auto' }}>
+                  <QrScanner
+                    onUpdate={handleReturnScan}
+                    facingMode="environment"
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                {returnLoading && <p>Processing...</p>}
               </div>
             </div>
           )}
