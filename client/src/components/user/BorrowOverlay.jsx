@@ -4,61 +4,38 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import Swal from 'sweetalert2';
 
-const BorrowOverlay = ({ item, onClose }) => {
-  const [borrowHour, setBorrowHour] = useState("5"); // Default hour
-  const [borrowMinute, setBorrowMinute] = useState("00"); // Default minute
-  const [returnHour, setReturnHour] = useState("6"); // Default return hour (1 hour after borrow)
-  const [returnMinute, setReturnMinute] = useState("00"); // Default return minute
-  const [returnPeriod, setReturnPeriod] = useState("AM"); // AM/PM for return time
-  const [borrowPeriod, setBorrowPeriod] = useState("AM"); // AM/PM for borrow time
-  const [userId, setUserId] = useState(null); // State to store userId
+// Accepts: item (single), items (array), isBatch (bool), onClose
+const BorrowOverlay = ({ item, items, isBatch, onClose }) => {
+  const [borrowHour, setBorrowHour] = useState("5");
+  const [borrowMinute, setBorrowMinute] = useState("00");
+  const [returnHour, setReturnHour] = useState("6");
+  const [returnMinute, setReturnMinute] = useState("00");
+  const [returnPeriod, setReturnPeriod] = useState("AM");
+  const [borrowPeriod, setBorrowPeriod] = useState("AM");
+  const [userId, setUserId] = useState(null);
   const token = sessionStorage.getItem("sessionToken");
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState(null); // For batch summary
 
-  // Function to fetch userId from the token
-  const fetchUserId = () => {
-    try {
-      if (!token) {
-        console.warn("No token found in session storage");
-        return;
-      }
-
-      const decodedToken = jwtDecode(token);
-
-      if (!decodedToken || !decodedToken.userId) {
-        throw new Error("Invalid token structure: userId not found");
-      }
-
-      console.log("Decoded Token:", decodedToken); // Optional: useful for debugging
-      setUserId(decodedToken.userId);
-    } catch (error) {
-      console.error("Failed to fetch or decode token:", error.message || error);
-    }
-  };
-
-  // Call fetchUserId when the component mounts
   useEffect(() => {
-    fetchUserId();
+    try {
+      if (!token) return;
+      const decodedToken = jwtDecode(token);
+      if (decodedToken && decodedToken.userId) setUserId(decodedToken.userId);
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+    }
   }, []);
 
   useEffect(() => {
     const currentTime = new Date();
-    const adjustedBorrowDate = new Date(currentTime.getTime() + 60 * 60 * 1000); // Add 1 hour
-
-    setBorrowHour(adjustedBorrowDate.getHours() % 12 || 12); // Convert to 12-hour format
-    setBorrowMinute(
-      adjustedBorrowDate.getMinutes().toString().padStart(2, "0")
-    ); // Format minutes
+    const adjustedBorrowDate = new Date(currentTime.getTime() + 60 * 60 * 1000);
+    setBorrowHour(adjustedBorrowDate.getHours() % 12 || 12);
+    setBorrowMinute(adjustedBorrowDate.getMinutes().toString().padStart(2, "0"));
     setBorrowPeriod(adjustedBorrowDate.getHours() >= 12 ? "PM" : "AM");
-
-    // Set return time to 1 hour after borrow time
-    const adjustedReturnDate = new Date(
-      adjustedBorrowDate.getTime() + 60 * 60 * 1000
-    ); // Add 1 hour
-    setReturnHour(adjustedReturnDate.getHours() % 12 || 12); // Convert to 12-hour format
-    setReturnMinute(
-      adjustedReturnDate.getMinutes().toString().padStart(2, "0")
-    ); // Format minutes
+    const adjustedReturnDate = new Date(adjustedBorrowDate.getTime() + 60 * 60 * 1000);
+    setReturnHour(adjustedReturnDate.getHours() % 12 || 12);
+    setReturnMinute(adjustedReturnDate.getMinutes().toString().padStart(2, "0"));
     setReturnPeriod(adjustedReturnDate.getHours() >= 12 ? "PM" : "AM");
   }, []);
 
@@ -66,235 +43,154 @@ const BorrowOverlay = ({ item, onClose }) => {
     setBorrowHour(hour);
     setBorrowMinute(minute);
     setBorrowPeriod(period);
-
-    // Update return time to be 1 hour after the new borrow time
     const borrowDate = createDate(hour, minute, period);
-    const newReturnDate = new Date(borrowDate.getTime() + 60 * 60 * 1000); // Add 1 hour
-    setReturnHour(newReturnDate.getHours() % 12 || 12); // Convert to 12-hour format
-    setReturnMinute(newReturnDate.getMinutes().toString().padStart(2, "0")); // Format minutes
+    const newReturnDate = new Date(borrowDate.getTime() + 60 * 60 * 1000);
+    setReturnHour(newReturnDate.getHours() % 12 || 12);
+    setReturnMinute(newReturnDate.getMinutes().toString().padStart(2, "0"));
     setReturnPeriod(newReturnDate.getHours() >= 12 ? "PM" : "AM");
   };
 
+  const createDate = (hour, minute, period) => {
+    const date = new Date();
+    if (period === "PM" && hour < 12) hour = parseInt(hour) + 12;
+    else if (period === "AM" && parseInt(hour) === 12) hour = 0;
+    date.setHours(hour, minute, 0);
+    return date;
+  };
+
+  // Batch or single submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    setResults(null);
     const requestDate = new Date();
     const borrowDate = createDate(borrowHour, borrowMinute, borrowPeriod);
     const returnDate = createDate(returnHour, returnMinute, returnPeriod);
-
-    /* Comment out time validation
-    // Validate that the selected time is not in the past
-    if (borrowDate < new Date()) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid Time',
-        text: 'Borrow time cannot be in the past.',
-        confirmButtonColor: '#3085d6'
-      });
-      setLoading(false);
-      return;
-    }
-
-    // Validate that return time is after borrow time
-    if (returnDate <= borrowDate) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid Return Time',
-        text: 'Return time must be after borrow time.',
-        confirmButtonColor: '#3085d6'
-      });
-      setLoading(false);
-      return;
-    }
-    */
-
-    try {
-      // First, make the borrow request
-      const response = await axios.post(
-        "http://localhost:3000/borrow",
-        {
-          userId,
-          item: item._id,
-          borrowDate: borrowDate.toISOString(),
-          returnDate: returnDate.toISOString(),
-          requestDate: requestDate.toISOString(),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    if (isBatch && Array.isArray(items)) {
+      // Batch mode
+      let success = [], fail = [];
+      for (const it of items) {
+        try {
+          const response = await axios.post(
+            "http://localhost:3000/borrow",
+            {
+              userId,
+              item: it._id,
+              borrowDate: borrowDate.toISOString(),
+              returnDate: returnDate.toISOString(),
+              requestDate: requestDate.toISOString(),
+            },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          success.push(it.name);
+        } catch (error) {
+          fail.push(it.name);
         }
-      );
-
-      // After successful booking, update user notifications
+      }
+      setResults({ success, fail });
+      setLoading(false);
+      Swal.fire({
+        icon: 'info',
+        title: 'Batch Borrow Results',
+        html: `<div style='text-align:left;'>${success.length ? `<b>Success:</b><ul>${success.map(n => `<li>${n}</li>`).join('')}</ul>` : ''}${fail.length ? `<b>Failed:</b><ul>${fail.map(n => `<li>${n}</li>`).join('')}</ul>` : ''}</div>`,
+        confirmButtonColor: '#3085d6'
+      }).then(() => onClose());
+      return;
+    } else {
+      // Single mode
       try {
-        // Update localStorage to trigger notification refresh
-        const currentNotifications = JSON.parse(localStorage.getItem('userNotifications') || '[]');
-        const newNotification = {
-          id: response.data._id,
-          message: `Your request to borrow ${item.name} is pending approval`,
-          status: 'pending',
-          timestamp: new Date().toISOString(),
-          item: item
-        };
-        
-        currentNotifications.unshift(newNotification);
-        localStorage.setItem('userNotifications', JSON.stringify(currentNotifications));
-        
-        // Update notification count
-        const currentCount = parseInt(localStorage.getItem('userNotificationCount') || '0');
-        localStorage.setItem('userNotificationCount', (currentCount + 1).toString());
-
-        // Dispatch custom events to notify other components
-        window.dispatchEvent(new Event('notificationUpdate'));
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'userNotificationCount',
-          newValue: (currentCount + 1).toString()
-        }));
-
-        // Show success message
+        const response = await axios.post(
+          "http://localhost:3000/borrow",
+          {
+            userId,
+            item: item._id,
+            borrowDate: borrowDate.toISOString(),
+            returnDate: returnDate.toISOString(),
+            requestDate: requestDate.toISOString(),
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         Swal.fire({
           icon: 'success',
           title: 'Success!',
           text: `You have successfully requested to borrow ${item.name}.`,
           confirmButtonColor: '#3085d6'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            onClose();
-          }
+        }).then(() => onClose());
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Failed to borrow item: ${item.name}. ${error.message}`,
+          confirmButtonColor: '#3085d6'
         });
-
-      } catch (notifError) {
-        console.error("Error updating notifications:", notifError);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error submitting request:", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: `Failed to borrow item: ${item.name}. ${error.message}`,
-        confirmButtonColor: '#3085d6'
-      });
-    } finally {
-      setLoading(false);
     }
   };
 
-  // Helper function to create a date object
-  const createDate = (hour, minute, period) => {
-    const date = new Date(); // Get the current date
-    console.log("Date:", date.toString());
-    // Set hours correctly for AM/PM
-    if (period === "PM" && hour < 12) {
-      hour += 12; // Convert PM hour to 24-hour format
-    } else if (period === "AM" && hour === 12) {
-      hour = 0; // Convert 12 AM to 0 hours
-    }
-    date.setHours(hour, minute, 0); // Set the hours and minutes
-    console.log("Date:", date.toString());
-    return date;
-  };
+  // Render list of items in batch mode
+  const renderBatchList = () => (
+    <div className="batch-list">
+      <h4>Selected Items:</h4>
+      <ul>
+        {items.map((it) => (
+          <li key={it._id || it.item_id}>{it.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
 
   return (
     <div className="borrow-overlay" onClick={onClose}>
       <div className="borrow-content" onClick={(e) => e.stopPropagation()}>
         <div className="header-area">
-          <button className="close-btn" onClick={onClose}>
-            ×
-          </button>
-         
+          <button className="close-btn" onClick={onClose}>×</button>
         </div>
-
         <div className="booking-layout">
-          <h3>Select Time</h3>
+          <h3>{isBatch ? 'Select Time for All Items' : 'Select Time'}</h3>
+          {isBatch && Array.isArray(items) && renderBatchList()}
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Borrow Time:</label>
               <div className="time-input">
-                <select
-                  value={borrowHour}
-                  onChange={(e) =>
-                    handleBorrowTimeChange(
-                      e.target.value,
-                      borrowMinute,
-                      borrowPeriod
-                    )
-                  }
-                >
+                <select value={borrowHour} onChange={e => handleBorrowTimeChange(e.target.value, borrowMinute, borrowPeriod)}>
                   {[...Array(12).keys()].map((hour) => (
-                    <option key={hour} value={hour + 1}>
-                      {hour + 1}
-                    </option>
+                    <option key={hour} value={hour + 1}>{hour + 1}</option>
                   ))}
                 </select>
-                <select
-                  value={borrowMinute}
-                  onChange={(e) =>
-                    handleBorrowTimeChange(
-                      borrowHour,
-                      e.target.value,
-                      borrowPeriod
-                    )
-                  }
-                >
+                <select value={borrowMinute} onChange={e => handleBorrowTimeChange(borrowHour, e.target.value, borrowPeriod)}>
                   {["00", "15", "30", "45"].map((minute) => (
-                    <option key={minute} value={minute}>
-                      {minute}
-                    </option>
+                    <option key={minute} value={minute}>{minute}</option>
                   ))}
                 </select>
-                <select
-                  value={borrowPeriod}
-                  onChange={(e) =>
-                    handleBorrowTimeChange(
-                      borrowHour,
-                      borrowMinute,
-                      e.target.value
-                    )
-                  }
-                >
+                <select value={borrowPeriod} onChange={e => handleBorrowTimeChange(borrowHour, borrowMinute, e.target.value)}>
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
                 </select>
               </div>
             </div>
-
             <div className="form-group">
               <label>Return Time:</label>
               <div className="time-input">
-                <select
-                  value={returnHour}
-                  onChange={(e) => setReturnHour(e.target.value)}
-                >
+                <select value={returnHour} onChange={e => setReturnHour(e.target.value)}>
                   {[...Array(12).keys()].map((hour) => (
-                    <option key={hour} value={hour + 1}>
-                      {hour + 1}
-                    </option>
+                    <option key={hour} value={hour + 1}>{hour + 1}</option>
                   ))}
                 </select>
-                <select
-                  value={returnMinute}
-                  onChange={(e) => setReturnMinute(e.target.value)}
-                >
+                <select value={returnMinute} onChange={e => setReturnMinute(e.target.value)}>
                   {["00", "15", "30", "45"].map((minute) => (
-                    <option key={minute} value={minute}>
-                      {minute}
-                    </option>
+                    <option key={minute} value={minute}>{minute}</option>
                   ))}
                 </select>
-                <select
-                  value={returnPeriod}
-                  onChange={(e) => setReturnPeriod(e.target.value)}
-                >
+                <select value={returnPeriod} onChange={e => setReturnPeriod(e.target.value)}>
                   <option value="AM">AM</option>
                   <option value="PM">PM</option>
                 </select>
               </div>
             </div>
-
             <button type="submit" className="book-now-btn" disabled={loading}>
-              {loading ? "Booking..." : "Book Now"}
+              {loading ? (isBatch ? "Booking All..." : "Booking...") : (isBatch ? "Book All" : "Book Now")}
             </button>
           </form>
         </div>

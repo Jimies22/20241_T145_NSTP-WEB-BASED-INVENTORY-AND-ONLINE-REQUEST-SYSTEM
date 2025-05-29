@@ -5,9 +5,12 @@
   },
   "scripts": {
     "client": "npm start --prefix client",
-    "server": "npm start --prefix server", 
+    "server": "npm start --prefix server",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run build --prefix client"
+  },
+  "dependencies": {
+    "react-qr-barcode-scanner": "^2.1.5"
   }
-} 
+}
