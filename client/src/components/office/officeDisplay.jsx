@@ -38,6 +38,17 @@ const OfficeDisplay = () => {
   const [cartScannedCodes, setCartScannedCodes] = useState([]); // [{item, code, valid}]
   const [cartBorrowLoading, setCartBorrowLoading] = useState(false);
 
+  // Add new state to track pending borrow action
+  const [pendingBorrowItem, setPendingBorrowItem] = useState(null);
+  const [pendingCartBorrow, setPendingCartBorrow] = useState(false);
+
+  // Add new state for confirmation modals
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showCartConfirmModal, setShowCartConfirmModal] = useState(false);
+
+  // Remove session logic, always require Google verification for each borrow
+  const [googleVerifiedUser, setGoogleVerifiedUser] = useState(null); // Store user info for current transaction only
+
   useEffect(() => {
     fetchItems();
     fetchCategories();
@@ -111,44 +122,59 @@ const OfficeDisplay = () => {
     setSelectedItem(null);
   };
 
+  // Refactored Single Borrow Flow
+  const handleBorrowItem = (item) => {
+    setPendingBorrowItem(item);
+    setShowGoogleLogin(true);
+  };
+
+  // Refactored Cart Borrow Flow
+  const handleCartBorrow = () => {
+    if (cart.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'No items selected',
+        text: 'Please select items to borrow.',
+      });
+      return;
+    }
+    setPendingCartBorrow(true);
+    setShowGoogleLogin(true);
+  };
+
+  // Google Verification Handler (single and batch)
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const response = await fetch("http://localhost:3000/login/google", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: 'include',
         body: JSON.stringify({ token: credentialResponse.credential })
       });
-
       const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      sessionStorage.setItem("sessionToken", data.token);
-      sessionStorage.setItem("userInfo", JSON.stringify(data.user));
-
-      // After successful login, proceed with borrow request
-      if (selectedItem) {
-        setShowBorrowOverlay(true);
-      }
-
+      if (!response.ok) throw new Error(data.message || 'Login failed');
+      setShowGoogleLogin(false);
+      setGoogleVerifiedUser(data.user); // Store for this transaction only
       Swal.fire({
-        title: "Login Successful",
-        text: "You can now proceed with borrowing the item.",
+        title: "Verification Successful",
+        text: "You can now proceed with borrowing.",
         icon: "success",
-        timer: 1500,
+        timer: 1200,
         showConfirmButton: false
       });
-
+      // Continue the pending borrow flow
+      if (pendingBorrowItem) {
+        setSelectedItem(pendingBorrowItem);
+        setBorrowStep('date');
+        setPendingBorrowItem(null);
+      } else if (pendingCartBorrow) {
+        setShowCartBorrow(true);
+        setPendingCartBorrow(false);
+      }
     } catch (error) {
-      console.error("Google login error:", error);
       Swal.fire({
-        title: "Login Failed",
-        text: error.message || "Failed to login with Google. Please try again.",
+        title: "Verification Failed",
+        text: error.message || "Failed to verify with Google. Please try again.",
         icon: "error",
         confirmButtonColor: "#d33",
       });
@@ -162,34 +188,6 @@ const OfficeDisplay = () => {
       icon: "error",
       confirmButtonColor: "#d33",
     });
-  };
-
-  const handleBorrowItem = async (item) => {
-    try {
-      const token = sessionStorage.getItem("sessionToken");
-      if (!token) {
-        setSelectedItem(item);
-        setShowGoogleLogin(true);
-        return;
-      }
-      // Check if user has pending request for this item
-      const response = await axios.get(`http://localhost:3000/borrow/my-requests`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const existingRequest = response.data.find(request => {
-        if (!request || !request.item) return false;
-        return request.item._id === item._id && (request.status === "pending" || request.status === "approved");
-      });
-      if (existingRequest) {
-        Swal.fire({ icon: 'error', title: 'Cannot Borrow', text: 'You already have a pending or approved request for this item.' });
-        return;
-      }
-      setSelectedItem(item);
-      setBorrowStep('date'); // Start borrow flow at date selection
-    } catch (error) {
-      console.error("Error checking existing requests:", error);
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to process borrow request. Please try again.' });
-    }
   };
 
   const handleCloseBorrowOverlay = () => {
@@ -226,24 +224,6 @@ const OfficeDisplay = () => {
     }
   };
 
-  const handleCartBorrow = () => {
-    if (cart.length === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'No items selected',
-        text: 'Please select items to borrow.',
-      });
-      return;
-    }
-    // If not logged in, show Google login modal
-    const token = sessionStorage.getItem("sessionToken");
-    if (!token) {
-      setShowGoogleLogin(true);
-      return;
-    }
-    setShowCartBorrow(true);
-  };
-
   // Borrow step: handle return date selection
   const handleReturnDateSubmit = (e) => {
     e.preventDefault();
@@ -270,13 +250,10 @@ const OfficeDisplay = () => {
   };
 
   useEffect(() => {
-    // When scannedCode is set, validate and complete borrow
     if (borrowStep === 'scan' && scannedCode && selectedItem) {
-      // Assume item QR/barcode is item._id or item.item_id
       const validCodes = [selectedItem._id, selectedItem.item_id, selectedItem.qrCode, selectedItem.barcode];
       if (validCodes.includes(scannedCode)) {
-        // Complete borrow
-        completeBorrow(selectedItem, borrowReturnDate);
+        setShowConfirmModal(true);
       } else {
         Swal.fire({ icon: 'error', title: 'Invalid Code', text: 'Scanned code does not match this item. Please try again.' });
         setScannedCode("");
@@ -288,20 +265,18 @@ const OfficeDisplay = () => {
   const completeBorrow = async (item, returnDate) => {
     setBorrowLoading(true);
     try {
-      const token = sessionStorage.getItem("sessionToken");
-      const userId = JSON.parse(atob(token.split(".")[1])).userId;
       const borrowDate = new Date();
       const returnDateObj = new Date(returnDate);
       await axios.post(
         "http://localhost:3000/borrow",
         {
-          userId,
+          userId: googleVerifiedUser._id,
           item: item._id,
           borrowDate: borrowDate.toISOString(),
           returnDate: returnDateObj.toISOString(),
           requestDate: borrowDate.toISOString(),
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${googleVerifiedUser.token}` } }
       );
       setBorrowStep(null);
       setBorrowReturnDate("");
@@ -313,6 +288,14 @@ const OfficeDisplay = () => {
     } finally {
       setBorrowLoading(false);
     }
+  };
+
+  // Confirm and complete single borrow
+  const handleConfirmBorrow = async () => {
+    setShowConfirmModal(false);
+    await completeBorrow(selectedItem, borrowReturnDate);
+    // Logout after success
+    Swal.fire({ icon: 'info', title: 'Logged out', text: 'You have been logged out for the next transaction.' });
   };
 
   // Cart Borrow Flow
@@ -363,23 +346,19 @@ const OfficeDisplay = () => {
   const handleCartBorrowSubmit = async () => {
     setCartBorrowLoading(true);
     try {
-      const token = sessionStorage.getItem("sessionToken");
-      const userId = JSON.parse(atob(token.split(".")[1])).userId;
-      const borrowDate = new Date();
-      const returnDateObj = new Date(cartBorrowReturnDate);
       let success = [], fail = [];
       for (const x of cartScannedCodes) {
         try {
           await axios.post(
             "http://localhost:3000/borrow",
             {
-              userId,
+              userId: googleVerifiedUser._id,
               item: x.item._id,
-              borrowDate: borrowDate.toISOString(),
-              returnDate: returnDateObj.toISOString(),
-              requestDate: borrowDate.toISOString(),
+              borrowDate: new Date().toISOString(),
+              returnDate: new Date(cartBorrowReturnDate).toISOString(),
+              requestDate: new Date().toISOString(),
             },
-            { headers: { Authorization: `Bearer ${token}` } }
+            { headers: { Authorization: `Bearer ${googleVerifiedUser.token}` } }
           );
           success.push(x.item.name);
         } catch (error) {
@@ -400,6 +379,14 @@ const OfficeDisplay = () => {
     } finally {
       setCartBorrowLoading(false);
     }
+  };
+
+  // Confirm and complete batch borrow
+  const handleConfirmCartBorrow = async () => {
+    setShowCartConfirmModal(false);
+    await handleCartBorrowSubmit();
+    // Logout after success
+    Swal.fire({ icon: 'info', title: 'Logged out', text: 'You have been logged out for the next transaction.' });
   };
 
   return (
@@ -687,6 +674,29 @@ const OfficeDisplay = () => {
                 >
                   {cartBorrowLoading ? 'Processing...' : 'Submit Borrow Requests'}
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* Confirm Borrow Modal (single) */}
+          {showConfirmModal && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h2>Confirm Borrow Request</h2>
+                <p>Do you want to confirm your borrow request?</p>
+                <button className="borrow-button" onClick={handleConfirmBorrow}>Confirm</button>
+                <button className="close-btn" onClick={() => setShowConfirmModal(false)}>×</button>
+              </div>
+            </div>
+          )}
+          {/* Confirm Borrow Modal (batch) */}
+          {showCartConfirmModal && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h2>Confirm Borrow Requests</h2>
+                <p>Do you want to confirm your borrow requests for all scanned items?</p>
+                <button className="borrow-button" onClick={handleConfirmCartBorrow}>Confirm</button>
+                <button className="close-btn" onClick={() => setShowCartConfirmModal(false)}>×</button>
               </div>
             </div>
           )}
