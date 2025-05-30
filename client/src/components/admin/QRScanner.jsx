@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import Swal from 'sweetalert2';
-import '../../css/Scanner.css';
+import '../../css/scanner.css';
 
 const QRScanner = ({ onScanSuccess, onScanError, onScannerMounted }) => {
   const [scanner, setScanner] = useState(null);
