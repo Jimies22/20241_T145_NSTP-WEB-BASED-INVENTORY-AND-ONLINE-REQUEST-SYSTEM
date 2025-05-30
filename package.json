@@ -8,7 +8,8 @@
     "server": "npm start --prefix server",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm run build --prefix client"
+    "build": "npm run build --prefix client",
+    "start": "npm run build && npm start --prefix server"
   },
   "dependencies": {
     "react-qr-barcode-scanner": "^2.1.5"

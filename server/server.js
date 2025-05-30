@@ -1,3 +1,4 @@
+require('dotenv').config({ path: __dirname + '/.env' });
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
@@ -20,8 +21,10 @@ const pdfRoutes = require('./routes/pdfRoutes');
 const activityRoutes = require('./routes/ActivityRoutes');
 const sheetsRoutes = require('./routes/sheetsRoutes');
 
-require("dotenv").config();
+
 require("./config/passport");
+
+console.log('CREDENTIALS_BASE64 loaded:', !!process.env.CREDENTIALS_BASE64);
 
 // Update the CORS configuration to include your ngrok URL
 app.use((req, res, next) => {

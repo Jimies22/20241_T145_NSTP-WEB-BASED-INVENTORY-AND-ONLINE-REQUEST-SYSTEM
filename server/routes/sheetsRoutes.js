@@ -4,9 +4,15 @@ const { google } = require('googleapis');
 const Activity = require('../models/Activity');
 const Request = require('../models/borrow');
 
+// Check if credentials are available
+if (!process.env.CREDENTIALS_BASE64) {
+    console.error('CREDENTIALS_BASE64 environment variable is not set');
+    throw new Error('Google Sheets credentials not configured. Please set CREDENTIALS_BASE64 environment variable.');
+}
+
 // Initialize Google Sheets API
 const auth = new google.auth.GoogleAuth({
-    credentials: require('../credentials.json'),
+    credentials: JSON.parse(Buffer.from(process.env.CREDENTIALS_BASE64, 'base64').toString()),
     scopes: ['https://www.googleapis.com/auth/spreadsheets']
 });
 
